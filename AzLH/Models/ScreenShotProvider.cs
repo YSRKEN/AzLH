@@ -11,7 +11,7 @@ namespace AzLH.Models {
 		// 取得できるゲーム画面の最小サイズ
 		private static readonly DSize MinGameWindowSize = new DSize(1280, 720);
 		// 探索用ステップ数
-		private static readonly int GameWindowSearchStepCount = 3;
+		private static readonly int GameWindowSearchStepCount = 10;
 		// 探索用ステップ数に基づく取得間隔
 		private static readonly DSize GameWindowSearchStep = new DSize(
 			MinGameWindowSize.Width / (GameWindowSearchStepCount + 1),
