@@ -7,7 +7,7 @@ namespace AzLH.Models {
 		public MainModel() {}
 		// サンプルコマンド
 		public void Test() {
-			if (false) {
+			if (true) {
 				var sw = new System.Diagnostics.Stopwatch();
 				sw.Start();
 				var rectList = ScreenShotProvider.GetGameWindowPosition();
@@ -27,9 +27,10 @@ namespace AzLH.Models {
 			else {
 				int count = 10;
 				var sw = new System.Diagnostics.Stopwatch();
+				// 呼び出すオーバーヘッドが18[ms/回]程度あることに注意
 				sw.Start();
 				for (int i = 0; i < count; ++i) {
-					var rectList = ScreenShotProvider.GetGameWindowPosition(new System.Drawing.Bitmap("hoge.png"));
+					var rectList = ScreenShotProvider.GetGameWindowPosition(new System.Drawing.Bitmap("benchmark2.png"));
 				}
 				sw.Stop();
 				System.GC.Collect();
