@@ -11,7 +11,7 @@ namespace AzLH.Models {
 		// 取得できるゲーム画面の最小サイズ
 		private static readonly DSize MinGameWindowSize = new DSize(1280, 720);
 		// 探索用ステップ数
-		private static readonly int GameWindowSearchStepCount = 20;
+		private static readonly int GameWindowSearchStepCount = 3;
 		// 探索用ステップ数に基づく取得間隔
 		private static readonly DSize GameWindowSearchStep = new DSize(
 			MinGameWindowSize.Width / (GameWindowSearchStepCount + 1),
@@ -61,42 +61,116 @@ namespace AzLH.Models {
 			//   Y=y  [..., A1, A2, .., Ax, ...]
 			//   Y=y+1[..., B1, B2, .., Bx, ...]
 			var topList = new List<int>();
-			for (int y = 0; y < bitmap.Height - MinGameWindowSize.Height - 1; ++y) {
+			{
 				var listA = new List<Color>();
-				var listB = new List<Color>();
 				for (int x = 0; x < bitmap.Width; x += GameWindowSearchStep.Width) {
-					listA.Add(bitmap.GetPixel(x, y));
-					listB.Add(bitmap.GetPixel(x, y + 1));
+					listA.Add(bitmap.GetPixel(x, 0));
 				}
-				for (int k = 0; k < listA.Count - GameWindowSearchStepCount; ++k) {
-					if (!listA.Skip(k).Take(GameWindowSearchStepCount).All(p => p == listA[k]))
-						continue;
-					if (listB.Skip(k).Take(GameWindowSearchStepCount).All(p => p == listB[k]))
-						continue;
-					if (listB.Skip(k).Take(GameWindowSearchStepCount).All(p => p == listA[k]))
-						continue;
-					topList.Add(y);
-					break;
+				for (int y = 1; y < bitmap.Height - MinGameWindowSize.Height - 1; ++y) {
+					var listB = new List<Color>();
+					for (int x = 0; x < bitmap.Width; x += GameWindowSearchStep.Width) {
+						listB.Add(bitmap.GetPixel(x, y));
+					}
+					for (int k = 0; k < listA.Count - GameWindowSearchStepCount; ++k) {
+						var clrA = listA[k];
+						{
+							// 全要素がlistA[k]と同じ値、ではない場合を弾く
+							bool flg = true;
+							for (int c = 1; c < GameWindowSearchStepCount; ++c) {
+								if (listA[k + c] != clrA) {
+									flg = false;
+									break;
+								}
+							}
+							if (!flg)
+								continue;
+						}
+						var clrB = listB[k];
+						{
+							// 全要素がlistB[k]と同じ値、ならば弾く
+							bool flg = false;
+							for (int c = 1; c < GameWindowSearchStepCount; ++c) {
+								if (listA[k + c] != clrB) {
+									flg = true;
+									break;
+								}
+							}
+							if (!flg)
+								continue;
+						}
+						{
+							// 全要素がlistA[k]と同じ値、ならば弾く
+							bool flg = false;
+							for (int c = 1; c < GameWindowSearchStepCount; ++c) {
+								if (listB[k + c] != clrA) {
+									flg = true;
+									break;
+								}
+							}
+							if (!flg)
+								continue;
+						}
+						topList.Add(y - 1);
+						break;
+					}
+					listA = listB;
 				}
 			}
 			// 左辺を検索する
 			var leftList = new List<int>();
-			for (int x = 0; x < bitmap.Width - MinGameWindowSize.Width - 1; ++x) {
+			{
 				var listA = new List<Color>();
-				var listB = new List<Color>();
 				for (int y = 0; y < bitmap.Height; y += GameWindowSearchStep.Height) {
-					listA.Add(bitmap.GetPixel(x, y));
-					listB.Add(bitmap.GetPixel(x + 1, y));
+					listA.Add(bitmap.GetPixel(0, y));
 				}
-				for (int k = 0; k < listA.Count - GameWindowSearchStepCount; ++k) {
-					if (!listA.Skip(k).Take(GameWindowSearchStepCount).All(p => p == listA[k]))
-						continue;
-					if (listB.Skip(k).Take(GameWindowSearchStepCount).All(p => p == listB[k]))
-						continue;
-					if (listB.Skip(k).Take(GameWindowSearchStepCount).All(p => p == listA[k]))
-						continue;
-					leftList.Add(x);
-					break;
+				for (int x = 1; x < bitmap.Width - MinGameWindowSize.Width - 1; ++x) {
+					var listB = new List<Color>();
+					for (int y = 0; y < bitmap.Height; y += GameWindowSearchStep.Height) {
+						listB.Add(bitmap.GetPixel(x, y));
+					}
+					for (int k = 0; k < listA.Count - GameWindowSearchStepCount; ++k) {
+						var clrA = listA[k];
+						{
+							// 全要素がlistA[k]と同じ値、ではない場合を弾く
+							bool flg = true;
+							for (int c = 1; c < GameWindowSearchStepCount; ++c) {
+								if (listA[k + c] != clrA) {
+									flg = false;
+									break;
+								}
+							}
+							if (!flg)
+								continue;
+						}
+						var clrB = listB[k];
+						{
+							// 全要素がlistB[k]と同じ値、ならば弾く
+							bool flg = false;
+							for (int c = 1; c < GameWindowSearchStepCount; ++c) {
+								if (listA[k + c] != clrB) {
+									flg = true;
+									break;
+								}
+							}
+							if (!flg)
+								continue;
+						}
+						{
+							// 全要素がlistA[k]と同じ値、ならば弾く
+							bool flg = false;
+							for (int c = 1; c < GameWindowSearchStepCount; ++c) {
+								if (listB[k + c] != clrA) {
+									flg = true;
+									break;
+								}
+							}
+							if (!flg)
+								continue;
+						}
+						leftList.Add(x - 1);
+						break;
+					}
+					listA = listB;
 				}
 			}
 			// 上辺・左辺から決まる各候補について、Rectとしての条件を満たせるかをチェックする
