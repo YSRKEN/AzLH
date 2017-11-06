@@ -13,10 +13,16 @@ namespace AzLH.Models {
 				var rectList = ScreenShotProvider.GetGameWindowPosition();
 				sw.Stop();
 				string output = $"{sw.ElapsedMilliseconds}[ms]\n";
-				foreach (var rect in rectList) {
-					output += $"({rect.X},{rect.Y}) - {rect.Width}x{rect.Height}\n";
+				var bitmap = ScreenShotProvider.GetScreenBitmap();
+				bitmap.Save("hoge-1.png");
+				using (var bitmapGraphics = System.Drawing.Graphics.FromImage(bitmap)) {
+					foreach (var rect in rectList) {
+						bitmapGraphics.DrawRectangle(new System.Drawing.Pen(System.Drawing.Color.Blue, 10.0f), rect);
+						output += $"({rect.X},{rect.Y}) - {rect.Width}x{rect.Height}\n";
+					}
 				}
 				MessageBox.Show(output);
+				bitmap.Save("hoge-2.png");
 			}
 			else {
 				int count = 10;
