@@ -59,7 +59,7 @@ public static Bitmap GetScreenBitmap() {
 			}
 		}
 		public static List<Rectangle> GetGameWindowPosition(Bitmap bitmap) {
-			// 上端の候補を検索する
+			// 上辺の候補を検索する
 			// 1. GameWindowSearchStep.Width ピクセルごとに画素を読み取る(Y=yとY=y+1)
 			// 2. 以下の2配列の中で、「A1～A{GameWindowSearchStepCount}は全部同じ色」かつ
 			//    「B1～B{GameWindowSearchStepCount}のどれかはAxと違う色」である箇所を見つける
@@ -72,7 +72,9 @@ public static Bitmap GetScreenBitmap() {
 				int stepCount = bitmap.Width / GameWindowSearchStep.Width;
 				//探索するステップの右端
 				int maxSearchWidth = (stepCount - GameWindowSearchStepCount) * GameWindowSearchStep.Width;
-				for (int y = 0; y < bitmap.Height - MinGameWindowSize.Height - 1; ++y) {
+				//探索する縦範囲
+				int maxSearchHeight = bitmap.Height - MinGameWindowSize.Height - 1;
+				for (int y = 0; y < maxSearchHeight; ++y) {
 					// KMP法を応用した検索方法
 					for (int x = 0; x < maxSearchWidth; x += GameWindowSearchStep.Width) {
 						// 基準となる色(A1)を取得する
@@ -106,7 +108,7 @@ public static Bitmap GetScreenBitmap() {
 					}
 				}
 			}
-			// 上端の候補の左側を軽く走査し、左辺となりうる辺を持ちうるかを調査する
+			// 上辺の候補の左側を軽く走査し、左辺となりうる辺を持ちうるかを調査する
 			var pointList = new List<KeyValuePair<int, int>>();
 			foreach(var top in topList) {
 				// ただの置き換え
@@ -121,19 +123,33 @@ public static Bitmap GetScreenBitmap() {
 					if (bitmap.GetPixel(x, y) != baseColor)
 						break;
 					// 左上座標から縦方向に見ていって、baseColorと色を違えた場合は次の候補に移る
-					bool safeFlg = true;
-					for (int k = 0, y2 = y + 1; k < MinGameWindowSize.Height;
-						k += GameWindowSearchStep.Height, y2 += GameWindowSearchStep.Height) {
-						if (bitmap.GetPixel(x, y2) != baseColor) {
-							safeFlg = false;
-							break;
+					{
+						bool safeFlg = true;
+						for (int k = 0, y2 = y + 1; k < MinGameWindowSize.Height;
+							k += GameWindowSearchStep.Height, y2 += GameWindowSearchStep.Height) {
+							if (bitmap.GetPixel(x, y2) != baseColor) {
+								safeFlg = false;
+								break;
+							}
 						}
+						if (!safeFlg)
+							continue;
 					}
-					if (!safeFlg)
-						continue;
+					// 左辺候補の1ピクセル内側におけるチェック
+					{
+						bool safeFlg = false;
+						for (int k = 0, y2 = y + 1; k < MinGameWindowSize.Height;
+							k += GameWindowSearchStep.Height, y2 += GameWindowSearchStep.Height) {
+							if (bitmap.GetPixel(x + 1, y2) != baseColor) {
+								safeFlg = true;
+								break;
+							}
+						}
+						if (!safeFlg)
+							continue;
+					}
 					// 候補を追加する
 					pointList.Add(new KeyValuePair<int, int>(x, y));
-					break;
 				}
 			}
 			// 上辺・左辺から決まる各候補について、Rectとしての条件を満たせるかをチェックする
@@ -143,10 +159,6 @@ public static Bitmap GetScreenBitmap() {
 				int top = point.Value;
 				// 枠の基準色を決める
 				var baseColor = bitmap.GetPixel(left, top);
-				if (bitmap.GetPixel(left + 1, top) != baseColor) continue;
-				if (bitmap.GetPixel(left, top + 1) != baseColor) continue;
-				if (bitmap.GetPixel(left + 2, top) != baseColor) continue;
-				if (bitmap.GetPixel(left, top + 2) != baseColor) continue;
 				// まず、MinGameWindowSizeまで大丈夫かを検証する
 				{
 					// 上辺
