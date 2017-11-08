@@ -25,9 +25,17 @@ namespace AzLH.Models {
 			.ToList();
 		#endregion
 
-// 引数なし→仮想画面全体のスクリーンショットを取得する
-// 引数あり→仮想画面の指定した範囲を切り取ったスクリーンショットを取得する
-public static Bitmap GetScreenBitmap() {
+		// nullではない場合、スクリーンショットを取得可能ということになる
+		public static Rectangle GameWindowRect { get; set; }
+
+		// スクリーンショットを保存する
+		public static Bitmap GetScreenshot()
+			=> GetScreenBitmap(GameWindowRect);
+
+		// スクリーンショットを取得する
+		// 引数なし→仮想画面全体のスクリーンショットを取得する
+		// 引数あり→仮想画面の指定した範囲を切り取ったスクリーンショットを取得する
+		public static Bitmap GetScreenBitmap() {
 			//System.Drawing.dllの参照を追加しておくのがポイント
 			//https://social.msdn.microsoft.com/Forums/vstudio/en-US/7a3d2cee-2e72-420d-b596-d51f7002a07e/wpf-screen-capture-with-rectangle
 			int top = (int)SystemParameters.VirtualScreenTop;

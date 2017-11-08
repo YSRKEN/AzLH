@@ -1,4 +1,5 @@
 ﻿using Prism.Mvvm;
+using System;
 using System.Windows;
 
 namespace AzLH.Models {
@@ -65,8 +66,9 @@ namespace AzLH.Models {
 				break;
 			case 1: {
 					// 即座にその候補で確定させる
+					ScreenShotProvider.GameWindowRect = rectList[0];
 					PutLog("座標取得 : 成功");
-					PutLog($"ゲーム座標 : {Utility.GetRectStr(rectList[0])}");
+					PutLog($"ゲーム座標 : {Utility.GetRectStr(ScreenShotProvider.GameWindowRect)}");
 					SaveScreenshotFlg = true;
 				}
 				break;
@@ -79,7 +81,15 @@ namespace AzLH.Models {
 		}
 		// ゲーム画面のスクリーンショットを保存する
 		public void SaveScreenshot() {
-
+			try {
+				string fileName = $"pic\\{Utility.GetTimeStrLong()}.png";
+				ScreenShotProvider.GetScreenshot().Save(fileName);
+				PutLog($"スクリーンショット : 成功");
+				PutLog($"ファイル名 : {fileName}");
+			}
+			catch (Exception) {
+				PutLog($"スクリーンショット : 失敗");
+			}
 		}
 	}
 }

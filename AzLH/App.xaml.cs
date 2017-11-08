@@ -10,6 +10,9 @@ namespace AzLH {
 			// アプリの起動
 			var bootstrapper = new Bootstrapper();
 			bootstrapper.Run();
+			// picフォルダが存在しない場合は作成する
+			if (!System.IO.Directory.Exists(@"pic\"))
+				System.IO.Directory.CreateDirectory(@"pic\");
 		}
 	}
 }
