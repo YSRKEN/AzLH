@@ -25,7 +25,8 @@
 					Command="{Binding SaveScreenshotCommand}"
 					IsEnabled="{Binding SaveScreenshotFlg.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
 		</Grid>
-		<TextBox Grid.Row="1" IsReadOnly="True" AcceptsReturn="True" Margin="5,5,5,5"
+		<TextBox Name="ApplicationLogTextBox" Grid.Row="1" IsReadOnly="True" AcceptsReturn="True" Margin="5,5,5,5"
+				HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
 				Text="{Binding ApplicationLog.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 	</Grid>
 </Window>
