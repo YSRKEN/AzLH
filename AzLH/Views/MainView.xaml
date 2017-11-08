@@ -9,7 +9,23 @@
 	<Window.DataContext>
 		<local:MainViewModel/>
 	</Window.DataContext>
-	<Grid>
-		<Button Width="80" Height="24" Content="test" Command="{Binding TestCommand}" />
+	<Grid Margin="5,5,5,5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="auto"/>
+			<RowDefinition/>
+		</Grid.RowDefinitions>
+		<Grid Grid.Row="0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="auto"/>
+				<ColumnDefinition Width="auto"/>
+			</Grid.ColumnDefinitions>
+			<Button Grid.Column="0" Width="80" Height="24" Margin="5,5,5,5" Content="座標取得"
+					Command="{Binding GetGameWindowPositionCommand}" />
+			<Button Grid.Column="1" Width="80" Height="24" Margin="5,5,5,5" Content="画像保存"
+					Command="{Binding SaveScreenshotCommand}"
+					IsEnabled="{Binding SaveScreenshotFlg.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+		</Grid>
+		<TextBox Grid.Row="1" IsReadOnly="True" AcceptsReturn="True"
+				Text="{Binding ApplicationLog.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 	</Grid>
 </Window>

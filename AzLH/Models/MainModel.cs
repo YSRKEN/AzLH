@@ -3,8 +3,18 @@ using System.Windows;
 
 namespace AzLH.Models {
 	class MainModel : BindableBase {
-		// コンストラクタ
-		public MainModel() {}
+		// 画像保存ボタンは有効か？
+		private bool saveScreenshotFlg = false;
+		public bool SaveScreenshotFlg {
+			get { return saveScreenshotFlg; }
+			set { SetProperty(ref saveScreenshotFlg, value); }
+		}
+		// 実行ログ
+		private string applicationLog = "";
+		public string ApplicationLog {
+			get { return applicationLog; }
+			set { SetProperty(ref applicationLog, value); }
+		}
 		// サンプルコマンド
 		public void Test() {
 			if (true) {
@@ -37,6 +47,16 @@ namespace AzLH.Models {
 				string output = $"{1.0 * sw.ElapsedMilliseconds / count}[ms]\n";
 				MessageBox.Show(output);
 			}
+		}
+		// ゲーム画面の座標を取得する
+		public void GetGameWindowPosition() {
+			// ゲーム画面の座標候補を検出する
+			var rectList = ScreenShotProvider.GetGameWindowPosition();
+
+		}
+		// ゲーム画面のスクリーンショットを保存する
+		public void SaveScreenshot() {
+
 		}
 	}
 }
