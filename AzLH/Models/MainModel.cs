@@ -55,35 +55,40 @@ namespace AzLH.Models {
 		}
 		// ゲーム画面の座標を取得する
 		public void GetGameWindowPosition() {
-			// ゲーム画面の座標候補を検出する
-			var rectList = ScreenShotProvider.GetGameWindowPosition();
-			// 候補数によって処理を分岐させる
-			switch (rectList.Count) {
-			case 0: {
-					// 候補なしと表示する
-					PutLog("座標取得 : 失敗");
+			try {
+				// ゲーム画面の座標候補を検出する
+				var rectList = ScreenShotProvider.GetGameWindowPosition();
+				// 候補数によって処理を分岐させる
+				switch (rectList.Count) {
+				case 0: {
+						// 候補なしと表示する
+						PutLog("座標取得 : 失敗");
+					}
+					break;
+				case 1: {
+						// 即座にその候補で確定させる
+						ScreenShotProvider.GameWindowRect = rectList[0];
+						PutLog("座標取得 : 成功");
+						PutLog($"ゲーム座標 : {Utility.GetRectStr(ScreenShotProvider.GameWindowRect)}");
+						SaveScreenshotFlg = true;
+					}
+					break;
+				default: {
+						// 選択画面を表示する
+						PutLog("座標取得 : 失敗");
+					}
+					break;
 				}
-				break;
-			case 1: {
-					// 即座にその候補で確定させる
-					ScreenShotProvider.GameWindowRect = rectList[0];
-					PutLog("座標取得 : 成功");
-					PutLog($"ゲーム座標 : {Utility.GetRectStr(ScreenShotProvider.GameWindowRect)}");
-					SaveScreenshotFlg = true;
-				}
-				break;
-			default: {
-					// 選択画面を表示する
-					PutLog("座標取得 : 失敗");
-				}
-				break;
+			}
+			catch (Exception) {
+				PutLog($"座標取得 : 失敗");
 			}
 		}
 		// ゲーム画面のスクリーンショットを保存する
 		public void SaveScreenshot() {
 			try {
-				string fileName = $"pic\\{Utility.GetTimeStrLong()}.png";
-				ScreenShotProvider.GetScreenshot().Save(fileName);
+				string fileName = $"{Utility.GetTimeStrLong()}.png";
+				ScreenShotProvider.GetScreenshot().Save($"pic\\{fileName}");
 				PutLog($"スクリーンショット : 成功");
 				PutLog($"ファイル名 : {fileName}");
 			}

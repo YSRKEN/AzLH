@@ -11,7 +11,6 @@ namespace AzLH {
 		protected override DependencyObject CreateShell() {
 			return Container.Resolve<MainView>();
 		}
-
 		protected override void InitializeShell() {
 			Application.Current.MainWindow.Show();
 		}
