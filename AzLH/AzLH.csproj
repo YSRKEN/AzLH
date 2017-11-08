@@ -108,6 +108,7 @@
     <Compile Include="Messenger.cs" />
     <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\ScreenShotProvider.cs" />
+    <Compile Include="Models\Utility.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>

@@ -15,6 +15,10 @@ namespace AzLH.Models {
 			get { return applicationLog; }
 			set { SetProperty(ref applicationLog, value); }
 		}
+		// 実行ログに追記する
+		private void PutLog(string message) {
+			ApplicationLog += $"{Utility.GetTimeStrShort()} {message}\n";
+		}
 		// サンプルコマンド
 		public void Test() {
 			if (true) {
@@ -52,7 +56,26 @@ namespace AzLH.Models {
 		public void GetGameWindowPosition() {
 			// ゲーム画面の座標候補を検出する
 			var rectList = ScreenShotProvider.GetGameWindowPosition();
-
+			// 候補数によって処理を分岐させる
+			switch (rectList.Count) {
+			case 0: {
+					// 候補なしと表示する
+					PutLog("座標取得 : 失敗");
+				}
+				break;
+			case 1: {
+					// 即座にその候補で確定させる
+					PutLog("座標取得 : 成功");
+					PutLog($"ゲーム座標 : {Utility.GetRectStr(rectList[0])}");
+					SaveScreenshotFlg = true;
+				}
+				break;
+			default: {
+					// 選択画面を表示する
+					PutLog("座標取得 : 失敗");
+				}
+				break;
+			}
 		}
 		// ゲーム画面のスクリーンショットを保存する
 		public void SaveScreenshot() {
