@@ -7,6 +7,12 @@ using static AzLH.Models.MainModel;
 
 namespace AzLH.Models {
 	class GameScreenSelectModel : BindableBase {
+		// trueにすると画面を閉じる
+		private bool closeWindow;
+		public bool CloseWindow {
+			get { return closeWindow; }
+			set { SetProperty(ref closeWindow, value); }
+		}
 		// ページ情報を表示
 		private string pageInfoStr = "";
 		public string PageInfoStr {
@@ -28,12 +34,14 @@ namespace AzLH.Models {
 		// プレビューを書き換える
 		private void RedrawPage() {
 			PageInfoStr = $"{rectIndex + 1} / {rectList.Count} {Utility.GetRectStr(rectList[rectIndex])}";
+			GameWindowPage = (BitmapSource)ScreenShotProvider.GetScreenBitmap(rectList[rectIndex]).ToImageSource();
 		}
 		// コンストラクタ
 		public GameScreenSelectModel(List<Rectangle> rectList, SelectGameWindowAction dg) {
 			this.rectList = rectList;
 			this.dg = dg;
 			rectIndex = 0;
+			RedrawPage();
 		}
 		// 前の画像に移動
 		public void PrevPage() {
@@ -46,8 +54,14 @@ namespace AzLH.Models {
 			RedrawPage();
 		}
 		// 決定ボタン
-		public void SelectPage() { dg(rectList[rectIndex]); }
+		public void SelectPage() {
+			dg(rectList[rectIndex]);
+			CloseWindow = true;
+		}
 		// キャンセルボタン
-		public void Cancel() { dg(null); }
+		public void Cancel() {
+			dg(null);
+			CloseWindow = true;
+		}
 	}
 }

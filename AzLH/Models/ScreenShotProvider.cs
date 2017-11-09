@@ -10,7 +10,7 @@ namespace AzLH.Models {
 	static class ScreenShotProvider {
 		#region 定数宣言
 		// 取得できるゲーム画面の最小サイズ
-		private static readonly DSize MinGameWindowSize = new DSize(640, 360);
+		private static readonly DSize MinGameWindowSize = new DSize(1280, 720);
 		// 探索用ステップ数
 		private static readonly int GameWindowSearchStepCount = 5;
 		// 探索用ステップ数に基づく取得間隔
@@ -20,13 +20,26 @@ namespace AzLH.Models {
 		// 取得できるゲーム画面の最大サイズ
 		private static readonly DSize MaxGameWindowSize = new DSize(2560, 1440);
 		// 枠検出に利用する定数
-		private static readonly List<DSize> GameWindowSizeList = Enumerable.Range(MinGameWindowSize.Width, MaxGameWindowSize.Width - MinGameWindowSize.Width + 1)
-			.Select(p => new DSize(p + 1, p * MinGameWindowSize.Height / MinGameWindowSize.Width + 1))
-			.ToList();
+		private static readonly List<DSize> GameWindowSizeList = initializeGameWindowSizeList();
 		#endregion
 
 		// nullではない場合、スクリーンショットを取得可能ということになる
 		public static Rectangle? GameWindowRect { get; set; }
+
+		// 枠検出に利用する定数を初期化
+		private static List<DSize> initializeGameWindowSizeList() {
+			var list = new List<DSize>();
+			for(int i = MinGameWindowSize.Width; i <= MaxGameWindowSize.Width; ++i) {
+				int xSize = i + 1;
+				int ySize1 = i * MinGameWindowSize.Height / MinGameWindowSize.Width - 1;
+				int ySize2 = ySize1 + 1;
+				int ySize3 = ySize2 + 1;
+				list.Add(new DSize(xSize, ySize1));
+				list.Add(new DSize(xSize, ySize2));
+				list.Add(new DSize(xSize, ySize3));
+			}
+			return list;
+		}
 
 		// スクリーンショットを保存する
 		public static Bitmap GetScreenshot()

@@ -6,6 +6,7 @@
 	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
 	xmlns:local="clr-namespace:AzLH.ViewModels"
 	mc:Ignorable="d"
+	local:CloseWindowAttachedBehavior.Close="{Binding CloseWindow}"
 	Title="AzurLane Helper" Height="300" Width="300">
 	<Window.DataContext>
 		<local:MainViewModel/>

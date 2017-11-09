@@ -110,6 +110,7 @@
     <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\ScreenShotProvider.cs" />
     <Compile Include="Models\Utility.cs" />
+    <Compile Include="ViewModels\CloseWindowAttachedBehavior.cs" />
     <Compile Include="ViewModels\ApplicationLogScrollBehavior.cs" />
     <Compile Include="ViewModels\GameScreenSelectViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

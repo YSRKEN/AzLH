@@ -10,6 +10,8 @@ namespace AzLH.ViewModels {
 	class GameScreenSelectViewModel {
 		// modelのinstance
 		private GameScreenSelectModel gameScreenSelectModel;
+		// trueにすると画面を閉じる
+		public ReactiveProperty<bool> CloseWindow { get; }
 		// ページ情報を表示
 		public ReactiveProperty<string> PageInfoStr { get; }
 		// 選択しているrectに基づくスクショのプレビュー
@@ -23,10 +25,12 @@ namespace AzLH.ViewModels {
 		// キャンセルボタン
 		public ReactiveCommand CancelCommand { get; }
 		// コンストラクタ
+		public GameScreenSelectViewModel() { }
 		public GameScreenSelectViewModel(List<Rectangle> rectList, SelectGameWindowAction dg) {
 			// 初期化
 			gameScreenSelectModel = new GameScreenSelectModel(rectList, dg);
 			// プロパティを設定
+			CloseWindow = gameScreenSelectModel.ObserveProperty(x => x.CloseWindow).ToReactiveProperty();
 			PageInfoStr = gameScreenSelectModel.ObserveProperty(x => x.PageInfoStr).ToReactiveProperty();
 			GameWindowPage = gameScreenSelectModel.ObserveProperty(x => x.GameWindowPage).ToReactiveProperty();
 			// コマンドを設定
