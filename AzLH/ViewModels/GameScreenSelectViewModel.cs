@@ -1,7 +1,10 @@
 ﻿using AzLH.Models;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Media.Imaging;
+using static AzLH.Models.MainModel;
 
 namespace AzLH.ViewModels {
 	class GameScreenSelectViewModel {
@@ -20,9 +23,9 @@ namespace AzLH.ViewModels {
 		// キャンセルボタン
 		public ReactiveCommand CancelCommand { get; }
 		// コンストラクタ
-		public GameScreenSelectViewModel() {
+		public GameScreenSelectViewModel(List<Rectangle> rectList, SelectGameWindowAction dg) {
 			// 初期化
-			gameScreenSelectModel = new GameScreenSelectModel();
+			gameScreenSelectModel = new GameScreenSelectModel(rectList, dg);
 			// プロパティを設定
 			PageInfoStr = gameScreenSelectModel.ObserveProperty(x => x.PageInfoStr).ToReactiveProperty();
 			GameWindowPage = gameScreenSelectModel.ObserveProperty(x => x.GameWindowPage).ToReactiveProperty();

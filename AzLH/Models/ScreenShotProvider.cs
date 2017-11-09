@@ -26,11 +26,11 @@ namespace AzLH.Models {
 		#endregion
 
 		// nullではない場合、スクリーンショットを取得可能ということになる
-		public static Rectangle GameWindowRect { get; set; }
+		public static Rectangle? GameWindowRect { get; set; }
 
 		// スクリーンショットを保存する
 		public static Bitmap GetScreenshot()
-			=> GetScreenBitmap(GameWindowRect);
+			=> GetScreenBitmap((Rectangle)GameWindowRect);
 
 		// スクリーンショットを取得する
 		// 引数なし→仮想画面全体のスクリーンショットを取得する

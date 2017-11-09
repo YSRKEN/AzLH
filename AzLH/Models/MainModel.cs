@@ -1,9 +1,11 @@
 ﻿using Prism.Mvvm;
 using System;
+using System.Drawing;
 using System.Windows;
 
 namespace AzLH.Models {
 	class MainModel : BindableBase {
+		public delegate void SelectGameWindowAction(Rectangle? rect);
 		// 画像保存ボタンは有効か？
 		private bool saveScreenshotFlg = false;
 		public bool SaveScreenshotFlg {
@@ -19,6 +21,19 @@ namespace AzLH.Models {
 		// 実行ログに追記する
 		private void PutLog(string message) {
 			ApplicationLog += $"{Utility.GetTimeStrShort()} {message}\n";
+		}
+		// 複数ウィンドウから選択した際の結果を処理する
+		private void SelectGameWindow(Rectangle? rect) {
+			if (rect == null) {
+				PutLog("座標取得 : 失敗");
+				SaveScreenshotFlg = false;
+			}
+			else {
+				ScreenShotProvider.GameWindowRect = rect;
+				PutLog("座標取得 : 成功");
+				PutLog($"ゲーム座標 : {Utility.GetRectStr((Rectangle)ScreenShotProvider.GameWindowRect)}");
+				SaveScreenshotFlg = true;
+			}
 		}
 		// サンプルコマンド
 		public void Test() {
@@ -62,7 +77,9 @@ namespace AzLH.Models {
 				switch (rectList.Count) {
 				case 0: {
 						// 候補なしと表示する
+						ScreenShotProvider.GameWindowRect = null;
 						PutLog("座標取得 : 失敗");
+						SaveScreenshotFlg = true;
 					}
 					break;
 				/*case 1: {
@@ -75,10 +92,10 @@ namespace AzLH.Models {
 					break;*/
 				default: {
 						// 選択画面を表示する
-						var vm = new ViewModels.GameScreenSelectViewModel();
+						var dg = new SelectGameWindowAction(SelectGameWindow);
+						var vm = new ViewModels.GameScreenSelectViewModel(rectList, dg);
 						var view = new Views.GameScreenSelectView { DataContext = vm };
 						view.ShowDialog();
-						PutLog("座標取得 : 失敗");
 					}
 					break;
 				}
