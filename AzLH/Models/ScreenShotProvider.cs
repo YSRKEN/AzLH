@@ -10,7 +10,7 @@ namespace AzLH.Models {
 	static class ScreenShotProvider {
 		#region 定数宣言
 		// 取得できるゲーム画面の最小サイズ
-		private static readonly DSize MinGameWindowSize = new DSize(1280, 720);
+		private static readonly DSize MinGameWindowSize = new DSize(640, 360);
 		// 探索用ステップ数
 		private static readonly int GameWindowSearchStepCount = 5;
 		// 探索用ステップ数に基づく取得間隔
