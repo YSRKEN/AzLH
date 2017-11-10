@@ -75,10 +75,11 @@ namespace AzLH.Models {
 			}
 		}*/
 		// ゲーム画面の座標を取得する
-		public void GetGameWindowPosition() {
+		public async void GetGameWindowPosition() {
+			PutLog("座標取得開始...");
 			try {
 				// ゲーム画面の座標候補を検出する
-				var rectList = ScreenShotProvider.GetGameWindowPosition();
+				var rectList = await ScreenShotProvider.GetGameWindowPositionAsync();
 				// 候補数によって処理を分岐させる
 				switch (rectList.Count) {
 				case 0: {

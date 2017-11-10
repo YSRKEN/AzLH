@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace AzLH.Models {
@@ -77,6 +78,9 @@ namespace AzLH.Models {
 				// ゲーム画面の位置と思われるrectを検索する
 				return GetGameWindowPosition(virtualScreenBitmap);
 			}
+		}
+		public static Task<List<Rectangle>> GetGameWindowPositionAsync() {
+			return Task.Run(() => GetGameWindowPosition());
 		}
 		public static List<Rectangle> GetGameWindowPosition(Bitmap bitmap) {
 			// 上辺の候補を検索する
