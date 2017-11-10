@@ -1,7 +1,7 @@
 ﻿using Prism.Mvvm;
 using System;
 using System.Drawing;
-using System.Windows;
+using System.Linq;
 
 namespace AzLH.Models {
 	internal class MainModel : BindableBase {
@@ -88,20 +88,50 @@ namespace AzLH.Models {
 						SaveScreenshotFlg = true;
 					}
 					break;
-				/*case 1: {
+				case 1: {
 						// 即座にその候補で確定させる
 						ScreenShotProvider.GameWindowRect = rectList[0];
 						PutLog("座標取得 : 成功");
 						PutLog($"ゲーム座標 : {Utility.GetRectStr((Rectangle)ScreenShotProvider.GameWindowRect)}");
 						SaveScreenshotFlg = true;
 					}
-					break;*/
+					break;
 				default: {
-						// 選択画面を表示する
-						var dg = new SelectGameWindowAction(SelectGameWindow);
-						var vm = new ViewModels.GameScreenSelectViewModel(rectList, dg);
-						var view = new Views.GameScreenSelectView { DataContext = vm };
-						view.ShowDialog();
+						// 各座標についてシーン認識を行い、認識可能だった座標が
+						// 0個→従来通りの選択画面を表示する
+						// 1個→その結果で確定させる
+						// 2個以上→認識可能だった座標だけで選択画面を表示する
+						var rectList2 = rectList.Where(rect => {
+							var bitmap = ScreenShotProvider.GetScreenBitmap(rect);
+							string scene = SceneRecognition.JudgeGameScene(bitmap);
+							return (scene != "不明");
+						}).ToList();
+						switch (rectList2.Count) {
+						case 0: {
+								// 選択画面を表示する
+								var dg = new SelectGameWindowAction(SelectGameWindow);
+								var vm = new ViewModels.GameScreenSelectViewModel(rectList, dg);
+								var view = new Views.GameScreenSelectView { DataContext = vm };
+								view.ShowDialog();
+							}
+							break;
+						case 1: {
+								// 即座にその候補で確定させる
+								ScreenShotProvider.GameWindowRect = rectList2[0];
+								PutLog("座標取得 : 成功");
+								PutLog($"ゲーム座標 : {Utility.GetRectStr((Rectangle)ScreenShotProvider.GameWindowRect)}");
+								SaveScreenshotFlg = true;
+							}
+							break;
+						default: {
+								// 選択画面を表示する
+								var dg = new SelectGameWindowAction(SelectGameWindow);
+								var vm = new ViewModels.GameScreenSelectViewModel(rectList2, dg);
+								var view = new Views.GameScreenSelectView { DataContext = vm };
+								view.ShowDialog();
+							}
+							break;
+						}
 					}
 					break;
 				}
