@@ -18,6 +18,12 @@ namespace AzLH.Models {
 			get { return applicationLog; }
 			set { SetProperty(ref applicationLog, value); }
 		}
+		// シーン表示
+		private string judgedScene = "不明";
+		public string JudgedScene {
+			get { return $"シーン判定 : {judgedScene}"; }
+			set { SetProperty(ref judgedScene, value); }
+		}
 		// 実行ログに追記する
 		private void PutLog(string message) {
 			ApplicationLog += $"{Utility.GetTimeStrShort()} {message}\n";
@@ -111,12 +117,18 @@ namespace AzLH.Models {
 				ScreenShotProvider.GetScreenshot().Save($"pic\\{fileName}");
 				PutLog($"スクリーンショット : 成功");
 				PutLog($"ファイル名 : {fileName}");
-
-				var bitmap = ScreenShotProvider.GetScreenshot();
-				PutLog($"判定結果 : {SceneRecognition.JudgeGameScene(bitmap)}");
 			}
 			catch (Exception) {
 				PutLog($"スクリーンショット : 失敗");
+			}
+		}
+		// そこから定期的な処理を実行する
+		public void HelperTask() {
+			// スクショが取得可能な際の処理
+			if (SaveScreenshotFlg) {
+				using(var screenShot = ScreenShotProvider.GetScreenshot()) {
+					JudgedScene = SceneRecognition.JudgeGameScene(screenShot);
+				}
 			}
 		}
 	}

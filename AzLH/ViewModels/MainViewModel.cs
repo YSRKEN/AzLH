@@ -1,6 +1,7 @@
 ﻿using AzLH.Models;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System.Timers;
 
 namespace AzLH.ViewModels {
 	class MainViewModel {
@@ -14,6 +15,8 @@ namespace AzLH.ViewModels {
 		public ReactiveCommand GetGameWindowPositionCommand { get; }
 		// 画像保存ボタン
 		public ReactiveCommand SaveScreenshotCommand { get; }
+		// シーン表示
+		public ReactiveProperty<string> JudgedScene { get; }
 		// コンストラクタ
 		public MainViewModel() {
 			// 初期化
@@ -21,6 +24,7 @@ namespace AzLH.ViewModels {
 			// プロパティを設定
 			SaveScreenshotFlg = mainModel.ObserveProperty(x => x.SaveScreenshotFlg).ToReactiveProperty();
 			ApplicationLog = mainModel.ObserveProperty(x => x.ApplicationLog).ToReactiveProperty();
+			JudgedScene = mainModel.ObserveProperty(x => x.JudgedScene).ToReactiveProperty();
 			// コマンドを設定
 			GetGameWindowPositionCommand = new ReactiveCommand();
 			SaveScreenshotCommand = new ReactiveCommand();
@@ -28,6 +32,17 @@ namespace AzLH.ViewModels {
 			//https://qiita.com/pierusan2010/items/76b7a406b3f064193c88
 			GetGameWindowPositionCommand.Subscribe(mainModel.GetGameWindowPosition);
 			SaveScreenshotCommand.Subscribe(mainModel.SaveScreenshot);
+			// タイマーを初期化し、定時タスクを登録して実行する
+			// http://takachan.hatenablog.com/entry/2017/09/09/225342
+			var timer = new Timer(200);
+			timer.Elapsed += (sender, e) => {
+				try{
+					timer.Stop();
+					mainModel.HelperTask();
+				}
+				finally{timer.Start();}
+			};
+			timer.Start();
 		}
 	}
 }

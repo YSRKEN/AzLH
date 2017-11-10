@@ -7,7 +7,7 @@
 	xmlns:local="clr-namespace:AzLH.ViewModels"
 	mc:Ignorable="d"
 	local:CloseWindowAttachedBehavior.Close="{Binding CloseWindow}"
-	Title="AzurLane Helper" Height="300" Width="300">
+	Title="AzurLane Helper" Height="300" Width="400">
 	<Window.DataContext>
 		<local:MainViewModel/>
 	</Window.DataContext>
@@ -20,12 +20,15 @@
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="auto"/>
 				<ColumnDefinition Width="auto"/>
+				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 			<Button Grid.Column="0" Width="80" Height="24" Margin="5,5,5,5" Content="座標取得"
 					Command="{Binding GetGameWindowPositionCommand}" />
 			<Button Grid.Column="1" Width="80" Height="24" Margin="5,5,5,5" Content="画像保存"
 					Command="{Binding SaveScreenshotCommand}"
 					IsEnabled="{Binding SaveScreenshotFlg.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+			<TextBlock Grid.Column="2" Height="24" Margin="5,5,5,5" VerticalAlignment="Center" FontSize="18"
+					Text="{Binding JudgedScene.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 		</Grid>
 		<TextBox Grid.Row="1" IsReadOnly="True" AcceptsReturn="True" Margin="5,5,5,5"
 				HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"

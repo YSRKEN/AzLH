@@ -41,6 +41,7 @@ namespace AzLH.Models {
 		}
 
 		// ビットカウント
+		// 参考→http://developer.cybozu.co.jp/takesako/2006/11/binary_hacks.html
 		private static ulong Popcnt(ulong x) {
 			x = ((x & 0xaaaaaaaaaaaaaaaa) >> 1) + (x & 0x5555555555555555);
 			x = ((x & 0xcccccccccccccccc) >> 2) + (x & 0x3333333333333333);
@@ -48,7 +49,7 @@ namespace AzLH.Models {
 			x = ((x & 0xff00ff00ff00ff00) >> 8) + (x & 0x00ff00ff00ff00ff);
 			x = ((x & 0xffff0000ffff0000) >> 16) + (x & 0x0000ffff0000ffff);
 			x = ((x & 0xffffffff00000000) >> 32) + (x & 0x00000000ffffffff);
-			return (ulong)x;
+			return x;
 		}
 
 		// ハミング距離を計算する
@@ -108,7 +109,7 @@ namespace AzLH.Models {
 			return hash;
 		}
 
-		// どのシーンかを判定する(空文字列＝判定不可)
+		// どのシーンかを判定する("不明"＝判定不可)
 		public static string JudgeGameScene(Bitmap bitmap) {
 			foreach(var scene in sceneParameters) {
 				bool flg = true;
@@ -122,7 +123,7 @@ namespace AzLH.Models {
 				if (flg)
 					return scene.Key;
 			}
-			return "";
+			return "不明";
 		}
 
 		// 認識パラメーターを表すクラス
