@@ -82,14 +82,14 @@ namespace AzLH.Models {
 						SaveScreenshotFlg = true;
 					}
 					break;
-				/*case 1: {
+				case 1: {
 						// 即座にその候補で確定させる
 						ScreenShotProvider.GameWindowRect = rectList[0];
 						PutLog("座標取得 : 成功");
 						PutLog($"ゲーム座標 : {Utility.GetRectStr((Rectangle)ScreenShotProvider.GameWindowRect)}");
 						SaveScreenshotFlg = true;
 					}
-					break;*/
+					break;
 				default: {
 						// 選択画面を表示する
 						var dg = new SelectGameWindowAction(SelectGameWindow);

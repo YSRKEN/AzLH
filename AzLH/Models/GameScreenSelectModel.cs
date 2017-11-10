@@ -33,7 +33,7 @@ namespace AzLH.Models {
 		private SelectGameWindowAction dg;
 		// プレビューを書き換える
 		private void RedrawPage() {
-			PageInfoStr = $"{rectIndex + 1} / {rectList.Count} {Utility.GetRectStr(rectList[rectIndex])}";
+			PageInfoStr = $"[{rectIndex + 1}/{rectList.Count}] {Utility.GetRectStr(rectList[rectIndex])}";
 			GameWindowPage = (BitmapSource)ScreenShotProvider.GetScreenBitmap(rectList[rectIndex]).ToImageSource();
 		}
 		// コンストラクタ
@@ -45,12 +45,12 @@ namespace AzLH.Models {
 		}
 		// 前の画像に移動
 		public void PrevPage() {
-			rectIndex = Math.Max(rectIndex - 1, 0);
+			rectIndex = (rectList.Count + rectIndex - 1) % rectList.Count;
 			RedrawPage();
 		}
 		// 次の画像に移動
 		public void NextPage() {
-			rectIndex = Math.Min(rectIndex + 1, rectList.Count - 1);
+			rectIndex = (rectList.Count + rectIndex + 1) % rectList.Count;
 			RedrawPage();
 		}
 		// 決定ボタン
