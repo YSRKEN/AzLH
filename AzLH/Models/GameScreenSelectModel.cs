@@ -1,5 +1,4 @@
 ﻿using Prism.Mvvm;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Media.Imaging;
@@ -31,6 +30,7 @@ namespace AzLH.Models {
 		private int rectIndex;
 		// 選択結果を返すdelegate
 		private SelectGameWindowAction dg;
+
 		// プレビューを書き換える
 		private void RedrawPage() {
 			PageInfoStr = $"[{rectIndex + 1}/{rectList.Count}] {Utility.GetRectStr(rectList[rectIndex])}";

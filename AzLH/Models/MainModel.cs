@@ -111,6 +111,9 @@ namespace AzLH.Models {
 				ScreenShotProvider.GetScreenshot().Save($"pic\\{fileName}");
 				PutLog($"スクリーンショット : 成功");
 				PutLog($"ファイル名 : {fileName}");
+
+				var bitmap = ScreenShotProvider.GetScreenshot();
+				PutLog($"判定結果 : {SceneRecognition.JudgeGameScene(bitmap)}");
 			}
 			catch (Exception) {
 				PutLog($"スクリーンショット : 失敗");

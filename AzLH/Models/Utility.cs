@@ -10,23 +10,23 @@ namespace AzLH.Models {
 	static class Utility {
 		// 時刻を短い表示形式("12:34:56")で返す
 		public static string GetTimeStrShort() {
-			var dateTime = System.DateTime.Now;
+			var dateTime = DateTime.Now;
 			return dateTime.ToString("HH:mm:ss");
 		}
 		// 時刻を長い表示形式("2017-01-23 12-34-56-789")で返す
 		public static string GetTimeStrLong() {
-			var dateTime = System.DateTime.Now;
+			var dateTime = DateTime.Now;
 			return dateTime.ToString("yyyy-MM-dd HH-mm-ss-fff");
 		}
 		// Rectangleを文字列()で返す
-		public static string GetRectStr(System.Drawing.Rectangle rect) {
+		public static string GetRectStr(Rectangle rect) {
 			return $"({rect.X},{rect.Y}) {rect.Width}x{rect.Height}";
 		}
 		// BitmapをImageSourceに変換する
 		// 参考→http://www.nuits.jp/entry/2016/10/17/181232
 		[DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool DeleteObject([In] IntPtr hObject);
+		private static extern bool DeleteObject([In] IntPtr hObject);
 		public static ImageSource ToImageSource(this Bitmap bmp) {
 			var handle = bmp.GetHbitmap();
 			try {
