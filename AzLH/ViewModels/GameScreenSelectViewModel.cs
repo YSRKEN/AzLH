@@ -7,9 +7,9 @@ using System.Windows.Media.Imaging;
 using static AzLH.Models.MainModel;
 
 namespace AzLH.ViewModels {
-	class GameScreenSelectViewModel {
+	internal class GameScreenSelectViewModel {
 		// modelのinstance
-		private GameScreenSelectModel gameScreenSelectModel;
+		private readonly GameScreenSelectModel gameScreenSelectModel;
 		// trueにすると画面を閉じる
 		public ReactiveProperty<bool> CloseWindow { get; }
 		// ページ情報を表示

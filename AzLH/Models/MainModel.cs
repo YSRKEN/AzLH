@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Windows;
 
 namespace AzLH.Models {
-	class MainModel : BindableBase {
+	internal class MainModel : BindableBase {
 		public delegate void SelectGameWindowAction(Rectangle? rect);
 		// 画像保存ボタンは有効か？
 		private bool saveScreenshotFlg = false;
@@ -42,7 +42,7 @@ namespace AzLH.Models {
 			}
 		}
 		// サンプルコマンド
-		public void Test() {
+		/*public void Test() {
 			if (true) {
 				var sw = new System.Diagnostics.Stopwatch();
 				sw.Start();
@@ -73,7 +73,7 @@ namespace AzLH.Models {
 				string output = $"{1.0 * sw.ElapsedMilliseconds / count}[ms]\n";
 				MessageBox.Show(output);
 			}
-		}
+		}*/
 		// ゲーム画面の座標を取得する
 		public void GetGameWindowPosition() {
 			try {
@@ -88,14 +88,14 @@ namespace AzLH.Models {
 						SaveScreenshotFlg = true;
 					}
 					break;
-				case 1: {
+				/*case 1: {
 						// 即座にその候補で確定させる
 						ScreenShotProvider.GameWindowRect = rectList[0];
 						PutLog("座標取得 : 成功");
 						PutLog($"ゲーム座標 : {Utility.GetRectStr((Rectangle)ScreenShotProvider.GameWindowRect)}");
 						SaveScreenshotFlg = true;
 					}
-					break;
+					break;*/
 				default: {
 						// 選択画面を表示する
 						var dg = new SelectGameWindowAction(SelectGameWindow);

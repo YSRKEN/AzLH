@@ -5,7 +5,7 @@ using System.Windows.Media.Imaging;
 using static AzLH.Models.MainModel;
 
 namespace AzLH.Models {
-	class GameScreenSelectModel : BindableBase {
+	internal class GameScreenSelectModel : BindableBase {
 		// trueにすると画面を閉じる
 		private bool closeWindow;
 		public bool CloseWindow {
@@ -25,11 +25,11 @@ namespace AzLH.Models {
 			set { SetProperty(ref gameWindowPage, value); }
 		}
 		// rect一覧
-		private List<Rectangle> rectList;
+		private readonly List<Rectangle> rectList;
 		// 選択しているrectのindex
 		private int rectIndex;
 		// 選択結果を返すdelegate
-		private SelectGameWindowAction dg;
+		private readonly SelectGameWindowAction dg;
 
 		// プレビューを書き換える
 		private void RedrawPage() {
@@ -41,6 +41,9 @@ namespace AzLH.Models {
 			this.rectList = rectList;
 			this.dg = dg;
 			rectIndex = 0;
+			// 次のメソッドはCA2214警告の引き金になるが、
+			// そもそもコンストラクタの時点でこのメソッドが
+			// 動かないと都合が悪いのでこのままにしておく
 			RedrawPage();
 		}
 		// 前の画像に移動

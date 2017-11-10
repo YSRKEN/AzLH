@@ -4,9 +4,9 @@ using Reactive.Bindings.Extensions;
 using System.Timers;
 
 namespace AzLH.ViewModels {
-	class MainViewModel {
+	internal class MainViewModel {
 		// modelのinstance
-		private MainModel mainModel;
+		private readonly MainModel mainModel;
 		// 画像保存ボタンは有効か？
 		public ReactiveProperty<bool> SaveScreenshotFlg { get; }
 		// 実行ログ

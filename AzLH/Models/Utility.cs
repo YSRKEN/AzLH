@@ -24,9 +24,7 @@ namespace AzLH.Models {
 		}
 		// BitmapをImageSourceに変換する
 		// 参考→http://www.nuits.jp/entry/2016/10/17/181232
-		[DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		private static extern bool DeleteObject([In] IntPtr hObject);
+
 		public static ImageSource ToImageSource(this Bitmap bmp) {
 			var handle = bmp.GetHbitmap();
 			try {
@@ -34,8 +32,13 @@ namespace AzLH.Models {
 					handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
 			}
 			finally {
-				DeleteObject(handle);
+				NativeMethods.DeleteObject(handle);
 			}
 		}
+	}
+	internal static class NativeMethods {
+		[DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool DeleteObject([In] IntPtr hObject);
 	}
 }

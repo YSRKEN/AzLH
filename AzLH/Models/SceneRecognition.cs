@@ -17,25 +17,33 @@ namespace AzLH.Models {
 			// Dictionaryを準備
 			var output = new Dictionary<string, SceneParameter[]>();
 			// ファイルを読み込む
-			using (var ms = new MemoryStream(Properties.Resources.scene_parameter, false))
-			using (var sr = new System.IO.StreamReader(ms, Encoding.UTF8)) {
-				// 全体をstringに読み込む
-				string json = sr.ReadToEnd();
-				// Json.NETでパース
-				var model = JsonConvert.DeserializeObject<Dictionary<string, SceneParameterJson[]>>(json);
-				// パース結果をさらに変換
-				foreach(var pair in model) {
-					// LINQを用いて一発で放り込む
-					output[pair.Key] = pair.Value.Select(
-						p => new SceneParameter(
-							Convert.ToUInt64(p.HashStr, 16),
-							p.RectFloat[0],
-							p.RectFloat[1],
-							p.RectFloat[2],
-							p.RectFloat[3]
-						)
-					).ToArray();
+			MemoryStream ms = null;
+			try {
+				ms = new MemoryStream(Properties.Resources.scene_parameter, false);
+				using (var sr = new System.IO.StreamReader(ms, Encoding.UTF8)) {
+					ms = null;
+					// 全体をstringに読み込む
+					string json = sr.ReadToEnd();
+					// Json.NETでパース
+					var model = JsonConvert.DeserializeObject<Dictionary<string, SceneParameterJson[]>>(json);
+					// パース結果をさらに変換
+					foreach (var pair in model) {
+						// LINQを用いて一発で放り込む
+						output[pair.Key] = pair.Value.Select(
+							p => new SceneParameter(
+								Convert.ToUInt64(p.HashStr, 16),
+								p.RectFloat[0],
+								p.RectFloat[1],
+								p.RectFloat[2],
+								p.RectFloat[3]
+							)
+						).ToArray();
+					}
 				}
+			}
+			finally {
+				if (ms != null)
+					ms.Dispose();
 			}
 			return output;
 		}
