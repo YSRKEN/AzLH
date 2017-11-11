@@ -38,11 +38,20 @@ namespace AzLH.ViewModels {
 			timer.Elapsed += (sender, e) => {
 				try{
 					timer.Stop();
-					mainModel.HelperTask();
+					mainModel.HelperTaskF();
 				}
 				finally{timer.Start();}
 			};
 			timer.Start();
+			var timer2 = new Timer(1000);
+			timer2.Elapsed += (sender, e) => {
+				try {
+					timer2.Stop();
+					mainModel.HelperTaskS();
+				}
+				finally { timer2.Start(); }
+			};
+			timer2.Start();
 		}
 	}
 }

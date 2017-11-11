@@ -45,6 +45,44 @@ namespace AzLH.Models {
 		public static Bitmap GetScreenshot()
 			=> GetScreenBitmap((Rectangle)GameWindowRect);
 
+		// スクリーンショットを保存できるかを判定する(ズレチェック)
+		public static bool CanGetScreenshot() {
+			if (GameWindowRect == null)
+				return false;
+			try {
+				// 通常より一回り大きな範囲を取得する
+				using (var bitmap = GetScreenBitmap(new Rectangle(
+					GameWindowRect.Value.X - 1,
+					GameWindowRect.Value.Y - 1,
+					GameWindowRect.Value.Width + 2,
+					GameWindowRect.Value.Height + 2
+				))) {
+					// 左上の色(つまり枠の色)を取得する
+					var baseColor = bitmap.GetPixel(0, 0);
+					for (int k = 0; k < bitmap.Width; k += GameWindowSearchStep.Width) {
+						if (bitmap.GetPixel(k, 0) != baseColor) {
+							return false;
+						}
+						if (bitmap.GetPixel(k, bitmap.Height - 1) != baseColor) {
+							return false;
+						}
+					}
+					for (int k = 0; k < bitmap.Height; k += GameWindowSearchStep.Height) {
+						if (bitmap.GetPixel(0, k) != baseColor) {
+							return false;
+						}
+						if (bitmap.GetPixel(bitmap.Width - 1, k) != baseColor) {
+							return false;
+						}
+					}
+				}
+			}
+			catch {
+				return false;
+			}
+			return true;
+		}
+
 		// スクリーンショットを取得する
 		// 引数なし→仮想画面全体のスクリーンショットを取得する
 		// 引数あり→仮想画面の指定した範囲を切り取ったスクリーンショットを取得する

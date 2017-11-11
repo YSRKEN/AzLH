@@ -31,6 +31,7 @@ namespace AzLH.Models {
 		// 複数ウィンドウから選択した際の結果を処理する
 		private void SelectGameWindow(Rectangle? rect) {
 			if (rect == null) {
+				ScreenShotProvider.GameWindowRect = null;
 				PutLog("座標取得 : 失敗");
 				SaveScreenshotFlg = false;
 			}
@@ -153,12 +154,30 @@ namespace AzLH.Models {
 				PutLog($"スクリーンショット : 失敗");
 			}
 		}
-		// そこから定期的な処理を実行する
-		public void HelperTask() {
-			// スクショが取得可能な際の処理
-			if (SaveScreenshotFlg) {
-				using(var screenShot = ScreenShotProvider.GetScreenshot()) {
+		// 定期的にスクリーンショットを取得し、そこに起因する処理を行う
+		public void HelperTaskF() {
+			if (!SaveScreenshotFlg)
+				return;
+			using (var screenShot = ScreenShotProvider.GetScreenshot()) {
+				// スクショが取得できるとscreenShotがnullにならない
+				if (screenShot != null) {
 					JudgedScene = SceneRecognition.JudgeGameScene(screenShot);
+				}
+				else {
+					// スクショが取得できなくなったのでその旨を通知する
+					PutLog("エラー：スクショが取得できなくなりました");
+					SaveScreenshotFlg = false;
+				}
+			}
+		}
+		// 毎秒ごとの処理を行う
+		public void HelperTaskS() {
+			// ズレ検出・修正処理
+			if (SaveScreenshotFlg) {
+				if (!ScreenShotProvider.CanGetScreenshot()) {
+					// スクショが取得できなくなったのでその旨を通知する
+					PutLog("エラー：ゲーム画面の位置ズレを検出しました");
+					SaveScreenshotFlg = false;
 				}
 			}
 		}
