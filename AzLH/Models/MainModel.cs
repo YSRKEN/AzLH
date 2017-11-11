@@ -171,13 +171,58 @@ namespace AzLH.Models {
 			}
 		}
 		// 毎秒ごとの処理を行う
-		public void HelperTaskS() {
+		public async void HelperTaskS() {
 			// ズレ検出・修正処理
 			if (SaveScreenshotFlg) {
 				if (!ScreenShotProvider.CanGetScreenshot()) {
 					// スクショが取得できなくなったのでその旨を通知する
 					PutLog("エラー：ゲーム画面の位置ズレを検出しました");
-					SaveScreenshotFlg = false;
+					try {
+						// 再び自動座標検出を行う
+						var rectList = await ScreenShotProvider.GetGameWindowPositionAsync();
+						// その結果によって処理を分岐させる
+						switch (rectList.Count) {
+						case 0: {
+								// 候補なしと表示する
+								ScreenShotProvider.GameWindowRect = null;
+								PutLog($"位置ズレ自動修正 : 失敗");
+								SaveScreenshotFlg = false;
+							}
+							break;
+						case 1: {
+								// 即座にその候補で確定させる
+								ScreenShotProvider.GameWindowRect = rectList[0];
+								PutLog("位置ズレ自動修正 : 成功");
+								PutLog($"ゲーム座標 : {Utility.GetRectStr((Rectangle)ScreenShotProvider.GameWindowRect)}");
+								SaveScreenshotFlg = true;
+							}
+							break;
+						default: {
+								// 元の座標に最も近いものに合わせる
+								int distance = int.MaxValue;
+								Rectangle? nearestRect = null;
+								foreach(var rect in rectList) {
+									int diffX = ScreenShotProvider.GameWindowRect.Value.X - rect.X;
+									int diffY = ScreenShotProvider.GameWindowRect.Value.Y - rect.Y;
+									int diff = diffX * diffX + diffY * diffY;
+									if(distance > diff) {
+										distance = diff;
+										nearestRect = rect;
+									}
+								}
+								ScreenShotProvider.GameWindowRect = nearestRect;
+								PutLog("位置ズレ自動修正 : 成功");
+								PutLog($"ゲーム座標 : {Utility.GetRectStr((Rectangle)ScreenShotProvider.GameWindowRect)}");
+								SaveScreenshotFlg = true;
+							}
+							break;
+						}
+					}
+					catch {
+						ScreenShotProvider.GameWindowRect = null;
+						PutLog($"位置ズレ自動修正 : 失敗");
+						SaveScreenshotFlg = false;
+					}
 				}
 			}
 		}
