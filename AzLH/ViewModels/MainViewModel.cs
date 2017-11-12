@@ -22,6 +22,7 @@ namespace AzLH.ViewModels {
 		public ReactiveProperty<bool> ForTwitterFlg { get; }
 		// ソフトウェアのタイトル
 		public ReactiveProperty<string> SoftwareTitle { get; }
+
 		// 座標取得ボタン
 		public ReactiveCommand GetGameWindowPositionCommand { get; }
 		// 画像保存ボタン
@@ -30,6 +31,11 @@ namespace AzLH.ViewModels {
 		public ReactiveCommand CloseCommand { get; }
 		// ソフトの情報を表示
 		public ReactiveCommand SoftwareInfoCommand { get; }
+		// 設定をインポート
+		public ReactiveCommand ImportSettingsCommand { get; }
+		// 設定をエクスポート
+		public ReactiveCommand ExportSettingsCommand { get; }
+
 		// コンストラクタ
 		public MainViewModel() {
 			// picフォルダが存在しない場合は作成する
@@ -37,8 +43,12 @@ namespace AzLH.ViewModels {
 				Directory.CreateDirectory(@"pic\");
 			// 設定項目を初期化する
 			var settings = SettingsStore.Instance;
-			if (!settings.initialize())
-				MessageBox.Show("設定ファイルを読み込めませんでした。\nデフォルトの設定で起動します。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+			if (!settings.initialize()) {
+				MessageBox.Show("設定を読み込めませんでした。\nデフォルトの設定で起動します。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				if (!settings.SaveSettings()) {
+					MessageBox.Show("デフォルト設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				}
+			}
 
 			// 初期化
 			mainModel = new MainModel();
@@ -54,11 +64,15 @@ namespace AzLH.ViewModels {
 			SaveScreenshotCommand = new ReactiveCommand();
 			CloseCommand = new ReactiveCommand();
 			SoftwareInfoCommand = new ReactiveCommand();
+			ImportSettingsCommand = new ReactiveCommand();
+			ExportSettingsCommand = new ReactiveCommand();
 			//voidを返すメソッドならこれだけで良いらしい
 			//https://qiita.com/pierusan2010/items/76b7a406b3f064193c88
 			GetGameWindowPositionCommand.Subscribe(mainModel.GetGameWindowPosition);
 			SaveScreenshotCommand.Subscribe(mainModel.SaveScreenshot);
 			CloseCommand.Subscribe(mainModel.Close);
+			ImportSettingsCommand.Subscribe(mainModel.ImportSettings);
+			ExportSettingsCommand.Subscribe(mainModel.ExportSettings);
 			// 値を返すメソッドなのでView側でも対応する
 			SoftwareInfoCommand.Subscribe(
 				() => Messenger.Instance.GetEvent<PubSubEvent<string>>()

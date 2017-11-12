@@ -1,8 +1,10 @@
-﻿using Prism.Mvvm;
+﻿using Microsoft.Win32;
+using Prism.Mvvm;
 using System;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
 
 namespace AzLH.Models {
 	internal class MainModel : BindableBase {
@@ -39,7 +41,9 @@ namespace AzLH.Models {
 				SetProperty(ref forTwitterFlg, value);
 				var settings = SettingsStore.Instance;
 				settings.ForTwitterFlg = forTwitterFlg;
-				settings.SaveSettings();
+				if (!settings.SaveSettings()) {
+					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				}
 			}
 		}
 		// ソフトウェアのタイトル
@@ -51,10 +55,14 @@ namespace AzLH.Models {
 
 		// コンストラクタ
 		public MainModel() {
+			SetSettings();
+		}
+
+		// 設定内容を画面に反映する
+		private void SetSettings() {
 			var settings = SettingsStore.Instance;
 			ForTwitterFlg = settings.ForTwitterFlg;
 		}
-
 		// 実行ログに追記する
 		private void PutLog(string message) {
 			ApplicationLog += $"{Utility.GetTimeStrShort()} {message}\n";
@@ -209,6 +217,44 @@ namespace AzLH.Models {
 			var asmver = assembly.GetName().Version;
 			return $"{asmttl} Ver.{asmver}\n{asmcpy}\n{asmprd}";
 		}
+		// 設定をインポート
+		public void ImportSettings() {
+			// インスタンスを作成
+			var ofd = new OpenFileDialog();
+			// ファイルの種類を設定
+			ofd.Filter = "設定ファイル(*.json)|*.json|全てのファイル (*.*)|*.*";
+			// ダイアログを表示
+			if ((bool)ofd.ShowDialog()) {
+				// 設定をインポート
+				var settings = SettingsStore.Instance;
+				if (!settings.LoadSettings(ofd.FileName)) {
+					PutLog("エラー：設定を読み込めませんでした");
+				}
+				else {
+					PutLog("設定を読み込みました");
+				}
+				SetSettings();
+			}
+		}
+		// 設定をエクスポート
+		public void ExportSettings() {
+			// インスタンスを作成
+			var sfd = new SaveFileDialog();
+			// ファイルの種類を設定
+			sfd.Filter = "設定ファイル(*.json)|*.json|全てのファイル (*.*)|*.*";
+			// ダイアログを表示
+			if ((bool)sfd.ShowDialog()) {
+				// 設定をエクスポート
+				var settings = SettingsStore.Instance;
+				if (!settings.SaveSettings(sfd.FileName)) {
+					PutLog("エラー：設定を保存できませんでした");
+				}
+				else {
+					PutLog("設定を保存しました");
+				}
+			}
+		}
+
 		// 定期的にスクリーンショットを取得し、そこに起因する処理を行う
 		public void HelperTaskF() {
 			if (!SaveScreenshotFlg)

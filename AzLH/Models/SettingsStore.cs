@@ -6,6 +6,7 @@ using System.Text;
 namespace AzLH.Models {
 	sealed class SettingsStore {
 		// シングルトンパターン
+		// 参考→https://qiita.com/rohinomiya/items/6bca22211d1bddf581c4
 		private static SettingsStore instance = new SettingsStore();
 		public static SettingsStore Instance => instance;
 		private SettingsStore(){}
@@ -18,46 +19,52 @@ namespace AzLH.Models {
 			ForTwitterFlg = false;
 		}
 		// JSONから読み込み
-		private void LoadSettings() {
+		public bool LoadSettings(string path) {
 			try {
-				using (var sr = new StreamReader("settings.json", Encoding.UTF8)) {
+				using (var sr = new StreamReader(path, Encoding.UTF8)) {
 					// 全体をstringに読み込む
 					string json = sr.ReadToEnd();
 					// Json.NETでパース
 					var model = JsonConvert.DeserializeObject<SettingsStore>(json);
 					ForTwitterFlg = model.ForTwitterFlg;
 				}
+				return true;
 			}
 			catch {
 				SetDefaultSettings();
-				throw;
+				return false;
 			}
 		}
+		public bool LoadSettings() {
+			return LoadSettings("settings.json");
+		}
 		// JSONに書き出し
-		public void SaveSettings() {
+		public bool SaveSettings(string path) {
 			try {
-				using (var sw = new StreamWriter("settings.json", false, Encoding.UTF8)) {
+				using (var sw = new StreamWriter(path, false, Encoding.UTF8)) {
 					// Json.NETでstring形式に書き出す
 					string json = JsonConvert.SerializeObject(this);
 					// 書き込み
 					sw.Write(json);
 				}
+				return true;
 			}
 			catch {
-				SetDefaultSettings();
-				throw;
+				return false;
 			}
+		}
+		public bool SaveSettings() {
+			return SaveSettings("settings.json");
 		}
 		// 設定項目を初期化
 		public bool initialize() {
-			try {
-				LoadSettings();
+			if (LoadSettings()) {
+				return true;
 			}
-			catch {
+			else {
 				SaveSettings();
 				return false;
 			}
-			return true;
 		}
 	}
 }
