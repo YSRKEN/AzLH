@@ -9,6 +9,7 @@ namespace AzLH.Views {
 	public partial class MainView : Window {
 		public MainView() {
 			InitializeComponent();
+			MouseLeftButtonDown += (o, e) => DragMove();
 			Messenger.Instance.GetEvent<PubSubEvent<string>>().Subscribe(
 				s => MessageBox.Show(s, Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Information));
 		}

@@ -6,6 +6,7 @@ namespace AzLH.Views {
 	public partial class GameScreenSelectView : Window {
 		public GameScreenSelectView() {
 			InitializeComponent();
+			MouseLeftButtonDown += (o, e) => DragMove();
 		}
 	}
 }
