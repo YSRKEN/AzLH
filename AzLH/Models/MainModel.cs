@@ -30,6 +30,13 @@ namespace AzLH.Models {
 			get { return $"シーン判定 : {judgedScene}"; }
 			set { SetProperty(ref judgedScene, value); }
 		}
+		// Twitter用に加工するか？
+		private bool forTwitterFlg = false;
+		public bool ForTwitterFlg {
+			get { return forTwitterFlg; }
+			set { SetProperty(ref forTwitterFlg, value); }
+		}
+
 		// 実行ログに追記する
 		private void PutLog(string message) {
 			ApplicationLog += $"{Utility.GetTimeStrShort()} {message}\n";
@@ -152,7 +159,7 @@ namespace AzLH.Models {
 		public void SaveScreenshot() {
 			try {
 				string fileName = $"{Utility.GetTimeStrLong()}.png";
-				ScreenShotProvider.GetScreenshot().Save($"pic\\{fileName}");
+				ScreenShotProvider.GetScreenshot(ForTwitterFlg).Save($"pic\\{fileName}");
 				PutLog($"スクリーンショット : 成功");
 				PutLog($"ファイル名 : {fileName}");
 			}
@@ -164,6 +171,7 @@ namespace AzLH.Models {
 		public void Close() {
 			CloseWindow = true;
 		}
+
 		// 定期的にスクリーンショットを取得し、そこに起因する処理を行う
 		public void HelperTaskF() {
 			if (!SaveScreenshotFlg)

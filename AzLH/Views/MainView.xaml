@@ -29,7 +29,8 @@
 						IsEnabled="{Binding SaveScreenshotFlg.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 			</MenuItem>
 			<MenuItem Header="オプション(_O)">
-				<MenuItem IsCheckable="True" Header="ツイッター用に加工(_T)" />
+				<MenuItem IsCheckable="True" Header="ツイッター用に加工(_T)"
+						IsChecked="{Binding ForTwitterFlg.Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
 			</MenuItem>
 			<MenuItem Header="ヘルプ(_H)">
 				<MenuItem Header="バージョン情報...(_A)" />

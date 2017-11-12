@@ -42,8 +42,17 @@ namespace AzLH.Models {
 		}
 
 		// スクリーンショットを保存する
-		public static Bitmap GetScreenshot()
-			=> GetScreenBitmap((Rectangle)GameWindowRect);
+		public static Bitmap GetScreenshot(bool forTwitterFlg = false) {
+			// スクショを取得する
+			var screenShot = GetScreenBitmap((Rectangle)GameWindowRect);
+			// Twitter用に左上を僅かに透過させる
+			if (forTwitterFlg) {
+				var color = screenShot.GetPixel(0, 0);
+				int alphaValue = (color.A == 0 ? 1 : color.A - 1);
+				screenShot.SetPixel(0, 0, Color.FromArgb(alphaValue, color.R, color.G, color.B));
+			}
+			return screenShot;
+		}
 
 		// スクリーンショットを保存できるかを判定する(ズレチェック)
 		public static bool CanGetScreenshot() {
