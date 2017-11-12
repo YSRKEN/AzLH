@@ -37,6 +37,12 @@ namespace AzLH.Models {
 			get { return forTwitterFlg; }
 			set { SetProperty(ref forTwitterFlg, value); }
 		}
+		// ソフトウェアのタイトル
+		private string softwareTitle = $"{Utility.SoftwareName} Ver.{Utility.SoftwareVer}";
+		public string SoftwareTitle {
+			get { return softwareTitle; }
+			set { SetProperty(ref softwareTitle, value); }
+		}
 
 		// 実行ログに追記する
 		private void PutLog(string message) {

@@ -18,6 +18,8 @@ namespace AzLH.ViewModels {
 		public ReactiveProperty<string> JudgedScene { get; }
 		// Twitter用に加工するか？
 		public ReactiveProperty<bool> ForTwitterFlg { get; }
+		// ソフトウェアのタイトル
+		public ReactiveProperty<string> SoftwareTitle { get; }
 		// 座標取得ボタン
 		public ReactiveCommand GetGameWindowPositionCommand { get; }
 		// 画像保存ボタン
@@ -36,6 +38,7 @@ namespace AzLH.ViewModels {
 			ApplicationLog = mainModel.ObserveProperty(x => x.ApplicationLog).ToReactiveProperty();
 			JudgedScene = mainModel.ObserveProperty(x => x.JudgedScene).ToReactiveProperty();
 			ForTwitterFlg = ReactiveProperty.FromObject(mainModel, x => x.ForTwitterFlg);
+			SoftwareTitle = mainModel.ObserveProperty(x => x.SoftwareTitle).ToReactiveProperty();
 			// コマンドを設定
 			GetGameWindowPositionCommand = new ReactiveCommand();
 			SaveScreenshotCommand = new ReactiveCommand();

@@ -46,6 +46,14 @@ namespace AzLH.Models {
 				return asmttl;
 			}
 		}
+		// ソフトウェアのバージョンを返す
+		public static string SoftwareVer {
+			get {
+				var assembly = Assembly.GetExecutingAssembly();
+				var asmver = assembly.GetName().Version;
+				return $"{asmver}";
+			}
+		}
 	}
 	internal static class NativeMethods {
 		[DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
