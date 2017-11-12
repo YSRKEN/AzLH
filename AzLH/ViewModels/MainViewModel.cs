@@ -2,7 +2,9 @@
 using Prism.Events;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System.IO;
 using System.Timers;
+using System.Windows;
 
 namespace AzLH.ViewModels {
 	internal class MainViewModel {
@@ -30,6 +32,14 @@ namespace AzLH.ViewModels {
 		public ReactiveCommand SoftwareInfoCommand { get; }
 		// コンストラクタ
 		public MainViewModel() {
+			// picフォルダが存在しない場合は作成する
+			if (!Directory.Exists(@"pic\"))
+				Directory.CreateDirectory(@"pic\");
+			// 設定項目を初期化する
+			var settings = SettingsStore.Instance;
+			if (!settings.initialize())
+				MessageBox.Show("設定ファイルを読み込めませんでした。\nデフォルトの設定で起動します。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
 			// 初期化
 			mainModel = new MainModel();
 			// プロパティを設定
@@ -37,7 +47,7 @@ namespace AzLH.ViewModels {
 			SaveScreenshotFlg = mainModel.ObserveProperty(x => x.SaveScreenshotFlg).ToReactiveProperty();
 			ApplicationLog = mainModel.ObserveProperty(x => x.ApplicationLog).ToReactiveProperty();
 			JudgedScene = mainModel.ObserveProperty(x => x.JudgedScene).ToReactiveProperty();
-			ForTwitterFlg = ReactiveProperty.FromObject(mainModel, x => x.ForTwitterFlg);
+			ForTwitterFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.ForTwitterFlg);
 			SoftwareTitle = mainModel.ObserveProperty(x => x.SoftwareTitle).ToReactiveProperty();
 			// コマンドを設定
 			GetGameWindowPositionCommand = new ReactiveCommand();

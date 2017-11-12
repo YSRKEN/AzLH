@@ -34,14 +34,25 @@ namespace AzLH.Models {
 		// Twitter用に加工するか？
 		private bool forTwitterFlg = false;
 		public bool ForTwitterFlg {
-			get { return forTwitterFlg; }
-			set { SetProperty(ref forTwitterFlg, value); }
+			get => forTwitterFlg;
+			set {
+				SetProperty(ref forTwitterFlg, value);
+				var settings = SettingsStore.Instance;
+				settings.ForTwitterFlg = forTwitterFlg;
+				settings.SaveSettings();
+			}
 		}
 		// ソフトウェアのタイトル
 		private string softwareTitle = $"{Utility.SoftwareName} Ver.{Utility.SoftwareVer}";
 		public string SoftwareTitle {
 			get { return softwareTitle; }
 			set { SetProperty(ref softwareTitle, value); }
+		}
+
+		// コンストラクタ
+		public MainModel() {
+			var settings = SettingsStore.Instance;
+			ForTwitterFlg = settings.ForTwitterFlg;
 		}
 
 		// 実行ログに追記する

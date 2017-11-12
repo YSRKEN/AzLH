@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Windows;
+﻿using System.Windows;
 
 namespace AzLH {
 	/// <summary>
@@ -11,9 +10,6 @@ namespace AzLH {
 			// アプリの起動
 			var bootstrapper = new Bootstrapper();
 			bootstrapper.Run();
-			// picフォルダが存在しない場合は作成する
-			if (!Directory.Exists(@"pic\"))
-				Directory.CreateDirectory(@"pic\");
 		}
 	}
 }
