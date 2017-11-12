@@ -140,7 +140,7 @@ namespace AzLH.Models {
 				//横幅÷ステップ幅
 				int stepCount = bitmap.Width / GameWindowSearchStep.Width;
 				//探索するステップの右端
-				int maxSearchWidth = (stepCount - GameWindowSearchStepCount) * GameWindowSearchStep.Width;
+				int maxSearchWidth = bitmap.Width  - GameWindowSearchStepCount * GameWindowSearchStep.Width;
 				//探索する縦範囲
 				int maxSearchHeight = bitmap.Height - MinGameWindowSize.Height - 1;
 				for (int y = 0; y < maxSearchHeight; ++y) {
