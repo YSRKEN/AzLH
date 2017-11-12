@@ -33,7 +33,7 @@
 						IsChecked="{Binding ForTwitterFlg.Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
 			</MenuItem>
 			<MenuItem Header="ヘルプ(_H)">
-				<MenuItem Header="バージョン情報...(_A)" />
+				<MenuItem Header="バージョン情報...(_A)" Command="{Binding SoftwareInfoCommand}"/>
 			</MenuItem>
 		</Menu>
 		<Grid Grid.Row="1" Margin="5,5,5,5">

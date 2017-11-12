@@ -1,4 +1,5 @@
 ﻿using AzLH.Models;
+using Prism.Events;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Timers;
@@ -23,6 +24,8 @@ namespace AzLH.ViewModels {
 		public ReactiveCommand SaveScreenshotCommand { get; }
 		// 終了操作
 		public ReactiveCommand CloseCommand { get; }
+		// ソフトの情報を表示
+		public ReactiveCommand SoftwareInfoCommand { get; }
 		// コンストラクタ
 		public MainViewModel() {
 			// 初期化
@@ -37,11 +40,16 @@ namespace AzLH.ViewModels {
 			GetGameWindowPositionCommand = new ReactiveCommand();
 			SaveScreenshotCommand = new ReactiveCommand();
 			CloseCommand = new ReactiveCommand();
+			SoftwareInfoCommand = new ReactiveCommand();
 			//voidを返すメソッドならこれだけで良いらしい
 			//https://qiita.com/pierusan2010/items/76b7a406b3f064193c88
 			GetGameWindowPositionCommand.Subscribe(mainModel.GetGameWindowPosition);
 			SaveScreenshotCommand.Subscribe(mainModel.SaveScreenshot);
 			CloseCommand.Subscribe(mainModel.Close);
+			// 値を返すメソッドなのでView側でも対応する
+			SoftwareInfoCommand.Subscribe(
+				() => Messenger.Instance.GetEvent<PubSubEvent<string>>()
+				.Publish(mainModel.GetSoftwareInfo()));
 			// タイマーを初期化し、定時タスクを登録して実行する
 			// http://takachan.hatenablog.com/entry/2017/09/09/225342
 			var timer = new Timer(200);

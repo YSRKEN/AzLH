@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 
 namespace AzLH.Models {
 	internal class MainModel : BindableBase {
@@ -171,7 +172,26 @@ namespace AzLH.Models {
 		public void Close() {
 			CloseWindow = true;
 		}
-
+		// ソフトの情報を返す
+		// 参考→http://dobon.net/vb/dotnet/file/myversioninfo.html
+		public string GetSoftwareInfo() {
+			var assembly = Assembly.GetExecutingAssembly();
+			// AssemblyTitle
+			string asmttl = ((AssemblyTitleAttribute)
+				Attribute.GetCustomAttribute(assembly,
+				typeof(AssemblyTitleAttribute))).Title;
+			// AssemblyCopyright
+			string asmcpy = ((AssemblyCopyrightAttribute)
+				Attribute.GetCustomAttribute(assembly,
+				typeof(AssemblyCopyrightAttribute))).Copyright;
+			// AssemblyProduct
+			string asmprd = ((AssemblyProductAttribute)
+				Attribute.GetCustomAttribute(assembly,
+				typeof(AssemblyProductAttribute))).Product;
+			// AssemblyVersion
+			var asmver = assembly.GetName().Version;
+			return $"{asmttl} Ver.{asmver}\n{asmcpy}\n{asmprd}";
+		}
 		// 定期的にスクリーンショットを取得し、そこに起因する処理を行う
 		public void HelperTaskF() {
 			if (!SaveScreenshotFlg)

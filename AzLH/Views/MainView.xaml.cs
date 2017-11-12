@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using AzLH.Models;
+using Prism.Events;
+using System.Windows;
 
 namespace AzLH.Views {
 	/// <summary>
@@ -7,6 +9,8 @@ namespace AzLH.Views {
 	public partial class MainView : Window {
 		public MainView() {
 			InitializeComponent();
+			Messenger.Instance.GetEvent<PubSubEvent<string>>().Subscribe(
+				s => MessageBox.Show(s, Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Information));
 		}
 	}
 }

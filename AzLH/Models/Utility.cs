@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -24,7 +25,6 @@ namespace AzLH.Models {
 		}
 		// BitmapをImageSourceに変換する
 		// 参考→http://www.nuits.jp/entry/2016/10/17/181232
-
 		public static ImageSource ToImageSource(this Bitmap bmp) {
 			var handle = bmp.GetHbitmap();
 			try {
@@ -33,6 +33,17 @@ namespace AzLH.Models {
 			}
 			finally {
 				NativeMethods.DeleteObject(handle);
+			}
+		}
+		// ソフトウェアのタイトルを返す
+		public static string SoftwareName {
+			get {
+				var assembly = Assembly.GetExecutingAssembly();
+				// AssemblyTitle
+				string asmttl = ((AssemblyTitleAttribute)
+					Attribute.GetCustomAttribute(assembly,
+					typeof(AssemblyTitleAttribute))).Title;
+				return asmttl;
 			}
 		}
 	}
