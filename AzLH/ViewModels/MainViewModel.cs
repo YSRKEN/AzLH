@@ -27,6 +27,8 @@ namespace AzLH.ViewModels {
 		public ReactiveProperty<double> MainWindowPositionTop    { get; }
 		public ReactiveProperty<double> MainWindowPositionWidth  { get; }
 		public ReactiveProperty<double> MainWindowPositionHeight { get; }
+		// ウィンドウの座標を記憶するか？
+		public ReactiveProperty<bool> MemoryWindowPositionFlg { get; }
 
 		// 座標取得ボタン
 		public ReactiveCommand GetGameWindowPositionCommand { get; }
@@ -68,6 +70,7 @@ namespace AzLH.ViewModels {
 			MainWindowPositionTop    = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionTop   );
 			MainWindowPositionWidth  = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionWidth );
 			MainWindowPositionHeight = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionHeight);
+			MemoryWindowPositionFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.MemoryWindowPositionFlg);
 			// コマンドを設定
 			GetGameWindowPositionCommand = new ReactiveCommand();
 			SaveScreenshotCommand = new ReactiveCommand();

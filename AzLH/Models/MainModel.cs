@@ -57,6 +57,8 @@ namespace AzLH.Models {
 		public double MainWindowPositionLeft {
 			get { return mainWindowPositionLeft; }
 			set {
+				if (!MemoryWindowPositionFlg)
+					return;
 				SetProperty(ref mainWindowPositionLeft, value);
 				var settings = SettingsStore.Instance;
 				settings.MainWindowRect[0] = mainWindowPositionLeft;
@@ -69,6 +71,8 @@ namespace AzLH.Models {
 		public double MainWindowPositionTop {
 			get { return mainWindowPositionTop; }
 			set {
+				if (!MemoryWindowPositionFlg)
+					return;
 				SetProperty(ref mainWindowPositionTop, value);
 				var settings = SettingsStore.Instance;
 				settings.MainWindowRect[1] = mainWindowPositionTop;
@@ -81,6 +85,8 @@ namespace AzLH.Models {
 		public double MainWindowPositionWidth {
 			get { return mainWindowPositionWidth; }
 			set {
+				if (!MemoryWindowPositionFlg)
+					return;
 				SetProperty(ref mainWindowPositionWidth, value);
 				var settings = SettingsStore.Instance;
 				settings.MainWindowRect[2] = mainWindowPositionWidth;
@@ -93,9 +99,24 @@ namespace AzLH.Models {
 		public double MainWindowPositionHeight {
 			get { return mainWindowPositionHeight; }
 			set {
+				if (!MemoryWindowPositionFlg)
+					return;
 				SetProperty(ref mainWindowPositionHeight, value);
 				var settings = SettingsStore.Instance;
 				settings.MainWindowRect[3] = mainWindowPositionHeight;
+				if (!settings.SaveSettings()) {
+					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				}
+			}
+		}
+		// ウィンドウの座標を記憶するか？
+		private bool memoryWindowPositionFlg = false;
+		public bool MemoryWindowPositionFlg {
+			get => memoryWindowPositionFlg;
+			set {
+				SetProperty(ref memoryWindowPositionFlg, value);
+				var settings = SettingsStore.Instance;
+				settings.MemoryWindowPositionFlg = memoryWindowPositionFlg;
 				if (!settings.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
@@ -111,10 +132,13 @@ namespace AzLH.Models {
 		private void SetSettings() {
 			var settings = SettingsStore.Instance;
 			ForTwitterFlg = settings.ForTwitterFlg;
-			MainWindowPositionLeft   = settings.MainWindowRect[0];
-			MainWindowPositionTop    = settings.MainWindowRect[1];
-			MainWindowPositionWidth  = settings.MainWindowRect[2];
-			MainWindowPositionHeight = settings.MainWindowRect[3];
+			MemoryWindowPositionFlg = settings.MemoryWindowPositionFlg;
+			if (MemoryWindowPositionFlg) {
+				MainWindowPositionLeft   = settings.MainWindowRect[0];
+				MainWindowPositionTop    = settings.MainWindowRect[1];
+				MainWindowPositionWidth  = settings.MainWindowRect[2];
+				MainWindowPositionHeight = settings.MainWindowRect[3];
+			}
 		}
 		// 実行ログに追記する
 		private void PutLog(string message) {

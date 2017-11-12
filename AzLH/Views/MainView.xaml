@@ -38,6 +38,8 @@
 			<MenuItem Header="オプション(_O)">
 				<MenuItem IsCheckable="True" Header="ツイッター用に加工(_T)"
 						IsChecked="{Binding ForTwitterFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<MenuItem IsCheckable="True" Header="ウィンドウの座標を記憶(_M)"
+						IsChecked="{Binding MemoryWindowPositionFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 			</MenuItem>
 			<MenuItem Header="ヘルプ(_H)">
 				<MenuItem Header="バージョン情報...(_A)" Command="{Binding SoftwareInfoCommand}"/>

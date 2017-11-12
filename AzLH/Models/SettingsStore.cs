@@ -12,14 +12,16 @@ namespace AzLH.Models {
 
 		// Twitter用に加工するか？
 		public bool ForTwitterFlg { get; set; }
-
 		// メイン画面の位置・大きさ
 		public double[] MainWindowRect { get; set; }
+		// ウィンドウの座標を記憶するか？
+		public bool MemoryWindowPositionFlg { get; set; }
 
 		// デフォルト設定
 		private void SetDefaultSettings() {
 			ForTwitterFlg = false;
 			MainWindowRect = new double[] { double.NaN, double.NaN, 400.0, 300.0 };
+			MemoryWindowPositionFlg = true;
 		}
 		// JSONから読み込み
 		public bool LoadSettings(string path) {
@@ -31,6 +33,7 @@ namespace AzLH.Models {
 					var model = JsonConvert.DeserializeObject<SettingsStore>(json);
 					ForTwitterFlg = model.ForTwitterFlg;
 					MainWindowRect = model.MainWindowRect;
+					MemoryWindowPositionFlg = model.MemoryWindowPositionFlg;
 				}
 				return true;
 			}
