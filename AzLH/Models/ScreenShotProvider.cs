@@ -40,7 +40,6 @@ namespace AzLH.Models {
 			}
 			return list;
 		}
-
 		// スクリーンショットを保存する
 		public static Bitmap GetScreenshot(bool forTwitterFlg = false) {
 			// スクショを取得する
@@ -53,7 +52,6 @@ namespace AzLH.Models {
 			}
 			return screenShot;
 		}
-
 		// スクリーンショットを保存できるかを判定する(ズレチェック)
 		public static bool CanGetScreenshot() {
 			if (GameWindowRect == null)
