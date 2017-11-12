@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -9,14 +8,18 @@ namespace AzLH.Models {
 		// 参考→https://qiita.com/rohinomiya/items/6bca22211d1bddf581c4
 		private static SettingsStore instance = new SettingsStore();
 		public static SettingsStore Instance => instance;
-		private SettingsStore(){}
+		private SettingsStore(){ SetDefaultSettings(); }
 
 		// Twitter用に加工するか？
 		public bool ForTwitterFlg { get; set; }
 
+		// メイン画面の位置・大きさ
+		public double[] MainWindowRect { get; set; }
+
 		// デフォルト設定
 		private void SetDefaultSettings() {
 			ForTwitterFlg = false;
+			MainWindowRect = new double[] { double.NaN, double.NaN, 400.0, 300.0 };
 		}
 		// JSONから読み込み
 		public bool LoadSettings(string path) {
@@ -27,6 +30,7 @@ namespace AzLH.Models {
 					// Json.NETでパース
 					var model = JsonConvert.DeserializeObject<SettingsStore>(json);
 					ForTwitterFlg = model.ForTwitterFlg;
+					MainWindowRect = model.MainWindowRect;
 				}
 				return true;
 			}

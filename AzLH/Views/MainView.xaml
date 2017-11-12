@@ -6,8 +6,13 @@
 	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
 	xmlns:local="clr-namespace:AzLH.ViewModels"
 	mc:Ignorable="d"
-	local:CloseWindowAttachedBehavior.Close="{Binding CloseWindow.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-	Title="{Binding SoftwareTitle.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Height="300" Width="400">
+	Topmost="True"
+	Top="{Binding MainWindowPositionTop.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+	Left ="{Binding MainWindowPositionLeft.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+	Width ="{Binding MainWindowPositionWidth.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+	Height="{Binding MainWindowPositionHeight.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+	Title="{Binding SoftwareTitle.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+	local:CloseWindowAttachedBehavior.Close="{Binding CloseWindow.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 	<Window.DataContext>
 		<local:MainViewModel/>
 	</Window.DataContext>

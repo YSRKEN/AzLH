@@ -22,6 +22,11 @@ namespace AzLH.ViewModels {
 		public ReactiveProperty<bool> ForTwitterFlg { get; }
 		// ソフトウェアのタイトル
 		public ReactiveProperty<string> SoftwareTitle { get; }
+		// メイン画面の位置
+		public ReactiveProperty<double> MainWindowPositionLeft   { get; }
+		public ReactiveProperty<double> MainWindowPositionTop    { get; }
+		public ReactiveProperty<double> MainWindowPositionWidth  { get; }
+		public ReactiveProperty<double> MainWindowPositionHeight { get; }
 
 		// 座標取得ボタン
 		public ReactiveCommand GetGameWindowPositionCommand { get; }
@@ -59,6 +64,10 @@ namespace AzLH.ViewModels {
 			JudgedScene = mainModel.ObserveProperty(x => x.JudgedScene).ToReactiveProperty();
 			ForTwitterFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.ForTwitterFlg);
 			SoftwareTitle = mainModel.ObserveProperty(x => x.SoftwareTitle).ToReactiveProperty();
+			MainWindowPositionLeft   = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionLeft  );
+			MainWindowPositionTop    = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionTop   );
+			MainWindowPositionWidth  = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionWidth );
+			MainWindowPositionHeight = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionHeight);
 			// コマンドを設定
 			GetGameWindowPositionCommand = new ReactiveCommand();
 			SaveScreenshotCommand = new ReactiveCommand();

@@ -52,6 +52,55 @@ namespace AzLH.Models {
 			get { return softwareTitle; }
 			set { SetProperty(ref softwareTitle, value); }
 		}
+		// メイン画面の位置
+		private double mainWindowPositionLeft = double.NaN;
+		public double MainWindowPositionLeft {
+			get { return mainWindowPositionLeft; }
+			set {
+				SetProperty(ref mainWindowPositionLeft, value);
+				var settings = SettingsStore.Instance;
+				settings.MainWindowRect[0] = mainWindowPositionLeft;
+				if (!settings.SaveSettings()) {
+					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				}
+			}
+		}
+		private double mainWindowPositionTop = double.NaN;
+		public double MainWindowPositionTop {
+			get { return mainWindowPositionTop; }
+			set {
+				SetProperty(ref mainWindowPositionTop, value);
+				var settings = SettingsStore.Instance;
+				settings.MainWindowRect[1] = mainWindowPositionTop;
+				if (!settings.SaveSettings()) {
+					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				}
+			}
+		}
+		private double mainWindowPositionWidth = 400.0;
+		public double MainWindowPositionWidth {
+			get { return mainWindowPositionWidth; }
+			set {
+				SetProperty(ref mainWindowPositionWidth, value);
+				var settings = SettingsStore.Instance;
+				settings.MainWindowRect[2] = mainWindowPositionWidth;
+				if (!settings.SaveSettings()) {
+					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				}
+			}
+		}
+		private double mainWindowPositionHeight = 300.0;
+		public double MainWindowPositionHeight {
+			get { return mainWindowPositionHeight; }
+			set {
+				SetProperty(ref mainWindowPositionHeight, value);
+				var settings = SettingsStore.Instance;
+				settings.MainWindowRect[3] = mainWindowPositionHeight;
+				if (!settings.SaveSettings()) {
+					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				}
+			}
+		}
 
 		// コンストラクタ
 		public MainModel() {
@@ -62,6 +111,10 @@ namespace AzLH.Models {
 		private void SetSettings() {
 			var settings = SettingsStore.Instance;
 			ForTwitterFlg = settings.ForTwitterFlg;
+			MainWindowPositionLeft   = settings.MainWindowRect[0];
+			MainWindowPositionTop    = settings.MainWindowRect[1];
+			MainWindowPositionWidth  = settings.MainWindowRect[2];
+			MainWindowPositionHeight = settings.MainWindowRect[3];
 		}
 		// 実行ログに追記する
 		private void PutLog(string message) {
