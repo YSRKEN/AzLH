@@ -96,13 +96,13 @@ namespace AzLH.Models {
 		public static Bitmap GetScreenBitmap() {
 			//System.Drawing.dllの参照を追加しておくのがポイント
 			//https://social.msdn.microsoft.com/Forums/vstudio/en-US/7a3d2cee-2e72-420d-b596-d51f7002a07e/wpf-screen-capture-with-rectangle
-			int top = (int)SystemParameters.VirtualScreenTop;
 			int left = (int)SystemParameters.VirtualScreenLeft;
+			int top = (int)SystemParameters.VirtualScreenTop;
 			int width = (int)SystemParameters.VirtualScreenWidth;
 			int height = (int)SystemParameters.VirtualScreenHeight;
 			var virtualScreenBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
 			using (var bitmapGraphics = Graphics.FromImage(virtualScreenBitmap)) {
-				bitmapGraphics.CopyFromScreen(top, left, 0, 0, virtualScreenBitmap.Size);
+				bitmapGraphics.CopyFromScreen(left, top, 0, 0, virtualScreenBitmap.Size);
 			}
 			return virtualScreenBitmap;
 		}
@@ -313,7 +313,10 @@ namespace AzLH.Models {
 							continue;
 					}
 					// 候補を追加
-					rectList.Add(new Rectangle(left + 1, top + 1, frameSize.Width - 1, frameSize.Height - 1));
+					// (virtualScreenLeft/Topは仮想画面の左上座標)
+					int virtualScreenLeft = (int)SystemParameters.VirtualScreenLeft;
+					int virtualScreenTop = (int)SystemParameters.VirtualScreenTop;
+					rectList.Add(new Rectangle(virtualScreenLeft + left + 1, virtualScreenTop + top + 1, frameSize.Width - 1, frameSize.Height - 1));
 					break;
 				}
 			}
