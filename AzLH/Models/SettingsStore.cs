@@ -50,7 +50,7 @@ namespace AzLH.Models {
 			try {
 				using (var sw = new StreamWriter(path, false, Encoding.UTF8)) {
 					// Json.NETでstring形式に書き出す
-					string json = JsonConvert.SerializeObject(this);
+					string json = JsonConvert.SerializeObject(this, Formatting.Indented);
 					// 書き込み
 					sw.Write(json);
 				}
