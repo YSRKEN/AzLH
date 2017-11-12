@@ -6,6 +6,12 @@ using System.Linq;
 namespace AzLH.Models {
 	internal class MainModel : BindableBase {
 		public delegate void SelectGameWindowAction(Rectangle? rect);
+		// trueにすると画面を閉じる
+		private bool closeWindow;
+		public bool CloseWindow {
+			get { return closeWindow; }
+			set { SetProperty(ref closeWindow, value); }
+		}
 		// 画像保存ボタンは有効か？
 		private bool saveScreenshotFlg = false;
 		public bool SaveScreenshotFlg {
@@ -153,6 +159,10 @@ namespace AzLH.Models {
 			catch (Exception) {
 				PutLog($"スクリーンショット : 失敗");
 			}
+		}
+		// ソフトを終了させる
+		public void Close() {
+			CloseWindow = true;
 		}
 		// 定期的にスクリーンショットを取得し、そこに起因する処理を行う
 		public void HelperTaskF() {
