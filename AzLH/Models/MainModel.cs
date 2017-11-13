@@ -220,7 +220,7 @@ namespace AzLH.Models {
 						// 候補なしと表示する
 						ScreenShotProvider.GameWindowRect = null;
 						PutLog("座標取得 : 失敗");
-						SaveScreenshotFlg = true;
+						SaveScreenshotFlg = false;
 					}
 					break;
 				case 1: {
