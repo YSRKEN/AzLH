@@ -55,7 +55,7 @@ namespace AzLH.Models {
 		// メイン画面の位置
 		private double mainWindowPositionLeft = double.NaN;
 		public double MainWindowPositionLeft {
-			get { return mainWindowPositionLeft; }
+			get => mainWindowPositionLeft;
 			set {
 				if (!MemoryWindowPositionFlg)
 					return;
@@ -67,9 +67,10 @@ namespace AzLH.Models {
 				}
 			}
 		}
+
 		private double mainWindowPositionTop = double.NaN;
 		public double MainWindowPositionTop {
-			get { return mainWindowPositionTop; }
+			get => mainWindowPositionTop;
 			set {
 				if (!MemoryWindowPositionFlg)
 					return;
@@ -81,9 +82,10 @@ namespace AzLH.Models {
 				}
 			}
 		}
+
 		private double mainWindowPositionWidth = 400.0;
 		public double MainWindowPositionWidth {
-			get { return mainWindowPositionWidth; }
+			get => mainWindowPositionWidth;
 			set {
 				if (!MemoryWindowPositionFlg)
 					return;
@@ -95,6 +97,7 @@ namespace AzLH.Models {
 				}
 			}
 		}
+
 		private double mainWindowPositionHeight = 300.0;
 		public double MainWindowPositionHeight {
 			get { return mainWindowPositionHeight; }
@@ -210,7 +213,7 @@ namespace AzLH.Models {
 			PutLog("座標取得開始...");
 			try {
 				// ゲーム画面の座標候補を検出する
-				var rectList = await ScreenShotProvider.GetGameWindowPositionAsync();
+				var rectList = await ScreenShotProvider.GetGameWindowPositionAsync().ConfigureAwait(false);
 				// 候補数によって処理を分岐させる
 				switch (rectList.Count) {
 				case 0: {
@@ -311,9 +314,10 @@ namespace AzLH.Models {
 		// 設定をインポート
 		public void ImportSettings() {
 			// インスタンスを作成
-			var ofd = new OpenFileDialog();
-			// ファイルの種類を設定
-			ofd.Filter = "設定ファイル(*.json)|*.json|全てのファイル (*.*)|*.*";
+			var ofd = new OpenFileDialog {
+				// ファイルの種類を設定
+				Filter = "設定ファイル(*.json)|*.json|全てのファイル (*.*)|*.*"
+			};
 			// ダイアログを表示
 			if ((bool)ofd.ShowDialog()) {
 				// 設定をインポート
@@ -330,9 +334,10 @@ namespace AzLH.Models {
 		// 設定をエクスポート
 		public void ExportSettings() {
 			// インスタンスを作成
-			var sfd = new SaveFileDialog();
-			// ファイルの種類を設定
-			sfd.Filter = "設定ファイル(*.json)|*.json|全てのファイル (*.*)|*.*";
+			var sfd = new SaveFileDialog {
+				// ファイルの種類を設定
+				Filter = "設定ファイル(*.json)|*.json|全てのファイル (*.*)|*.*"
+			};
 			// ダイアログを表示
 			if ((bool)sfd.ShowDialog()) {
 				// 設定をエクスポート
@@ -371,7 +376,7 @@ namespace AzLH.Models {
 					PutLog("エラー：ゲーム画面の位置ズレを検出しました");
 					try {
 						// 再び自動座標検出を行う
-						var rectList = await ScreenShotProvider.GetGameWindowPositionAsync();
+						var rectList = await ScreenShotProvider.GetGameWindowPositionAsync().ConfigureAwait(false);
 						// その結果によって処理を分岐させる
 						switch (rectList.Count) {
 						case 0: {
@@ -396,7 +401,7 @@ namespace AzLH.Models {
 								foreach(var rect in rectList) {
 									int diffX = ScreenShotProvider.GameWindowRect.Value.X - rect.X;
 									int diffY = ScreenShotProvider.GameWindowRect.Value.Y - rect.Y;
-									int diff = diffX * diffX + diffY * diffY;
+									int diff = (diffX * diffX) + (diffY * diffY);
 									if(distance > diff) {
 										distance = diff;
 										nearestRect = rect;

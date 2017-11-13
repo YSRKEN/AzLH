@@ -3,11 +3,10 @@ using System.IO;
 using System.Text;
 
 namespace AzLH.Models {
-	sealed class SettingsStore {
+	internal sealed class SettingsStore {
 		// シングルトンパターン
 		// 参考→https://qiita.com/rohinomiya/items/6bca22211d1bddf581c4
-		private static SettingsStore instance = new SettingsStore();
-		public static SettingsStore Instance => instance;
+		public static SettingsStore Instance { get; } = new SettingsStore();
 		private SettingsStore(){ SetDefaultSettings(); }
 
 		// Twitter用に加工するか？
@@ -46,9 +45,11 @@ namespace AzLH.Models {
 				return false;
 			}
 		}
+
 		public bool LoadSettings() {
 			return LoadSettings("settings.json");
 		}
+
 		// JSONに書き出し
 		public bool SaveSettings(string path) {
 			try {
@@ -64,11 +65,13 @@ namespace AzLH.Models {
 				return false;
 			}
 		}
+
 		public bool SaveSettings() {
 			return SaveSettings("settings.json");
 		}
+
 		// 設定項目を初期化
-		public bool initialize() {
+		public bool Initialize() {
 			if (LoadSettings()) {
 				return true;
 			}

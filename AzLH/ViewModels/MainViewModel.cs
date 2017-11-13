@@ -52,7 +52,7 @@ namespace AzLH.ViewModels {
 				Directory.CreateDirectory(@"pic\");
 			// 設定項目を初期化する
 			var settings = SettingsStore.Instance;
-			if (!settings.initialize()) {
+			if (!settings.Initialize()) {
 				MessageBox.Show("設定を読み込めませんでした。\nデフォルトの設定で起動します。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				if (!settings.SaveSettings()) {
 					MessageBox.Show("デフォルト設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);

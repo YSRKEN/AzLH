@@ -7,12 +7,12 @@ using System.Windows;
 
 namespace AzLH.Models {
 	using DSize = System.Drawing.Size;
-	static class ScreenShotProvider {
+	internal static class ScreenShotProvider {
 		#region 定数宣言
 		// 取得できるゲーム画面の最小サイズ
 		private static readonly DSize MinGameWindowSize = new DSize(1280, 720);
 		// 探索用ステップ数
-		private static readonly int GameWindowSearchStepCount = 5;
+		private const int GameWindowSearchStepCount = 5;
 		// 探索用ステップ数に基づく取得間隔
 		private static readonly DSize GameWindowSearchStep = new DSize(
 			MinGameWindowSize.Width / (GameWindowSearchStepCount + 1),
@@ -20,18 +20,18 @@ namespace AzLH.Models {
 		// 取得できるゲーム画面の最大サイズ
 		private static readonly DSize MaxGameWindowSize = new DSize(2560, 1440);
 		// 枠検出に利用する定数
-		private static readonly List<DSize> GameWindowSizeList = initializeGameWindowSizeList();
+		private static readonly List<DSize> GameWindowSizeList = InitializeGameWindowSizeList();
 		#endregion
 
 		// nullではない場合、スクリーンショットを取得可能ということになる
 		public static Rectangle? GameWindowRect { get; set; }
 
 		// 枠検出に利用する定数を初期化
-		private static List<DSize> initializeGameWindowSizeList() {
+		private static List<DSize> InitializeGameWindowSizeList() {
 			var list = new List<DSize>();
 			for(int i = MinGameWindowSize.Width; i <= MaxGameWindowSize.Width; ++i) {
 				int xSize = i + 1;
-				int ySize1 = i * MinGameWindowSize.Height / MinGameWindowSize.Width - 1;
+				int ySize1 = (i * MinGameWindowSize.Height / MinGameWindowSize.Width) - 1;
 				int ySize2 = ySize1 + 1;
 				int ySize3 = ySize2 + 1;
 				list.Add(new DSize(xSize, ySize1));
@@ -106,6 +106,7 @@ namespace AzLH.Models {
 			}
 			return virtualScreenBitmap;
 		}
+
 		public static Bitmap GetScreenBitmap(Rectangle rect) {
 			var virtualScreenBitmap = new Bitmap(rect.Width, rect.Height, PixelFormat.Format32bppArgb);
 			using (var bitmapGraphics = Graphics.FromImage(virtualScreenBitmap)) {
@@ -124,9 +125,11 @@ namespace AzLH.Models {
 				return GetGameWindowPosition(virtualScreenBitmap);
 			}
 		}
+
 		public static Task<List<Rectangle>> GetGameWindowPositionAsync() {
 			return Task.Run(() => GetGameWindowPosition());
 		}
+
 		public static List<Rectangle> GetGameWindowPosition(Bitmap bitmap) {
 			// 上辺の候補を検索する
 			// 1. GameWindowSearchStep.Width ピクセルごとに画素を読み取る(Y=yとY=y+1)
@@ -140,7 +143,7 @@ namespace AzLH.Models {
 				//横幅÷ステップ幅
 				int stepCount = bitmap.Width / GameWindowSearchStep.Width;
 				//探索するステップの右端
-				int maxSearchWidth = bitmap.Width  - GameWindowSearchStepCount * GameWindowSearchStep.Width;
+				int maxSearchWidth = bitmap.Width  - (GameWindowSearchStepCount * GameWindowSearchStep.Width);
 				//探索する縦範囲
 				int maxSearchHeight = bitmap.Height - MinGameWindowSize.Height - 1;
 				for (int y = 0; y < maxSearchHeight; ++y) {
