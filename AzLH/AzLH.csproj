@@ -132,11 +132,13 @@
     <Compile Include="Models\SceneRecognition.cs" />
     <Compile Include="Models\ScreenShotProvider.cs" />
     <Compile Include="Models\SettingsStore.cs" />
+    <Compile Include="Models\SupplyModel.cs" />
     <Compile Include="Models\Utility.cs" />
     <Compile Include="ViewModels\CloseWindowAttachedBehavior.cs" />
     <Compile Include="ViewModels\ApplicationLogScrollBehavior.cs" />
     <Compile Include="ViewModels\GameScreenSelectViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\SupplyViewModel.cs" />
     <Compile Include="Views\GameScreenSelectView.xaml.cs">
       <DependentUpon>GameScreenSelectView.xaml</DependentUpon>
     </Compile>
@@ -147,11 +149,18 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Views\SupplyView.xaml.cs">
+      <DependentUpon>SupplyView.xaml</DependentUpon>
+    </Compile>
     <Page Include="Views\GameScreenSelectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SupplyView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

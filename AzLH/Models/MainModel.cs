@@ -351,6 +351,12 @@ namespace AzLH.Models {
 		public void OpenPicFolder() {
 			System.Diagnostics.Process.Start(@"pic\");
 		}
+		// 資材記録画面を表示
+		public void OpenSupplyView() {
+			var vm = new ViewModels.SupplyViewModel();
+			var view = new Views.SupplyView { DataContext = vm };
+			view.Show();
+		}
 
 		// 定期的にスクリーンショットを取得し、そこに起因する処理を行う
 		public void HelperTaskF() {

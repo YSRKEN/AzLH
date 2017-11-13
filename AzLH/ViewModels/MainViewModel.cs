@@ -46,6 +46,8 @@ namespace AzLH.ViewModels {
 		public ReactiveCommand ExportSettingsCommand { get; }
 		// スクショ保存フォルダを表示
 		public ReactiveCommand OpenPicFolderCommand { get; }
+		// 資材記録画面を表示
+		public ReactiveCommand OpenSupplyViewCommand { get; }
 
 		// コンストラクタ
 		public MainViewModel() {
@@ -84,6 +86,7 @@ namespace AzLH.ViewModels {
 			ImportSettingsCommand = new ReactiveCommand();
 			ExportSettingsCommand = new ReactiveCommand();
 			OpenPicFolderCommand = new ReactiveCommand();
+			OpenSupplyViewCommand = new ReactiveCommand();
 			//voidを返すメソッドならこれだけで良いらしい
 			//https://qiita.com/pierusan2010/items/76b7a406b3f064193c88
 			GetGameWindowPositionCommand.Subscribe(mainModel.GetGameWindowPosition);
@@ -92,6 +95,7 @@ namespace AzLH.ViewModels {
 			ImportSettingsCommand.Subscribe(mainModel.ImportSettings);
 			ExportSettingsCommand.Subscribe(mainModel.ExportSettings);
 			OpenPicFolderCommand.Subscribe(mainModel.OpenPicFolder);
+			OpenSupplyViewCommand.Subscribe(mainModel.OpenSupplyView);
 			// 値を返すメソッドなのでView側でも対応する
 			SoftwareInfoCommand.Subscribe(
 				() => Messenger.Instance.GetEvent<PubSubEvent<string>>()
