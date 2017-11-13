@@ -67,7 +67,6 @@ namespace AzLH.Models {
 				}
 			}
 		}
-
 		private double mainWindowPositionTop = double.NaN;
 		public double MainWindowPositionTop {
 			get => mainWindowPositionTop;
@@ -82,7 +81,6 @@ namespace AzLH.Models {
 				}
 			}
 		}
-
 		private double mainWindowPositionWidth = 400.0;
 		public double MainWindowPositionWidth {
 			get => mainWindowPositionWidth;
@@ -97,7 +95,6 @@ namespace AzLH.Models {
 				}
 			}
 		}
-
 		private double mainWindowPositionHeight = 300.0;
 		public double MainWindowPositionHeight {
 			get { return mainWindowPositionHeight; }
@@ -349,6 +346,10 @@ namespace AzLH.Models {
 					PutLog("設定を保存しました");
 				}
 			}
+		}
+		// スクショ保存フォルダを表示
+		public void OpenPicFolder() {
+			System.Diagnostics.Process.Start(@"pic\");
 		}
 
 		// 定期的にスクリーンショットを取得し、そこに起因する処理を行う

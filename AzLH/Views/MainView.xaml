@@ -34,6 +34,8 @@
 				<MenuItem Header="スクショ(_S)"
 						Command="{Binding SaveScreenshotCommand}"
 						IsEnabled="{Binding SaveScreenshotFlg.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<MenuItem Header="スクショ保存フォルダを表示(_O)"
+						Command="{Binding OpenPicFolderCommand}"/>
 			</MenuItem>
 			<MenuItem Header="オプション(_O)">
 				<MenuItem IsCheckable="True" Header="ツイッター用に加工(_T)"
