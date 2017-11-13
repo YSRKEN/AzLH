@@ -16,12 +16,15 @@ namespace AzLH.Models {
 		public double[] MainWindowRect { get; set; }
 		// ウィンドウの座標を記憶するか？
 		public bool MemoryWindowPositionFlg { get; set; }
+		// 常時座標を捕捉し続けるか？
+		public bool AutoSearchPositionFlg { get; set; }
 
 		// デフォルト設定
 		private void SetDefaultSettings() {
 			ForTwitterFlg = false;
 			MainWindowRect = new double[] { double.NaN, double.NaN, 400.0, 300.0 };
 			MemoryWindowPositionFlg = true;
+			AutoSearchPositionFlg = true;
 		}
 		// JSONから読み込み
 		public bool LoadSettings(string path) {
@@ -34,6 +37,7 @@ namespace AzLH.Models {
 					ForTwitterFlg = model.ForTwitterFlg;
 					MainWindowRect = model.MainWindowRect;
 					MemoryWindowPositionFlg = model.MemoryWindowPositionFlg;
+					AutoSearchPositionFlg = model.AutoSearchPositionFlg;
 				}
 				return true;
 			}

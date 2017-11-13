@@ -40,6 +40,9 @@
 						IsChecked="{Binding ForTwitterFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<MenuItem IsCheckable="True" Header="ウィンドウの座標を記憶(_M)"
 						IsChecked="{Binding MemoryWindowPositionFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<MenuItem IsCheckable="True" Header="常時座標認識(_A)"
+						IsChecked="{Binding AutoSearchPositionFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
 			</MenuItem>
 			<MenuItem Header="ヘルプ(_H)">
 				<MenuItem Header="バージョン情報...(_A)" Command="{Binding SoftwareInfoCommand}"/>

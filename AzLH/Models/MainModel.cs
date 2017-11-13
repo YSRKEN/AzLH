@@ -122,6 +122,19 @@ namespace AzLH.Models {
 				}
 			}
 		}
+		// 常時座標を捕捉し続けるか？
+		private bool autoSearchPositionFlg = false;
+		public bool AutoSearchPositionFlg {
+			get => autoSearchPositionFlg;
+			set {
+				SetProperty(ref autoSearchPositionFlg, value);
+				var settings = SettingsStore.Instance;
+				settings.AutoSearchPositionFlg = autoSearchPositionFlg;
+				if (!settings.SaveSettings()) {
+					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				}
+			}
+		}
 
 		// コンストラクタ
 		public MainModel() {
@@ -139,6 +152,7 @@ namespace AzLH.Models {
 				MainWindowPositionWidth  = settings.MainWindowRect[2];
 				MainWindowPositionHeight = settings.MainWindowRect[3];
 			}
+			AutoSearchPositionFlg = settings.AutoSearchPositionFlg;
 		}
 		// 実行ログに追記する
 		private void PutLog(string message) {
@@ -401,6 +415,12 @@ namespace AzLH.Models {
 						PutLog($"位置ズレ自動修正 : 失敗");
 						SaveScreenshotFlg = false;
 					}
+				}
+			}
+			else {
+				// 常時座標認識
+				if (AutoSearchPositionFlg) {
+					GetGameWindowPosition();
 				}
 			}
 		}
