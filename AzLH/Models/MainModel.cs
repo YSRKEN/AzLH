@@ -368,13 +368,13 @@ namespace AzLH.Models {
 					// シーン文字列を取得し、表示する
 					JudgedScene = SceneRecognition.JudgeGameScene(screenShot);
 					// 資材量を取得する
-					switch (JudgedScene) {
+					/*switch (JudgedScene) {
 					case "シーン判定 : 母港": {
 							// 燃料
 							int fuel = CharacterRecognition.GetValueOCR(screenShot, "燃料");
 						}
 						break;
-					}
+					}*/
 				}
 				else {
 					// スクショが取得できなくなったのでその旨を通知する

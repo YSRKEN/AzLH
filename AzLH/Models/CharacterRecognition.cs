@@ -11,14 +11,6 @@ using System.Text;
 namespace AzLH.Models {
 	using dSize = System.Drawing.Size;
 	static class CharacterRecognition {
-		// 燃料：～10000　通常資材左
-		// 資金：～50000　通常資材右
-		// キューブ：～100　特殊資材左
-		// ドリル：～100　特殊資材左
-		// 勲章：～100　特殊資材左
-		// ダイヤ：～1000　特殊資材右
-		// 家具コイン：～1000　特殊資材右
-
 		// OCRする際にリサイズするサイズ
 		private static readonly dSize ocrTemplateSize1 = new dSize(32, 32);
 		// OCRする際にマッチングさせる元のサイズ
@@ -26,9 +18,9 @@ namespace AzLH.Models {
 		// OCRする際に引き伸ばす際の短辺長
 		private static readonly int ocrStretchSize = 64;
 		// 各資材における認識パラメーター
-		private static Dictionary<string, SupplyParameter> supplyParameters = LoadSupplyParameters();
+		public static Dictionary<string, SupplyParameter> SupplyParameters { get; } = LoadSupplyParameters();
 		// OCRする際に使用する画像
-		private static Mat templateSource = MakeTemplateSource();
+		private static readonly Mat templateSource = MakeTemplateSource();
 
 		// 認識パラメーターを読み込む
 		private static Dictionary<string, SupplyParameter> LoadSupplyParameters() {
@@ -57,7 +49,8 @@ namespace AzLH.Models {
 								pair.Value.MainSupplyFlg,
 								pair.Value.SecondaryAxisFlg,
 								pair.Value.InverseFlg,
-								pair.Value.Threshold
+								pair.Value.Threshold,
+								pair.Value.Name
 							);
 					}
 				}
@@ -152,10 +145,10 @@ namespace AzLH.Models {
 		// 資材量を読み取る(-1＝読み取り不可)
 		public static int GetValueOCR(Bitmap bitmap, string supplyType, bool debugFlg = false) {
 			// 対応している資材名ではない場合は無視する
-			if (!supplyParameters.ContainsKey(supplyType))
+			if (!SupplyParameters.ContainsKey(supplyType))
 				return -1;
 			// ％指定をピクセル指定に直す
-			var cropRect = supplyParameters[supplyType].Rect;
+			var cropRect = SupplyParameters[supplyType].Rect;
 			int px = (int)(bitmap.Width * cropRect.X / 100 + 0.5);
 			int py = (int)(bitmap.Height * cropRect.Y / 100 + 0.5);
 			int wx = (int)(bitmap.Width * cropRect.Width / 100 + 0.5);
@@ -186,10 +179,10 @@ namespace AzLH.Models {
 			using (var mat1 = BitmapConverter.ToMat(canvas))
 			using (var mat2 = new Mat(mat1.Size(), MatType.CV_8U)) {
 				Cv2.CvtColor(mat1, mat2, ColorConversionCodes.BGR2GRAY);
-				if (supplyParameters[supplyType].InverseFlg)
+				if (SupplyParameters[supplyType].InverseFlg)
 					Cv2.BitwiseNot(mat2, mat2);
 				if (debugFlg) mat2.SaveImage("pic\\digit2.png");
-				Cv2.Threshold(mat2, mat2, supplyParameters[supplyType].Threshold, 255, ThresholdTypes.Binary);
+				Cv2.Threshold(mat2, mat2, SupplyParameters[supplyType].Threshold, 255, ThresholdTypes.Binary);
 				canvas = mat2.ToBitmap();
 			}
 			if (debugFlg) canvas.Save("pic\\digit3.png");
@@ -292,15 +285,18 @@ namespace AzLH.Models {
 			public bool InverseFlg { get; }
 			// 判定に用いるしきい値
 			public int Threshold { get; }
+			// DBのテーブル名
+			public string Name { get; }
 			// コンストラクタ
 			public SupplyParameter(int r, int g, int b, float x, float y, float width, float height,
-				bool mainSupplyFlg, bool secondaryAxisFlg, bool inverseFlg, int threshold) {
+				bool mainSupplyFlg, bool secondaryAxisFlg, bool inverseFlg, int threshold, string name) {
 				Color = Color.FromArgb(r, g, b);
 				Rect = new RectangleF(x, y, width, height);
 				MainSupplyFlg = mainSupplyFlg;
 				SecondaryAxisFlg = secondaryAxisFlg;
 				InverseFlg = inverseFlg;
 				Threshold = threshold;
+				Name = name;
 			}
 		}
 		[JsonObject("param")]
@@ -311,6 +307,7 @@ namespace AzLH.Models {
 			public bool SecondaryAxisFlg { get; set; }
 			public bool InverseFlg { get; set; }
 			public int Threshold { get; set; }
+			public string Name { get; set; }
 		}
 	}
 }
