@@ -1,7 +1,7 @@
 ﻿{
   "燃料" : {
     "Color" : [71, 71, 72], "RectFloat" : [55.55, 3.111, 7.625, 2.667], "MainSupplyFlg" : true, "SecondaryAxisFlg" : false,
-    "InverseFlg" : true, "Threshold" : 15
+    "InverseFlg" : true, "Threshold" : 20
   },
   "資金" : {
     "Color" : [213, 176, 83], "RectFloat" : [71.75, 3.111, 7.625, 2.667], "MainSupplyFlg" : true, "SecondaryAxisFlg" : true,

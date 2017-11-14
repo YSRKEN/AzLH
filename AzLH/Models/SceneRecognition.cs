@@ -47,7 +47,6 @@ namespace AzLH.Models {
 			}
 			return output;
 		}
-
 		// ビットカウント
 		// 参考→http://developer.cybozu.co.jp/takesako/2006/11/binary_hacks.html
 		private static ulong Popcnt(ulong x) {
@@ -59,12 +58,10 @@ namespace AzLH.Models {
 			x = ((x & 0xffffffff00000000) >> 32) + (x & 0x00000000ffffffff);
 			return x;
 		}
-
 		// ハミング距離を計算する
 		private static ulong GetHummingDistance(ulong a, ulong b) {
 			return Popcnt(a ^ b);
 		}
-
 		// 画像の一部分におけるDifferenceHashを取得する
 		// (rectで指定する範囲は％単位)
 		private static ulong GetDifferenceHash(Bitmap bitmap, RectangleF rect) {
@@ -116,7 +113,6 @@ namespace AzLH.Models {
 			}
 			return hash;
 		}
-
 		// どのシーンかを判定する("不明"＝判定不可)
 		public static string JudgeGameScene(Bitmap bitmap) {
 			foreach(var scene in sceneParameters) {
