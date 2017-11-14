@@ -368,13 +368,37 @@ namespace AzLH.Models {
 					// シーン文字列を取得し、表示する
 					JudgedScene = SceneRecognition.JudgeGameScene(screenShot);
 					// 資材量を取得する
-					/*switch (JudgedScene) {
+					switch (JudgedScene) {
 					case "シーン判定 : 母港": {
-							// 燃料
-							int fuel = CharacterRecognition.GetValueOCR(screenShot, "燃料");
+							if(SupplyStore.UpdateSupplyValue(screenShot, "燃料"))
+								PutLog("資材量追記：燃料");
+							if (SupplyStore.UpdateSupplyValue(screenShot, "資金"))
+								PutLog("資材量追記：資金");
+							if (SupplyStore.UpdateSupplyValue(screenShot, "ダイヤ"))
+								PutLog("資材量追記：ダイヤ");
 						}
 						break;
-					}*/
+					case "シーン判定 : 建造": {
+							if (SupplyStore.UpdateSupplyValue(screenShot, "キューブ"))
+								PutLog("資材量追記：キューブ");
+						}
+						break;
+					case "シーン判定 : 建造中": {
+							if (SupplyStore.UpdateSupplyValue(screenShot, "ドリル"))
+								PutLog("資材量追記：ドリル");
+						}
+						break;
+					case "シーン判定 : 支援": {
+							if (SupplyStore.UpdateSupplyValue(screenShot, "勲章"))
+								PutLog("資材量追記：勲章");
+						}
+						break;
+					case "シーン判定 : 家具屋": {
+							if (SupplyStore.UpdateSupplyValue(screenShot, "家具コイン"))
+								PutLog("資材量追記：家具コイン");
+						}
+						break;
+					}
 				}
 				else {
 					// スクショが取得できなくなったのでその旨を通知する

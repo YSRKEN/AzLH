@@ -2,6 +2,8 @@
 using System.Data.SQLite;
 using static AzLH.Models.CharacterRecognition;
 using System.Data.SQLite.Linq;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace AzLH.Models {
 	internal static class SupplyStore {
@@ -13,6 +15,11 @@ namespace AzLH.Models {
 		// ダイヤ：～1000　特殊資材右
 		// 家具コイン：～1000　特殊資材右
 		private const string connectionString = @"Data Source=supply.db";
+		// 最終更新日時のキャッシュ
+		private static Dictionary<string, DateTime> lastWriteDateTime = new Dictionary<string, DateTime>();
+		// 更新間隔(分)
+		private static int updateInterval = 10;
+		// 母港画面で
 
 		// 初期化
 		public static void Initialize() {
@@ -30,10 +37,13 @@ namespace AzLH.Models {
 				}
 				catch { }
 			}
+			// 最終更新日時のキャッシュを準備する
+			foreach (var supplyInfo in SupplyParameters) {
+				lastWriteDateTime[supplyInfo.Key] = GetLastWriteDateTime(supplyInfo.Key);
+			}
 		}
-
 		// ある資材について、その最新書き込み日時を知る
-		public static DateTime LastWriteDateTime(string supplyType) {
+		private static DateTime GetLastWriteDateTime(string supplyType) {
 			var output = new DateTime();
 			try {
 				using (var con = new SQLiteConnection(connectionString)) {
@@ -51,6 +61,30 @@ namespace AzLH.Models {
 			}
 			catch { }
 			return output;
+		}
+		// 資材量を更新できれば更新する
+		public static bool UpdateSupplyValue(Bitmap bitmap, string supplyType) {
+			var nowDateTime = DateTime.Now;
+			if ((nowDateTime - lastWriteDateTime[supplyType]).Minutes < updateInterval)
+				return false;
+			int value = GetValueOCR(bitmap, supplyType);
+			if (value < 0)
+				return false;
+			try {
+				using (var con = new SQLiteConnection(connectionString)) {
+					con.Open();
+					using (var cmd = con.CreateCommand()) {
+						string sql = $"INSERT INTO [{SupplyParameters[supplyType].Name}] VALUES ('{nowDateTime.ToString("yyyy-MM-dd HH:mm:ss")}', {value})";
+						cmd.CommandText = sql;
+						cmd.ExecuteNonQuery();
+					}
+				}
+				lastWriteDateTime[supplyType] = nowDateTime;
+				return true;
+			}
+			catch {
+				return false;
+			}
 		}
 	}
 }

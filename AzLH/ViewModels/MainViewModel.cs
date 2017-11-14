@@ -62,6 +62,8 @@ namespace AzLH.ViewModels {
 					MessageBox.Show("デフォルト設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
+			// 資材データベースを初期化する
+			SupplyStore.Initialize();
 
 			// 初期化
 			mainModel = new MainModel();
