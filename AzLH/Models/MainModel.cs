@@ -365,7 +365,17 @@ namespace AzLH.Models {
 			using (var screenShot = ScreenShotProvider.GetScreenshot()) {
 				// スクショが取得できるとscreenShotがnullにならない
 				if (screenShot != null) {
+					// シーン文字列を取得し、表示する
 					JudgedScene = SceneRecognition.JudgeGameScene(screenShot);
+					// 資材量を取得する
+					int fuel_ = CharacterRecognition.GetValueOCR(screenShot, "燃料");
+					switch (JudgedScene) {
+					case "シーン判定 : 母港": {
+							// 燃料
+							int fuel = CharacterRecognition.GetValueOCR(screenShot, "燃料");
+						}
+						break;
+					}
 				}
 				else {
 					// スクショが取得できなくなったのでその旨を通知する
@@ -376,8 +386,8 @@ namespace AzLH.Models {
 		}
 		// 毎秒ごとの処理を行う
 		public async void HelperTaskS() {
-			// ズレ検出・修正処理
 			if (SaveScreenshotFlg) {
+				// ズレ検出・修正処理
 				if (!ScreenShotProvider.CanGetScreenshot()) {
 					// スクショが取得できなくなったのでその旨を通知する
 					PutLog("エラー：ゲーム画面の位置ズレを検出しました");

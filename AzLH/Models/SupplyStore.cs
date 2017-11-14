@@ -1,7 +1,5 @@
-﻿using Prism.Mvvm;
-
-namespace AzLH.Models {
-	class SupplyModel : BindableBase {
+﻿namespace AzLH.Models {
+	internal static class SupplyStore {
 		// 燃料：～10000　通常資材左
 		// 資金：～50000　通常資材右
 		// キューブ：～100　特殊資材左

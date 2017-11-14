@@ -127,12 +127,14 @@
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Messenger.cs" />
+    <Compile Include="Models\CharacterRecognition.cs" />
     <Compile Include="Models\GameScreenSelectModel.cs" />
     <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\SceneRecognition.cs" />
     <Compile Include="Models\ScreenShotProvider.cs" />
     <Compile Include="Models\SettingsStore.cs" />
     <Compile Include="Models\SupplyModel.cs" />
+    <Compile Include="Models\SupplyStore.cs" />
     <Compile Include="Models\Utility.cs" />
     <Compile Include="ViewModels\CloseWindowAttachedBehavior.cs" />
     <Compile Include="ViewModels\ApplicationLogScrollBehavior.cs" />
@@ -190,6 +192,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Resources\scene_parameter.json" />
+    <None Include="Resources\supply_parameter.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

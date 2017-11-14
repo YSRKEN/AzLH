@@ -134,8 +134,8 @@ namespace AzLH.Models {
 			return "不明";
 		}
 
-		// 認識パラメーターを表すクラス
-		class SceneParameter {
+		// シーンの認識パラメーターを表すクラス
+		private class SceneParameter {
 			// ハッシュ値
 			public ulong Hash { get; }
 			// 指定する範囲(％単位)
@@ -147,7 +147,7 @@ namespace AzLH.Models {
 			}
 		}
 		[JsonObject("param")]
-		class SceneParameterJson {
+		private class SceneParameterJson {
 			[JsonProperty("hash")]
 			public string HashStr { get; set; }
 			[JsonProperty("rect")]
