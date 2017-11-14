@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -26,6 +27,8 @@ namespace AzLH.Models {
 		private static readonly int ocrStretchSize = 64;
 		// 各資材における認識パラメーター
 		private static Dictionary<string, SupplyParameter> supplyParameters = LoadSupplyParameters();
+		// OCRする際に使用する画像
+		private static Mat templateSource = MakeTemplateSource();
 
 		// 認識パラメーターを読み込む
 		private static Dictionary<string, SupplyParameter> LoadSupplyParameters() {
@@ -64,6 +67,37 @@ namespace AzLH.Models {
 					ms.Dispose();
 			}
 			return output;
+		}
+		// OCR用の画像データを生成する
+		private static Mat MakeTemplateSource() {
+			string templateChar = "0123456789: ";
+			var output = new Bitmap(ocrTemplateSize2.Width * (templateChar.Length * 2 - 1), ocrTemplateSize2.Height);
+			// 適当なバッファに文字を出力しつつ、切り取ってテンプレートとする
+			for(int k = 0; k < templateChar.Length; ++k) {
+				var canvas = new Bitmap(ocrStretchSize * 2, ocrStretchSize * 2);
+				using (var g = Graphics.FromImage(canvas)) {
+					g.FillRectangle(new SolidBrush(Color.White), new Rectangle(0, 0, canvas.Width, canvas.Height));
+					g.DrawString(templateChar.Substring(k, 1), new Font("Impact", ocrStretchSize), new SolidBrush(Color.Black), new PointF(0, 0));
+				}
+				var canvas2 = new Bitmap(ocrTemplateSize2.Width, ocrTemplateSize2.Height);
+				using (var g = Graphics.FromImage(canvas2)) {
+					// 事前にcanvas3を赤色に塗りつぶす
+					g.FillRectangle(Brushes.Red, 0, 0, canvas2.Width, canvas2.Height);
+					// 切り取られる位置・大きさ
+					var srcRect = GetTrimmingRectangle(canvas);
+					// 貼り付ける位置・大きさ
+					var desRect = new Rectangle(1, 1, ocrTemplateSize1.Width, ocrTemplateSize1.Height);
+					g.DrawImage(canvas, desRect, srcRect, GraphicsUnit.Pixel);
+				}
+				using (var g = Graphics.FromImage(output)) {
+					// 切り取られる位置・大きさ
+					var srcRect = new Rectangle(0, 0, canvas2.Width, canvas2.Height);
+					// 貼り付ける位置・大きさ
+					var desRect = new Rectangle(k * 2 * ocrTemplateSize2.Width, 0, ocrTemplateSize2.Width, ocrTemplateSize2.Height);
+					g.DrawImage(canvas2, desRect, srcRect, GraphicsUnit.Pixel);
+				}
+			}
+			return BitmapConverter.ToMat(output);
 		}
 		// 周囲をトリミングする
 		static Rectangle GetTrimmingRectangle(Bitmap bitmap) {
@@ -219,9 +253,29 @@ namespace AzLH.Models {
 					g.DrawImage(canvas2, desRect, srcRect, GraphicsUnit.Pixel);
 				}
 				if (debugFlg) canvas3.Save($"pic\\digit4-{k + 1}-2.png");
-
+				// マッチングを行う
+				using (var image = BitmapConverter.ToMat(canvas3)) {
+					// テンプレートを読み込み、そこから検索を行う
+					var resultSize = new OpenCvSharp.Size(templateSource.Width - image.Width + 1, templateSource.Height - image.Height + 1);
+					using (var resultImage = new Mat(resultSize, MatType.CV_32F)) {
+						Cv2.MatchTemplate(templateSource, image, resultImage, TemplateMatchModes.SqDiff);
+						OpenCvSharp.Point minPosition, maxPosition;
+						Cv2.MinMaxLoc(resultImage, out minPosition, out maxPosition);
+						int xpos = minPosition.X;
+						// 検索した座標から、数字を特定する
+						int matchNumber = (int)Math.Round(1.0 * xpos / ocrTemplateSize2.Width / 2, 0);
+						matchNumber = (matchNumber < 0 ? 0 : matchNumber >= 10 ? 2 : matchNumber);
+						digit.Add(matchNumber);
+					}
+				}
 			}
-			return 0;
+			// 結果を数値化する
+			int retVal = 0;
+			foreach (int x in digit) {
+				retVal *= 10;
+				retVal += x;
+			}
+			return retVal;
 		}
 
 		// 資材の認識パラメーターを表すクラス
