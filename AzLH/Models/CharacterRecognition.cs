@@ -70,7 +70,7 @@ namespace AzLH.Models {
 		}
 		// OCR用の画像データを生成する
 		private static Mat MakeTemplateSource() {
-			string templateChar = "0123456789: ";
+			string templateChar = "0123456789 ";
 			var output = new Bitmap(ocrTemplateSize2.Width * (templateChar.Length * 2 - 1), ocrTemplateSize2.Height);
 			// 適当なバッファに文字を出力しつつ、切り取ってテンプレートとする
 			for(int k = 0; k < templateChar.Length; ++k) {
@@ -264,7 +264,7 @@ namespace AzLH.Models {
 						int xpos = minPosition.X;
 						// 検索した座標から、数字を特定する
 						int matchNumber = (int)Math.Round(1.0 * xpos / ocrTemplateSize2.Width / 2, 0);
-						matchNumber = (matchNumber < 0 ? 0 : matchNumber >= 10 ? 2 : matchNumber);
+						matchNumber = (matchNumber < 0 ? 0 : matchNumber >= 10 ? 0 : matchNumber);
 						digit.Add(matchNumber);
 					}
 				}

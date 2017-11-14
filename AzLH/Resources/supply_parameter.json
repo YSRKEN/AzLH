@@ -1,7 +1,7 @@
 ﻿{
   "燃料" : {
     "Color" : [71, 71, 72], "RectFloat" : [55.55, 3.111, 7.625, 2.667], "MainSupplyFlg" : true, "SecondaryAxisFlg" : false,
-    "InverseFlg" : true, "Threshold" : 20
+    "InverseFlg" : true, "Threshold" : 15
   },
   "資金" : {
     "Color" : [213, 176, 83], "RectFloat" : [71.75, 3.111, 7.625, 2.667], "MainSupplyFlg" : true, "SecondaryAxisFlg" : true,
@@ -9,15 +9,15 @@
   },
   "キューブ" : {
     "Color" : [149, 204, 216], "RectFloat" : [59.06, 14.03, 4.844, 3.333], "MainSupplyFlg" : false, "SecondaryAxisFlg" : false,
-    "InverseFlg" : true, "Threshold" : 128
+    "InverseFlg" : true, "Threshold" : 75
   },
   "ドリル" : {
     "Color" : [112, 103, 83], "RectFloat" : [57.50, 13.75, 5.234, 3.472], "MainSupplyFlg" : false, "SecondaryAxisFlg" : false,
-    "InverseFlg" : true, "Threshold" : 128
+    "InverseFlg" : true, "Threshold" : 75
   },
   "勲章" : {
     "Color" : [124, 126, 130], "RectFloat" : [58.98, 14.17, 6.484, 3.472], "MainSupplyFlg" : false, "SecondaryAxisFlg" : false,
-    "InverseFlg" : true, "Threshold" : 128
+    "InverseFlg" : true, "Threshold" : 75
   },
   "ダイヤ" : {
 			"Color": [ 192, 62, 93 ],
