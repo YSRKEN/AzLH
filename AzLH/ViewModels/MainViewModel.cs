@@ -102,6 +102,7 @@ namespace AzLH.ViewModels {
 			SoftwareInfoCommand.Subscribe(
 				() => Messenger.Instance.GetEvent<PubSubEvent<string>>()
 				.Publish(mainModel.GetSoftwareInfo()));
+
 			// タイマーを初期化し、定時タスクを登録して実行する
 			// http://takachan.hatenablog.com/entry/2017/09/09/225342
 			var timer = new Timer(200);
@@ -122,6 +123,11 @@ namespace AzLH.ViewModels {
 				finally { timer2.Start(); }
 			};
 			timer2.Start();
+
+			// ウィンドウ表示関係
+			if (settings.AutoSupplyWindowFlg) {
+				OpenSupplyViewCommand.Execute();
+			}
 		}
 	}
 }

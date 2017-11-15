@@ -19,6 +19,8 @@ namespace AzLH.Models {
 		public bool MemoryWindowPositionFlg { get; set; }
 		// 常時座標を捕捉し続けるか？
 		public bool AutoSearchPositionFlg { get; set; }
+		// 資材記録画面を最初から表示するか？
+		public bool AutoSupplyWindowFlg { get; set; }
 
 		// デフォルト設定
 		private void SetDefaultSettings() {
@@ -27,6 +29,7 @@ namespace AzLH.Models {
 			SupplyWindowRect = new double[] { double.NaN, double.NaN, 600.0, 400.0 };
 			MemoryWindowPositionFlg = true;
 			AutoSearchPositionFlg = true;
+			AutoSupplyWindowFlg = false;
 		}
 		// JSONから読み込み
 		public bool LoadSettings(string path) {
@@ -41,6 +44,7 @@ namespace AzLH.Models {
 					SupplyWindowRect = model.SupplyWindowRect;
 					MemoryWindowPositionFlg = model.MemoryWindowPositionFlg;
 					AutoSearchPositionFlg = model.AutoSearchPositionFlg;
+					AutoSupplyWindowFlg = model.AutoSupplyWindowFlg;
 				}
 				return true;
 			}

@@ -15,6 +15,8 @@ namespace AzLH.ViewModels {
 		public ReactiveProperty<double> WindowPositionTop { get; }
 		public ReactiveProperty<double> WindowPositionWidth { get; }
 		public ReactiveProperty<double> WindowPositionHeight { get; }
+		// 起動時にこの画面を表示するか？
+		public ReactiveProperty<bool> AutoOpenWindowFlg { get; }
 		// 表示する期間
 		public ReactiveProperty<int> GraphPeriodIndex { get; }
 		// 表示する期間の一覧
@@ -38,6 +40,7 @@ namespace AzLH.ViewModels {
 			WindowPositionTop = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionTop);
 			WindowPositionWidth = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionWidth);
 			WindowPositionHeight = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionHeight);
+			AutoOpenWindowFlg = supplyModel.ToReactivePropertyAsSynchronized(x => x.AutoOpenWindowFlg);
 			GraphPeriodIndex = supplyModel.ToReactivePropertyAsSynchronized(x => x.GraphPeriodIndex);
 			GraphPeriodList = supplyModel.ObserveProperty(x => x.GraphPeriodList).ToReactiveProperty();
 			SupplyModeButtonColor = supplyModel.ObserveProperty(x => x.SupplyModeButtonColor).ToReactiveProperty();

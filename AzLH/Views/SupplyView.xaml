@@ -16,6 +16,12 @@
 	<Window.DataContext>
 		<local:SupplyViewModel/>
 	</Window.DataContext>
+	<Window.ContextMenu>
+		<ContextMenu>
+			<MenuItem IsCheckable="True" Header="起動時にこのウィンドウを表示する"
+					IsChecked="{Binding AutoOpenWindowFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+		</ContextMenu>
+	</Window.ContextMenu>
 	<Grid Margin="5,5,5,5">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto"/>

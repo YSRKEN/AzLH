@@ -17,7 +17,7 @@ namespace AzLH.Models {
 		// trueにすると画面を閉じる
 		private bool closeWindow;
 		public bool CloseWindow {
-			get { return closeWindow; }
+			get => closeWindow;
 			set { SetProperty(ref closeWindow, value); }
 		}
 		// 画面の位置
@@ -77,6 +77,19 @@ namespace AzLH.Models {
 				}
 			}
 		}
+		// 起動時にこの画面を表示するか？
+		private bool autoOpenWindowFlg = false;
+		public bool AutoOpenWindowFlg {
+			get => autoOpenWindowFlg;
+			set {
+				SetProperty(ref autoOpenWindowFlg, value);
+				var settings = SettingsStore.Instance;
+				settings.AutoSupplyWindowFlg = autoOpenWindowFlg;
+				if (!settings.SaveSettings()) {
+					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				}
+			}
+		}
 		// 表示する期間
 		private int graphPeriodIndex = 2;
 		public int GraphPeriodIndex {
@@ -116,6 +129,7 @@ namespace AzLH.Models {
 				WindowPositionWidth = settings.SupplyWindowRect[2];
 				WindowPositionHeight = settings.SupplyWindowRect[3];
 			}
+			AutoOpenWindowFlg = settings.AutoSupplyWindowFlg;
 		}
 		// 表示する資材のモードを切り替える
 		public void ChangeSupplyMode() {
