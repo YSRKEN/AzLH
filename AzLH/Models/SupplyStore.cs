@@ -65,7 +65,7 @@ namespace AzLH.Models {
 		// 資材量を更新できれば更新する
 		public static bool UpdateSupplyValue(Bitmap bitmap, string supplyType) {
 			var nowDateTime = DateTime.Now;
-			if ((nowDateTime - lastWriteDateTime[supplyType]).Minutes < updateInterval)
+			if ((nowDateTime - lastWriteDateTime[supplyType]).TotalMinutes < updateInterval)
 				return false;
 			int value = GetValueOCR(bitmap, supplyType);
 			if (value < 0)
