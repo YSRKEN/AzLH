@@ -5,7 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:AzLH.ViewModels"
 	mc:Ignorable="d"
-	Title="ゲーム画面を選択して下さい" Height="300" Width="500"
+	Title="ゲーム画面を選択して下さい" Height="300" Width="500" Topmost="True"
 	local:CloseWindowAttachedBehavior.Close="{Binding CloseWindow.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 	<Window.DataContext>
 		<local:GameScreenSelectViewModel/>

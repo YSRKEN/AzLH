@@ -3,10 +3,19 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:local="clr-namespace:AzLH.Views"
-		xmlns:oxy="http://oxyplot.org/wpf"
+	xmlns:local="clr-namespace:AzLH.ViewModels"
+	xmlns:oxy="http://oxyplot.org/wpf"
 	mc:Ignorable="d"
-	Title="資材記録画面" Height="400" Width="600">
+	Topmost="True"
+	Title="資材記録画面"
+	Top="{Binding WindowPositionTop.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+	Left ="{Binding WindowPositionLeft.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+	Width ="{Binding WindowPositionWidth.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+	Height="{Binding WindowPositionHeight.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+	local:CloseWindowAttachedBehavior.Close="{Binding CloseWindow.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+	<Window.DataContext>
+		<local:SupplyViewModel/>
+	</Window.DataContext>
 	<Grid Margin="5,5,5,5">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto"/>

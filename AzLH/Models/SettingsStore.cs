@@ -13,6 +13,8 @@ namespace AzLH.Models {
 		public bool ForTwitterFlg { get; set; }
 		// メイン画面の位置・大きさ
 		public double[] MainWindowRect { get; set; }
+		// 資材記録画面の位置・大きさ
+		public double[] SupplyWindowRect { get; set; }
 		// ウィンドウの座標を記憶するか？
 		public bool MemoryWindowPositionFlg { get; set; }
 		// 常時座標を捕捉し続けるか？
@@ -22,6 +24,7 @@ namespace AzLH.Models {
 		private void SetDefaultSettings() {
 			ForTwitterFlg = false;
 			MainWindowRect = new double[] { double.NaN, double.NaN, 400.0, 300.0 };
+			SupplyWindowRect = new double[] { double.NaN, double.NaN, 600.0, 400.0 };
 			MemoryWindowPositionFlg = true;
 			AutoSearchPositionFlg = true;
 		}
@@ -35,6 +38,7 @@ namespace AzLH.Models {
 					var model = JsonConvert.DeserializeObject<SettingsStore>(json);
 					ForTwitterFlg = model.ForTwitterFlg;
 					MainWindowRect = model.MainWindowRect;
+					SupplyWindowRect = model.SupplyWindowRect;
 					MemoryWindowPositionFlg = model.MemoryWindowPositionFlg;
 					AutoSearchPositionFlg = model.AutoSearchPositionFlg;
 				}

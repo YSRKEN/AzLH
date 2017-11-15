@@ -8,6 +8,13 @@ namespace AzLH.ViewModels {
 	internal class SupplyViewModel {
 		// modelのinstance
 		private readonly SupplyModel supplyModel;
+		// trueにすると画面を閉じる
+		public ReactiveProperty<bool> CloseWindow { get; }
+		// 画面の位置
+		public ReactiveProperty<double> WindowPositionLeft { get; }
+		public ReactiveProperty<double> WindowPositionTop { get; }
+		public ReactiveProperty<double> WindowPositionWidth { get; }
+		public ReactiveProperty<double> WindowPositionHeight { get; }
 		// 表示する期間
 		public ReactiveProperty<int> GraphPeriodIndex { get; }
 		// 表示する期間の一覧
@@ -26,6 +33,11 @@ namespace AzLH.ViewModels {
 			// 初期化
 			supplyModel = new SupplyModel();
 			// プロパティを設定
+			CloseWindow = supplyModel.ObserveProperty(x => x.CloseWindow).ToReactiveProperty();
+			WindowPositionLeft = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionLeft);
+			WindowPositionTop = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionTop);
+			WindowPositionWidth = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionWidth);
+			WindowPositionHeight = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionHeight);
 			GraphPeriodIndex = supplyModel.ToReactivePropertyAsSynchronized(x => x.GraphPeriodIndex);
 			GraphPeriodList = supplyModel.ObserveProperty(x => x.GraphPeriodList).ToReactiveProperty();
 			SupplyModeButtonColor = supplyModel.ObserveProperty(x => x.SupplyModeButtonColor).ToReactiveProperty();
