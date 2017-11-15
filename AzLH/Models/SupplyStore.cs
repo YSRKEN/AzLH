@@ -19,7 +19,6 @@ namespace AzLH.Models {
 		private static Dictionary<string, DateTime> lastWriteDateTime = new Dictionary<string, DateTime>();
 		// 更新間隔(分)
 		private static int updateInterval = 10;
-		// 母港画面で
 
 		// 初期化
 		public static void Initialize() {

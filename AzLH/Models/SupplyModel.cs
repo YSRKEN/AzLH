@@ -114,6 +114,34 @@ namespace AzLH.Models {
 		// 表示する資材のモードに対応してボタンの色・表示内容が変わる
 		public Brush SupplyModeButtonColor => (showSupplyMode == 0 ? new SolidColorBrush(Colors.Pink) : new SolidColorBrush(Colors.SkyBlue));
 		public string SupplyModeButtonContent => (showSupplyMode == 0 ? "通常資材" : "特殊資材");
+		public string AxisYStr {
+			get {
+				var AxisYList = CharacterRecognition.SupplyParameters
+					.Where(p => p.Value.MainSupplyFlg == (showSupplyMode == 0) && !p.Value.SecondaryAxisFlg)
+					.Select(p => p.Key).ToList();
+				string output = "";
+				for(int i = 0; i < AxisYList.Count; ++i) {
+					if (i != 0)
+						output += "・";
+					output += AxisYList[i];
+				}
+				return output;
+			}
+		}
+		public string AxisY2Str {
+			get {
+				var AxisY2List = CharacterRecognition.SupplyParameters
+					.Where(p => p.Value.MainSupplyFlg == (showSupplyMode == 0) && p.Value.SecondaryAxisFlg)
+					.Select(p => p.Key).ToList();
+				string output = "";
+				for (int i = 0; i < AxisY2List.Count; ++i) {
+					if (i != 0)
+						output += "・";
+					output += AxisY2List[i];
+				}
+				return output;
+			}
+		}
 
 		// コンストラクタ
 		public SupplyModel() {
@@ -137,8 +165,10 @@ namespace AzLH.Models {
 				showSupplyMode = 1;
 			else
 				showSupplyMode = 0;
-			RaisePropertyChanged("SupplyModeButtonColor");
-			RaisePropertyChanged("SupplyModeButtonContent");
+			RaisePropertyChanged(nameof(SupplyModeButtonColor));
+			RaisePropertyChanged(nameof(SupplyModeButtonContent));
+			RaisePropertyChanged(nameof(AxisYStr));
+			RaisePropertyChanged(nameof(AxisY2Str));
 		}
 		// グラフ画像を保存する
 		public void SaveSupplyGraph() {

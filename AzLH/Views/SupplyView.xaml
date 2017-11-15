@@ -43,9 +43,14 @@
 			<Button Grid.Column="2" Content="画像保存" Width="80" Height="24" Margin="5,5,5,5" FontWeight="Bold" FontSize="16" VerticalContentAlignment="Center"/>
 		</Grid>
 		<oxy:Plot Grid.Row="1">
-			<oxy:Plot.Series>
-				<oxy:LineSeries ItemsSource="{Binding DataList}"/>
-			</oxy:Plot.Series>
+			<oxy:Plot.Axes>
+				<oxy:LinearAxis Position="Left"
+						Title="{Binding AxisYStr.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+				<oxy:LinearAxis Position="Bottom"
+						Title="期間" />
+				<oxy:LinearAxis Position="Right"
+						Title="{Binding AxisY2Str.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+			</oxy:Plot.Axes>
 		</oxy:Plot>
 	</Grid>
 </Window>
