@@ -85,5 +85,25 @@ namespace AzLH.Models {
 				return false;
 			}
 		}
+		// ある資材のデータを収集する
+		public static Dictionary<DateTime, int> GetSupplyData(string supplyType) {
+			var output = new Dictionary<DateTime, int>();
+			try {
+				using (var con = new SQLiteConnection(connectionString)) {
+					con.Open();
+					using (var cmd = con.CreateCommand()) {
+						string sql = $"SELECT datetime, value FROM [{SupplyParameters[supplyType].Name}]";
+						cmd.CommandText = sql;
+						using (var reader = cmd.ExecuteReader()) {
+							while(reader.Read()) {
+								output[reader.GetDateTime(0)] = reader.GetInt32(1);
+							}
+						}
+					}
+				}
+			}
+			catch {}
+			return output;
+		}
 	}
 }

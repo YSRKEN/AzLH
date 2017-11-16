@@ -1,4 +1,5 @@
 ﻿using AzLH.Models;
+using OxyPlot;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
@@ -21,11 +22,11 @@ namespace AzLH.ViewModels {
 		public ReactiveProperty<int> GraphPeriodIndex { get; }
 		// 表示する期間の一覧
 		public ReactiveProperty<List<string>> GraphPeriodList { get; }
-		// 表示する資材のモードに対応して色・表示内容が変わる
+		// 表示する資材のモードに対応してボタンの色・表示内容が変わる
 		public ReactiveProperty<Brush> SupplyModeButtonColor { get; }
 		public ReactiveProperty<string> SupplyModeButtonContent { get; }
-		public ReactiveProperty<string> AxisYStr { get; }
-		public ReactiveProperty<string> AxisY2Str { get; }
+		// グラフデータ
+		public ReactiveProperty<PlotModel> SupplyGraphModel { get; }
 
 		// 表示する資材のモードを切り替える
 		public ReactiveCommand ChangeSupplyModeCommand { get; }
@@ -47,8 +48,7 @@ namespace AzLH.ViewModels {
 			GraphPeriodList = supplyModel.ObserveProperty(x => x.GraphPeriodList).ToReactiveProperty();
 			SupplyModeButtonColor = supplyModel.ObserveProperty(x => x.SupplyModeButtonColor).ToReactiveProperty();
 			SupplyModeButtonContent = supplyModel.ObserveProperty(x => x.SupplyModeButtonContent).ToReactiveProperty();
-			AxisYStr = supplyModel.ObserveProperty(x => x.AxisYStr).ToReactiveProperty();
-			AxisY2Str = supplyModel.ObserveProperty(x => x.AxisY2Str).ToReactiveProperty();
+			SupplyGraphModel = supplyModel.ObserveProperty(x => x.SupplyGraphModel).ToReactiveProperty();
 			// コマンドを設定
 			ChangeSupplyModeCommand = new ReactiveCommand();
 			SaveSupplyGraphCommand = new ReactiveCommand();
