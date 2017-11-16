@@ -23,15 +23,15 @@
 				<ColumnDefinition Width="auto"/>
 				<ColumnDefinition Width="auto"/>
 			</Grid.ColumnDefinitions>
-			<Button Grid.Column="0" Content="◀" Width="30" Height="24" Margin="5,5,5,5"
+			<Button Grid.Column="0" Content="◀" Width="30" Height="24" Margin="5,5,5,5" FontWeight="Bold" FontSize="16" VerticalContentAlignment="Center"
 					Command="{Binding PrevPageCommand}"/>
-			<Button Grid.Column="1" Content="▶" Width="30" Height="24" Margin="5,5,5,5"
+			<Button Grid.Column="1" Content="▶" Width="30" Height="24" Margin="5,5,5,5" FontWeight="Bold" FontSize="16" VerticalContentAlignment="Center"
 					Command="{Binding NextPageCommand}"/>
 			<TextBlock Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"
 					Text="{Binding PageInfoStr.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
-			<Button Grid.Column="3" Content="決定" Width="80" Height="24" Margin="5,5,5,5"
+			<Button Grid.Column="3" Content="決定" Width="80" Height="24" Margin="5,5,5,5" FontWeight="Bold" FontSize="16" VerticalContentAlignment="Center"
 					Command="{Binding SelectPageCommand}"/>
-			<Button Grid.Column="4" Content="キャンセル" Width="80" Height="24" Margin="5,5,5,5"
+			<Button Grid.Column="4" Content="キャンセル" Width="80" Height="24" Margin="5,5,5,5" FontWeight="Bold" FontSize="16" VerticalContentAlignment="Center"
 					Command="{Binding CancelCommand}"/>
 		</Grid>
 		<Image Grid.Row="1" Margin="5,5,5,5"
