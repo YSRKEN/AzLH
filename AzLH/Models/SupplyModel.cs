@@ -10,14 +10,6 @@ using OxyPlot.Series;
 
 namespace AzLH.Models {
 	class SupplyModel : BindableBase {
-		// 燃料：～10000　通常資材左
-		// 資金：～50000　通常資材右
-		// キューブ：～100　特殊資材左
-		// ドリル：～100　特殊資材左
-		// 勲章：～100　特殊資材左
-		// ダイヤ：～1000　特殊資材右
-		// 家具コイン：～1000　特殊資材右
-
 		// trueにすると画面を閉じる
 		private bool closeWindow;
 		public bool CloseWindow {
@@ -142,40 +134,6 @@ namespace AzLH.Models {
 				SetProperty(ref supplyGraphModel, value);
 			}
 		}
-/*		public string AxisYStr {
-			get {
-				// Y軸に表示する文字列を自動生成する
-				// そのため、「表示する資材のモードと同じ」かつ「第二Y軸ではない」資材名を検索する
-				var AxisYList = CharacterRecognition.SupplyParameters
-					.Where(p => p.Value.MainSupplyFlg == (showSupplyMode == 0) && !p.Value.SecondaryAxisFlg)
-					.Select(p => p.Key).ToList();
-				// 「・A・B・C」ではなく「A・B・C」と表記したいので、LINQではなくわざわざforループで書いた
-				string output = "";
-				for(int i = 0; i < AxisYList.Count; ++i) {
-					if (i != 0)
-						output += "・";
-					output += AxisYList[i];
-				}
-				return output;
-			}
-		}
-		public string AxisY2Str {
-			get {
-				// 第二Y軸に表示する文字列を自動生成する
-				// そのため、「表示する資材のモードと同じ」かつ「第二Y軸である」資材名を検索する
-				var AxisY2List = CharacterRecognition.SupplyParameters
-					.Where(p => p.Value.MainSupplyFlg == (showSupplyMode == 0) && p.Value.SecondaryAxisFlg)
-					.Select(p => p.Key).ToList();
-				// 「・A・B・C」ではなく「A・B・C」と表記したいので、LINQではなくわざわざforループで書いた
-				string output = "";
-				for (int i = 0; i < AxisY2List.Count; ++i) {
-					if (i != 0)
-						output += "・";
-					output += AxisY2List[i];
-				}
-				return output;
-			}
-		}*/
 
 		// コンストラクタ
 		public SupplyModel() {

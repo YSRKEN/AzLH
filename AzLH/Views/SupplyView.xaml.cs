@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AzLH.Models;
+using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace AzLH.Views {
 	/// <summary>
@@ -19,6 +9,11 @@ namespace AzLH.Views {
 	public partial class SupplyView : Window {
 		public SupplyView() {
 			InitializeComponent();
+		}
+		protected override void OnClosing(CancelEventArgs e) {
+			base.OnClosing(e);
+			var settings = SettingsStore.Instance;
+			settings.ShowSupplyWindowFlg = false;
 		}
 	}
 }

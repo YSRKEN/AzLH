@@ -21,6 +21,9 @@ namespace AzLH.Models {
 		public bool AutoSearchPositionFlg { get; set; }
 		// 資材記録画面を最初から表示するか？
 		public bool AutoSupplyWindowFlg { get; set; }
+		// 資材記録画面が表示されているか？
+		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+		public bool ShowSupplyWindowFlg { get; set; }
 
 		// デフォルト設定
 		private void SetDefaultSettings() {

@@ -353,9 +353,13 @@ namespace AzLH.Models {
 		}
 		// 資材記録画面を表示
 		public void OpenSupplyView() {
+			var settings = SettingsStore.Instance;
+			if (settings.ShowSupplyWindowFlg)
+				return;
 			var vm = new ViewModels.SupplyViewModel();
 			var view = new Views.SupplyView { DataContext = vm };
 			view.Show();
+			settings.ShowSupplyWindowFlg = true;
 		}
 
 		// 定期的にスクリーンショットを取得し、そこに起因する処理を行う
