@@ -8,6 +8,7 @@ namespace AzLH.Views {
 	/// </summary>
 	public partial class SupplyView : Window {
 		public SupplyView() {
+			MouseLeftButtonDown += (o, e) => DragMove();
 			InitializeComponent();
 		}
 		protected override void OnClosing(CancelEventArgs e) {
