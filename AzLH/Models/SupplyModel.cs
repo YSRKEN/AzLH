@@ -7,6 +7,9 @@ using OxyPlot;
 using System;
 using OxyPlot.Axes;
 using OxyPlot.Series;
+using System.IO;
+using System.Windows.Media.Imaging;
+using Microsoft.Win32;
 
 namespace AzLH.Models {
 	class SupplyModel : BindableBase {
@@ -164,7 +167,25 @@ namespace AzLH.Models {
 		}
 		// グラフ画像を保存する
 		public void SaveSupplyGraph() {
-			// スタブ
+			var pngExporter = new OxyPlot.Wpf.PngExporter {
+				Width = (int)SupplyGraphModel.PlotArea.Width,
+				Height = (int)SupplyGraphModel.PlotArea.Height,
+				Background = OxyColors.White
+			};
+			var bitmapSource = pngExporter.ExportToBitmap(SupplyGraphModel);
+			// BitmapSourceを保存する
+			var sfd = new SaveFileDialog {
+				// ファイルの種類を設定
+				Filter = "画像ファイル(*.png)|*.png|全てのファイル (*.*)|*.*"
+			};
+			// ダイアログを表示
+			if ((bool)sfd.ShowDialog()) {
+				using (var stream = new FileStream(sfd.FileName, FileMode.Create)) {
+					var encoder = new PngBitmapEncoder();
+					encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+					encoder.Save(stream);
+				}
+			}
 		}
 		// グラフを再描画する
 		// 参考→https://qiita.com/maruh/items/035a39a2a01102ce248f
