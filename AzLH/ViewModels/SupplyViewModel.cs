@@ -3,6 +3,7 @@ using OxyPlot;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
+using System.Timers;
 using System.Windows.Media;
 
 namespace AzLH.ViewModels {
@@ -55,6 +56,16 @@ namespace AzLH.ViewModels {
 			//
 			ChangeSupplyModeCommand.Subscribe(supplyModel.ChangeSupplyMode);
 			SaveSupplyGraphCommand.Subscribe(supplyModel.SaveSupplyGraph);
+			// タイマーを指定してグラフ更新を定期実行する
+			var timer = new Timer(1000 * 60 * 5);
+			timer.Elapsed += (sender, e) => {
+				try {
+					timer.Stop();
+					supplyModel.RedrawSupplyGraph();
+				}
+				finally { timer.Start(); }
+			};
+			timer.Start();
 		}
 	}
 }
