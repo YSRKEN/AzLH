@@ -116,9 +116,12 @@ namespace AzLH.Models {
 		public string SupplyModeButtonContent => (showSupplyMode == 0 ? "通常資材" : "特殊資材");
 		public string AxisYStr {
 			get {
+				// Y軸に表示する文字列を自動生成する
+				// そのため、「表示する資材のモードと同じ」かつ「第二Y軸ではない」資材名を検索する
 				var AxisYList = CharacterRecognition.SupplyParameters
 					.Where(p => p.Value.MainSupplyFlg == (showSupplyMode == 0) && !p.Value.SecondaryAxisFlg)
 					.Select(p => p.Key).ToList();
+				// 「・A・B・C」ではなく「A・B・C」と表記したいので、LINQではなくわざわざforループで書いた
 				string output = "";
 				for(int i = 0; i < AxisYList.Count; ++i) {
 					if (i != 0)
@@ -130,9 +133,12 @@ namespace AzLH.Models {
 		}
 		public string AxisY2Str {
 			get {
+				// 第二Y軸に表示する文字列を自動生成する
+				// そのため、「表示する資材のモードと同じ」かつ「第二Y軸である」資材名を検索する
 				var AxisY2List = CharacterRecognition.SupplyParameters
 					.Where(p => p.Value.MainSupplyFlg == (showSupplyMode == 0) && p.Value.SecondaryAxisFlg)
 					.Select(p => p.Key).ToList();
+				// 「・A・B・C」ではなく「A・B・C」と表記したいので、LINQではなくわざわざforループで書いた
 				string output = "";
 				for (int i = 0; i < AxisY2List.Count; ++i) {
 					if (i != 0)
@@ -173,6 +179,10 @@ namespace AzLH.Models {
 		// グラフ画像を保存する
 		public void SaveSupplyGraph() {
 			// スタブ
+		}
+		// グラフを再描画する
+		public void RedrawSupplyGraph() {
+
 		}
 	}
 }
