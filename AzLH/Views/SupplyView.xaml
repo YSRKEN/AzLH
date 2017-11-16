@@ -42,7 +42,7 @@
 					Command="{Binding ChangeSupplyModeCommand}"/>
 			<Button Grid.Column="2" Content="画像保存" Width="80" Height="24" Margin="5,5,5,5" FontWeight="Bold" FontSize="16" VerticalContentAlignment="Center"/>
 		</Grid>
-		<oxy:PlotView Grid.Row="1" Margin="5,5,5,5"
+		<oxy:PlotView Grid.Row="1"
 					Model="{Binding SupplyGraphModel.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 	</Grid>
 </Window>
