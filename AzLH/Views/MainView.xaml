@@ -65,7 +65,7 @@
 			<Button Grid.Column="1" Width="80" Height="24" Margin="5,5,5,5" Content="スクショ" FontWeight="Bold" FontSize="16" VerticalContentAlignment="Center"
 					Command="{Binding SaveScreenshotCommand}"
 					IsEnabled="{Binding SaveScreenshotFlg.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
-			<TextBlock Grid.Column="2" Height="24" Margin="5,5,5,5" VerticalAlignment="Center" FontSize="18"
+			<TextBlock Grid.Column="2" Height="24" Margin="5,5,5,5" VerticalAlignment="Center" FontWeight="Bold" FontSize="18"
 					Text="{Binding JudgedScene.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 		</Grid>
 		<TextBox Grid.Row="2" IsReadOnly="True" AcceptsReturn="True" Margin="10,0,10,10"
