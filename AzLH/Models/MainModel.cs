@@ -361,6 +361,26 @@ namespace AzLH.Models {
 			view.Show();
 			settings.ShowSupplyWindowFlg = true;
 		}
+		// 資材のインポート機能(燃料・資金・ダイヤ)
+		public void ImportMainSupply() {
+
+		}
+		// 資材のインポート機能(index=0～3、0から順にキューブ・ドリル・勲章・家具コイン)
+		public void ImportSubSupply(int index) {
+
+		}
+		public void ImportSubSupply1() {
+			ImportSubSupply(0);
+		}
+		public void ImportSubSupply2() {
+			ImportSubSupply(1);
+		}
+		public void ImportSubSupply3() {
+			ImportSubSupply(2);
+		}
+		public void ImportSubSupply4() {
+			ImportSubSupply(3);
+		}
 
 		// 定期的にスクリーンショットを取得し、そこに起因する処理を行う
 		public void HelperTaskF() {

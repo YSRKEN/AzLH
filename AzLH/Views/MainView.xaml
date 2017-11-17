@@ -26,6 +26,13 @@
 			<MenuItem Header="ファイル(_F)">
 				<MenuItem Header="設定をインポート(_I)" Command="{Binding ImportSettingsCommand}" />
 				<MenuItem Header="設定をエクスポート(_E)" Command="{Binding ExportSettingsCommand}" />
+				<MenuItem Header="資材量をインポート(_S)">
+					<MenuItem Header="燃料・資金・ダイヤ(_F)" Command="{Binding ImportMainSupplyCommand}" />
+					<MenuItem Header="キューブ(_C)" Command="{Binding ImportSubSupply1Command}" />
+					<MenuItem Header="ドリル(高速建造材)(_D)" Command="{Binding ImportSubSupply2Command}" />
+					<MenuItem Header="勲章(_M)" Command="{Binding ImportSubSupply3Command}" />
+					<MenuItem Header="家具コイン(_K)" Command="{Binding ImportSubSupply4Command}" />
+				</MenuItem>
 				<MenuItem Header="終了(_X)" Command="{Binding CloseCommand}" />
 			</MenuItem>
 			<MenuItem Header="操作(_A)">

@@ -48,6 +48,12 @@ namespace AzLH.ViewModels {
 		public ReactiveCommand OpenPicFolderCommand { get; }
 		// 資材記録画面を表示
 		public ReactiveCommand OpenSupplyViewCommand { get; }
+		// 資材のインポート機能
+		public ReactiveCommand ImportMainSupplyCommand { get; }
+		public ReactiveCommand ImportSubSupply1Command { get; }
+		public ReactiveCommand ImportSubSupply2Command { get; }
+		public ReactiveCommand ImportSubSupply3Command { get; }
+		public ReactiveCommand ImportSubSupply4Command { get; }
 
 		// コンストラクタ
 		public MainViewModel() {
@@ -89,6 +95,11 @@ namespace AzLH.ViewModels {
 			ExportSettingsCommand = new ReactiveCommand();
 			OpenPicFolderCommand = new ReactiveCommand();
 			OpenSupplyViewCommand = new ReactiveCommand();
+			ImportMainSupplyCommand = new ReactiveCommand();
+			ImportSubSupply1Command = new ReactiveCommand();
+			ImportSubSupply2Command = new ReactiveCommand();
+			ImportSubSupply3Command = new ReactiveCommand();
+			ImportSubSupply4Command = new ReactiveCommand();
 			//voidを返すメソッドならこれだけで良いらしい
 			//https://qiita.com/pierusan2010/items/76b7a406b3f064193c88
 			GetGameWindowPositionCommand.Subscribe(mainModel.GetGameWindowPosition);
@@ -98,6 +109,11 @@ namespace AzLH.ViewModels {
 			ExportSettingsCommand.Subscribe(mainModel.ExportSettings);
 			OpenPicFolderCommand.Subscribe(mainModel.OpenPicFolder);
 			OpenSupplyViewCommand.Subscribe(mainModel.OpenSupplyView);
+			ImportMainSupplyCommand.Subscribe(mainModel.ImportMainSupply);
+			ImportSubSupply1Command.Subscribe(mainModel.ImportSubSupply1);
+			ImportSubSupply2Command.Subscribe(mainModel.ImportSubSupply2);
+			ImportSubSupply3Command.Subscribe(mainModel.ImportSubSupply3);
+			ImportSubSupply4Command.Subscribe(mainModel.ImportSubSupply4);
 			// 値を返すメソッドなのでView側でも対応する
 			SoftwareInfoCommand.Subscribe(
 				() => Messenger.Instance.GetEvent<PubSubEvent<string>>()
