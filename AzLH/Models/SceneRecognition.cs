@@ -158,11 +158,20 @@ namespace AzLH.Models {
 					}
 				}
 				if (flg) {
-					// 母港画面の時だけ判定を追加する
-					if(scene.Key == "母港") {
-						var aveColor = GetAverageColor(bitmap, new RectangleF(69.06f, 3.056f, 1.406f, 2.500f));
-						if(GetColorDistance(aveColor, Color.FromArgb(238, 200, 89)) > 50)
-							return "不明";
+					// 特定のシーンの時だけ判定を追加する
+					switch (scene.Key) {
+					case "母港": {
+							var aveColor = GetAverageColor(bitmap, new RectangleF(69.06f, 3.056f, 1.406f, 2.500f));
+							if (GetColorDistance(aveColor, Color.FromArgb(238, 200, 89)) > 50)
+								return "不明";
+						}
+						break;
+					case "支援": {
+							var aveColor = GetAverageColor(bitmap, new RectangleF(48.20f, 16.11f, 1.172f, 2.083f));
+							if (GetColorDistance(aveColor, Color.FromArgb(222, 210, 159)) > 50)
+								return "不明";
+						}
+						break;
 					}
 					return scene.Key;
 				}
