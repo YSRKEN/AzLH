@@ -15,9 +15,11 @@ namespace AzLH.Models {
 			return dateTime.ToString("HH:mm:ss");
 		}
 		// 時刻を長い表示形式("2017-01-23 12-34-56-789")で返す
+		public static string GetTimeStrLong(DateTime dt) {
+			return dt.ToString("yyyy-MM-dd HH-mm-ss-fff");
+		}
 		public static string GetTimeStrLong() {
-			var dateTime = DateTime.Now;
-			return dateTime.ToString("yyyy-MM-dd HH-mm-ss-fff");
+			return GetTimeStrLong(DateTime.Now);
 		}
 		// Rectangleを文字列()で返す
 		public static string GetRectStr(Rectangle rect) {

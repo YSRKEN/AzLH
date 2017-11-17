@@ -62,7 +62,7 @@ namespace AzLH.Models {
 			return output;
 		}
 		// 資材量を更新できれば更新する
-		public static bool UpdateSupplyValue(Bitmap bitmap, string supplyType) {
+		public static bool UpdateSupplyValue(Bitmap bitmap, string supplyType, bool debugFlg = false) {
 			var nowDateTime = DateTime.Now;
 			if ((nowDateTime - lastWriteDateTime[supplyType]).TotalMinutes < updateInterval)
 				return false;
@@ -79,6 +79,8 @@ namespace AzLH.Models {
 					}
 				}
 				lastWriteDateTime[supplyType] = nowDateTime;
+				if(debugFlg)
+					bitmap.Save($"pic\\{Utility.GetTimeStrLong(nowDateTime)} {supplyType} {value}.png");
 				return true;
 			}
 			catch {
