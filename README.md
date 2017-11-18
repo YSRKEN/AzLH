@@ -34,7 +34,10 @@ The AzurLane Helper II by C#
 
 ## 謝辞
 
-　当ソフトウェアは、ゲーム画面の位置を検出する処理に、 [kanahiron](https://github.com/kanahiron/) さんが考案したルーチンを採用しました。ありがとうございます。
+　本ソフトウェアを作成するために様々な技術・ライブラリ・ソフトウェアを使用しました。特に以下の方々に感謝いたします。
+
+- ゲーム画面の位置を検出する処理に、 [kanahiron](https://github.com/kanahiron/) さんが考案したルーチンを採用しました
+- Readmeやヘルプファイルなどの表示に、[tatesuke](https://github.com/tatesuke) さんの「 [かんたんMarkdown](https://github.com/tatesuke/KanTanMarkdown) 」を使用しました
 
 ## 使用したライブラリ
 
