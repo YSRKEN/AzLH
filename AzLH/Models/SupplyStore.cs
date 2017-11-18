@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data.SQLite;
 using static AzLH.Models.CharacterRecognition;
-using System.Data.SQLite.Linq;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
