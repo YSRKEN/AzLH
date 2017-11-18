@@ -272,6 +272,11 @@ namespace AzLH.Models {
 					}
 					lineSeries.YAxisKey = "Primary";
 					lineSeries.Title = plotInfo.Key;
+					lineSeries.Color = OxyColor.FromRgb(
+						CharacterRecognition.SupplyParameters[plotInfo.Key].Color.R,
+						CharacterRecognition.SupplyParameters[plotInfo.Key].Color.G,
+						CharacterRecognition.SupplyParameters[plotInfo.Key].Color.B
+					);
 					newSupplyGraphModel.Series.Add(lineSeries);
 				}
 				foreach (var plotInfo in AxisY2List) {
@@ -284,6 +289,11 @@ namespace AzLH.Models {
 					}
 					lineSeries.YAxisKey = "Secondary";
 					lineSeries.Title = plotInfo.Key;
+					lineSeries.Color = OxyColor.FromRgb(
+						CharacterRecognition.SupplyParameters[plotInfo.Key].Color.R,
+						CharacterRecognition.SupplyParameters[plotInfo.Key].Color.G,
+						CharacterRecognition.SupplyParameters[plotInfo.Key].Color.B
+					);
 					newSupplyGraphModel.Series.Add(lineSeries);
 				}
 
