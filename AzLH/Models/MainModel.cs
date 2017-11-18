@@ -362,7 +362,7 @@ namespace AzLH.Models {
 			settings.ShowSupplyWindowFlg = true;
 		}
 		// 資材のインポート機能(燃料・資金・ダイヤ)
-		public void ImportMainSupply() {
+		public async void ImportMainSupply() {
 			// インスタンスを作成
 			var ofd = new OpenFileDialog {
 				// ファイルの種類を設定
@@ -372,7 +372,8 @@ namespace AzLH.Models {
 			// ダイアログを表示
 			if ((bool)ofd.ShowDialog()) {
 				// 資材をインポート
-				if (SupplyStore.ImportOldMainSupplyData(ofd.FileName)) {
+				PutLog("資材データを読み込み開始...");
+				if (await SupplyStore.ImportOldMainSupplyDataAsync(ofd.FileName)) {
 					PutLog("資材データを読み込みました");
 				}
 				else {
@@ -381,7 +382,7 @@ namespace AzLH.Models {
 			}
 		}
 		// 資材のインポート機能(index=0～3、0から順にキューブ・ドリル・勲章・家具コイン)
-		public void ImportSubSupply(int index) {
+		public async void ImportSubSupply(int index) {
 			// インスタンスを作成
 			var ofd = new OpenFileDialog {
 				// ファイルの種類を設定
@@ -391,7 +392,8 @@ namespace AzLH.Models {
 			// ダイアログを表示
 			if ((bool)ofd.ShowDialog()) {
 				// 資材をインポート
-				if (SupplyStore.ImportOldSubSupplyData(ofd.FileName, index)) {
+				PutLog("資材データを読み込み開始...");
+				if (await SupplyStore.ImportOldSubSupplyDataAsync(ofd.FileName, index)) {
 					PutLog("資材データを読み込みました");
 				}
 				else {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace AzLH.Models {
 	internal static class SupplyStore {
@@ -179,6 +180,9 @@ namespace AzLH.Models {
 			}
 			return true;
 		}
+		public static Task<bool> ImportOldMainSupplyDataAsync(string fileName) {
+			return Task.Run(() => ImportOldMainSupplyData(fileName));
+		}
 		// サブ資材のデータをインポートする
 		public static bool ImportOldSubSupplyData(string fileName, int index) {
 			if (index < 0 || index >= 4)
@@ -240,6 +244,9 @@ namespace AzLH.Models {
 			}
 			lastWriteDateTime[subSupplyType] = GetLastWriteDateTime(subSupplyType);
 			return true;
+		}
+		public static Task<bool> ImportOldSubSupplyDataAsync(string fileName, int index) {
+			return Task.Run(() => ImportOldSubSupplyData(fileName, index));
 		}
 	}
 }
