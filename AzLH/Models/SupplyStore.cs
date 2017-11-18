@@ -110,7 +110,7 @@ namespace AzLH.Models {
 			return output;
 		}
 		// メイン資材のデータをインポートする
-		public static bool ImportOldSupplyData(string fileName) {
+		public static bool ImportOldMainSupplyData(string fileName) {
 			// インポート用にデータを読み込む
 			var mainSupplyData = new Dictionary<string, Dictionary<DateTime, int>>() {
 				{ "燃料", new Dictionary<DateTime, int>() },
@@ -177,6 +177,68 @@ namespace AzLH.Models {
 				}
 				lastWriteDateTime[supplyType] = GetLastWriteDateTime(supplyType);
 			}
+			return true;
+		}
+		// サブ資材のデータをインポートする
+		public static bool ImportOldSubSupplyData(string fileName, int index) {
+			if (index < 0 || index >= 4)
+				return false;
+			// インポート用にデータを読み込む
+			var subSupplyNameList = new string[] { "キューブ", "ドリル", "勲章", "家具コイン" };
+			string subSupplyType = subSupplyNameList[index];
+			var subSupplyData = new Dictionary<DateTime, int>();
+			try {
+				using (var sr = new StreamReader(fileName)) {
+					while (!sr.EndOfStream) {
+						// 1行を読み込む
+						string line = sr.ReadLine();
+						// マッチさせてから各数値を取り出す
+						string pattern = @"(?<Year>\d+)/(?<Month>\d+)/(?<Day>\d+) (?<Hour>\d+):(?<Minute>\d+):(?<Second>\d+),(?<Supply>\d+)";
+						var match = Regex.Match(line, pattern);
+						if (!match.Success) {
+							continue;
+						}
+						// 取り出した数値を元に、subSupplyDataに入力する
+						try {
+							// 読み取り
+							// 読み取り
+							var supplyDateTime = new DateTime(
+								int.Parse(match.Groups["Year"].Value),
+								int.Parse(match.Groups["Month"].Value),
+								int.Parse(match.Groups["Day"].Value),
+								int.Parse(match.Groups["Hour"].Value),
+								int.Parse(match.Groups["Minute"].Value),
+								int.Parse(match.Groups["Second"].Value));
+							int supplyData = int.Parse(match.Groups["Supply"].Value);
+							// データベースに入力
+							subSupplyData[supplyDateTime] = supplyData;
+						}
+						catch { }
+					}
+				}
+			}
+			catch {
+				return false;
+			}
+			// 読み込んだデータをデータベースに入力していく
+			foreach (var supply in subSupplyData) {
+				var date = supply.Key;
+				int value = supply.Value;
+				if (value < 0)
+					continue;
+				try {
+					using (var con = new SQLiteConnection(connectionString)) {
+						con.Open();
+						using (var cmd = con.CreateCommand()) {
+							string sql = $"INSERT INTO [{SupplyParameters[subSupplyType].Name}] VALUES ('{date.ToString("yyyy-MM-dd HH:mm:ss")}', {value})";
+							cmd.CommandText = sql;
+							cmd.ExecuteNonQuery();
+						}
+					}
+				}
+				catch { }
+			}
+			lastWriteDateTime[subSupplyType] = GetLastWriteDateTime(subSupplyType);
 			return true;
 		}
 	}

@@ -372,7 +372,7 @@ namespace AzLH.Models {
 			// ダイアログを表示
 			if ((bool)ofd.ShowDialog()) {
 				// 資材をインポート
-				if (SupplyStore.ImportOldSupplyData(ofd.FileName)) {
+				if (SupplyStore.ImportOldMainSupplyData(ofd.FileName)) {
 					PutLog("資材データを読み込みました");
 				}
 				else {
@@ -382,7 +382,22 @@ namespace AzLH.Models {
 		}
 		// 資材のインポート機能(index=0～3、0から順にキューブ・ドリル・勲章・家具コイン)
 		public void ImportSubSupply(int index) {
-
+			// インスタンスを作成
+			var ofd = new OpenFileDialog {
+				// ファイルの種類を設定
+				Filter = "設定ファイル(*.csv)|*.csv|全てのファイル (*.*)|*.*",
+				FileName = $"SubSupply{(index + 1)}.csv"
+			};
+			// ダイアログを表示
+			if ((bool)ofd.ShowDialog()) {
+				// 資材をインポート
+				if (SupplyStore.ImportOldSubSupplyData(ofd.FileName, index)) {
+					PutLog("資材データを読み込みました");
+				}
+				else {
+					PutLog("エラー：資材データを読み込めませんでした");
+				}
+			}
 		}
 		public void ImportSubSupply1() {
 			ImportSubSupply(0);
