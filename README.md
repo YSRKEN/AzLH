@@ -21,7 +21,7 @@ The AzurLane Helper II by C#
 
 ## 使い方
 
-　[help.html](./help/help.html) を参照してください。
+　[help.md](./help/help.md) を参照してください。
 
 ## 注意書き
 
@@ -30,7 +30,7 @@ The AzurLane Helper II by C#
 
 ## 更新履歴
 
-　[history.html](./help/history.html) を参照してください。
+　[history.md](./help/history.md) を参照してください。
 
 ## 謝辞
 
