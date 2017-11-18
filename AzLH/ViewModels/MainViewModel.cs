@@ -144,6 +144,9 @@ namespace AzLH.ViewModels {
 			if (settings.AutoSupplyWindowFlg) {
 				OpenSupplyViewCommand.Execute();
 			}
+
+			// 最新版をチェックする
+			mainModel.CheckSoftwareVer();
 		}
 	}
 }

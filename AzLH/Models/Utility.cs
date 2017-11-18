@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Drawing;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -54,6 +56,17 @@ namespace AzLH.Models {
 				var assembly = Assembly.GetExecutingAssembly();
 				var asmver = assembly.GetName().Version;
 				return $"{asmver}";
+			}
+		}
+		// 最新版のバージョンを返す
+		public static async Task<string> NewestSoftwareVerAsync() {
+			try {
+				var client = new HttpClient();
+				var response = await client.GetStringAsync("https://raw.githubusercontent.com/YSRKEN/AzLH/master/version.txt");
+				return response;
+			}
+			catch {
+				return "";
 			}
 		}
 	}

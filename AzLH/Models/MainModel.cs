@@ -413,6 +413,27 @@ namespace AzLH.Models {
 		public void ImportSubSupply4() {
 			ImportSubSupply(3);
 		}
+		// ソフトウェアが最新かを調べる
+		public async void CheckSoftwareVer() {
+			string nowSoftwareVer = Utility.SoftwareVer;
+			string lastSoftwareVer = await Utility.NewestSoftwareVerAsync();
+			PutLog("最新版チェック...");
+			if (lastSoftwareVer == "") {
+				PutLog("警告：バージョンチェックできませんでした");
+			}
+			else {
+				if (nowSoftwareVer != lastSoftwareVer) {
+					PutLog("警告：このソフトウェアは最新ではありません");
+					var result = MessageBox.Show($"より新しいVerが存在するようです。\n\n　現在のVer.→{nowSoftwareVer}\n　最新のVer.→{lastSoftwareVer}\n\nダウンロードページを開きますか？", Utility.SoftwareName, MessageBoxButton.YesNo, MessageBoxImage.Information);
+					if (result == MessageBoxResult.Yes) {
+						System.Diagnostics.Process.Start(@"https://github.com/YSRKEN/AzLH/releases");
+					}
+				}
+				else {
+					PutLog("このソフトウェアは最新です");
+				}
+			}
+		}
 
 		// 定期的にスクリーンショットを取得し、そこに起因する処理を行う
 		public void HelperTaskF() {
