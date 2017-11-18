@@ -1,0 +1,86 @@
+﻿<Window x:Class="AzLH.Views.MainView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+	xmlns:local="clr-namespace:AzLH.ViewModels"
+	mc:Ignorable="d"
+	Topmost="True"
+	Title="{Binding SoftwareTitle.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+	Top="{Binding MainWindowPositionTop.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+	Left ="{Binding MainWindowPositionLeft.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+	Width ="{Binding MainWindowPositionWidth.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+	Height="{Binding MainWindowPositionHeight.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+	local:CloseWindowAttachedBehavior.Close="{Binding CloseWindow.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+	<Window.DataContext>
+		<local:MainViewModel/>
+	</Window.DataContext>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="auto"/>
+			<RowDefinition Height="auto"/>
+			<RowDefinition/>
+		</Grid.RowDefinitions>
+		<Menu Grid.Row="0">
+			<MenuItem Header="ファイル(_F)">
+				<MenuItem Header="設定をインポート(_I)" Command="{Binding ImportSettingsCommand}" />
+				<MenuItem Header="設定をエクスポート(_E)" Command="{Binding ExportSettingsCommand}" />
+				<MenuItem Header="資材量をインポート(_S)">
+					<MenuItem Header="燃料・資金・ダイヤ(_F)" Command="{Binding ImportMainSupplyCommand}" />
+					<MenuItem Header="キューブ(_C)" Command="{Binding ImportSubSupply1Command}" />
+					<MenuItem Header="ドリル(高速建造材)(_D)" Command="{Binding ImportSubSupply2Command}" />
+					<MenuItem Header="勲章(_M)" Command="{Binding ImportSubSupply3Command}" />
+					<MenuItem Header="家具コイン(_K)" Command="{Binding ImportSubSupply4Command}" />
+				</MenuItem>
+				<MenuItem Header="終了(_X)" Command="{Binding CloseCommand}" />
+			</MenuItem>
+			<MenuItem Header="操作(_A)">
+				<MenuItem Header="座標取得(_G)"
+						Command="{Binding GetGameWindowPositionCommand}"/>
+				<MenuItem Header="スクリーンショット(_S)"
+						Command="{Binding SaveScreenshotCommand}"
+						IsEnabled="{Binding SaveScreenshotFlg.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<MenuItem Header="ウィンドウを表示(_W)">
+					<MenuItem Header="資材記録画面(_S)"
+						Command="{Binding OpenSupplyViewCommand}"/>
+				</MenuItem>
+				<MenuItem Header="スクショ保存フォルダを表示(_O)"
+						Command="{Binding OpenPicFolderCommand}"/>
+			</MenuItem>
+			<MenuItem Header="オプション(_O)">
+				<MenuItem IsCheckable="True" Header="ツイッター用に加工(_T)"
+						IsChecked="{Binding ForTwitterFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<MenuItem IsCheckable="True" Header="ウィンドウの座標を記憶(_M)"
+						IsChecked="{Binding MemoryWindowPositionFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<MenuItem IsCheckable="True" Header="常時座標認識(_A)"
+						IsChecked="{Binding AutoSearchPositionFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+			</MenuItem>
+			<MenuItem Header="ヘルプ(_H)">
+				<MenuItem Header="バージョン情報...(_A)" Command="{Binding SoftwareInfoCommand}"/>
+			</MenuItem>
+		</Menu>
+		<Grid Grid.Row="1" Margin="5,5,5,5">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="auto"/>
+				<ColumnDefinition Width="auto"/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
+			<Button Grid.Column="0" Width="80" Height="24" Margin="5,5,5,5" Content="座標取得" FontWeight="Bold" FontSize="16" VerticalContentAlignment="Center"
+					Command="{Binding GetGameWindowPositionCommand}" />
+			<Button Grid.Column="1" Width="80" Height="24" Margin="5,5,5,5" Content="スクショ" FontWeight="Bold" FontSize="16" VerticalContentAlignment="Center"
+					Command="{Binding SaveScreenshotCommand}"
+					IsEnabled="{Binding SaveScreenshotFlg.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+			<TextBlock Grid.Column="2" Height="24" Margin="5,5,5,5" VerticalAlignment="Center" FontWeight="Bold" FontSize="18"
+					Text="{Binding JudgedScene.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+		</Grid>
+		<TextBox Grid.Row="2" IsReadOnly="True" AcceptsReturn="True" Margin="10,0,10,10"
+				HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+				Text="{Binding ApplicationLog.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+			<i:Interaction.Behaviors>
+				<local:ApplicationLogScrollBehavior />
+			</i:Interaction.Behaviors>
+		</TextBox>
+	</Grid>
+</Window>

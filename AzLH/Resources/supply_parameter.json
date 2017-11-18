@@ -1,0 +1,31 @@
+﻿{
+  "燃料" : {
+    "Color" : [57, 52, 57], "RectFloat" : [55.55, 3.111, 7.625, 2.667], "MainSupplyFlg" : true, "SecondaryAxisFlg" : false,
+    "InverseFlg" : true, "Threshold" : 15, "Name" : "fuel"
+  },
+  "資金" : {
+    "Color" : [239, 182, 66], "RectFloat" : [71.75, 3.111, 7.625, 2.667], "MainSupplyFlg" : true, "SecondaryAxisFlg" : true,
+    "InverseFlg" : true, "Threshold" : 15, "Name" : "money"
+  },
+  "キューブ" : {
+    "Color" : [115, 223, 231], "RectFloat" : [59.06, 14.03, 4.844, 3.333], "MainSupplyFlg" : false, "SecondaryAxisFlg" : false,
+    "InverseFlg" : true, "Threshold" : 75, "Name" : "cube"
+  },
+  "ドリル" : {
+    "Color" : [115, 93, 66], "RectFloat" : [57.50, 13.75, 5.234, 3.472], "MainSupplyFlg" : false, "SecondaryAxisFlg" : false,
+    "InverseFlg" : true, "Threshold" : 75, "Name" : "drill"
+  },
+  "勲章" : {
+    "Color" : [41, 93, 189], "RectFloat" : [58.98, 14.17, 6.484, 3.472], "MainSupplyFlg" : false, "SecondaryAxisFlg" : false,
+    "InverseFlg" : true, "Threshold" : 75, "Name" : "medal"
+  },
+  "ダイヤ" : {
+    "Color": [255, 69, 115],
+    "RectFloat": [ 87.88, 3.111, 7.500, 2.667 ], "MainSupplyFlg" : false, "SecondaryAxisFlg" : true,
+    "InverseFlg" : true, "Threshold" : 15, "Name" : "diamond"
+  },
+  "家具コイン" : {
+    "Color" : [247, 190, 82], "RectFloat" : [65.47, 10.00, 8.594, 4.167], "MainSupplyFlg" : false, "SecondaryAxisFlg" : true,
+    "InverseFlg" : false, "Threshold" : 128, "Name" : "furniture_coin"
+  }
+}
