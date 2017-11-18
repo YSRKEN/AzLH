@@ -363,7 +363,22 @@ namespace AzLH.Models {
 		}
 		// 資材のインポート機能(燃料・資金・ダイヤ)
 		public void ImportMainSupply() {
-
+			// インスタンスを作成
+			var ofd = new OpenFileDialog {
+				// ファイルの種類を設定
+				Filter = "設定ファイル(*.csv)|*.csv|全てのファイル (*.*)|*.*",
+				FileName = "MainSupply.csv"
+			};
+			// ダイアログを表示
+			if ((bool)ofd.ShowDialog()) {
+				// 資材をインポート
+				if (SupplyStore.ImportOldSupplyData(ofd.FileName)) {
+					PutLog("資材データを読み込みました");
+				}
+				else {
+					PutLog("エラー：資材データを読み込めませんでした");
+				}
+			}
 		}
 		// 資材のインポート機能(index=0～3、0から順にキューブ・ドリル・勲章・家具コイン)
 		public void ImportSubSupply(int index) {
