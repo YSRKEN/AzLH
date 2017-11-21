@@ -82,7 +82,7 @@ namespace AzLH.Models {
 				}
 				lastWriteDateTime[supplyType] = nowDateTime;
 				if(debugFlg)
-					bitmap.Save($"pic\\{Utility.GetTimeStrLong(nowDateTime)} {supplyType} {value}.png");
+					bitmap.Save($"debug\\{Utility.GetTimeStrLong(nowDateTime)} {supplyType} {value}.png");
 				return true;
 			}
 			catch {

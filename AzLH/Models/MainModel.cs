@@ -135,6 +135,19 @@ namespace AzLH.Models {
 				}
 			}
 		}
+		// 資材記録時にスクショでロギングするか？
+		private bool autoSupplyScreenShotFlg = false;
+		public bool AutoSupplyScreenShotFlg {
+			get => autoSupplyScreenShotFlg;
+			set {
+				SetProperty(ref autoSupplyScreenShotFlg, value);
+				var settings = SettingsStore.Instance;
+				settings.AutoSupplyScreenShotFlg = autoSupplyScreenShotFlg;
+				if (!settings.SaveSettings()) {
+					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				}
+			}
+		}
 
 		// コンストラクタ
 		public MainModel() {
@@ -153,6 +166,7 @@ namespace AzLH.Models {
 				MainWindowPositionHeight = settings.MainWindowRect[3];
 			}
 			AutoSearchPositionFlg = settings.AutoSearchPositionFlg;
+			AutoSupplyScreenShotFlg = settings.AutoSupplyScreenShotFlg;
 		}
 		// 実行ログに追記する
 		private void PutLog(string message) {
@@ -447,31 +461,31 @@ namespace AzLH.Models {
 					// 資材量を取得する
 					switch (JudgedScene) {
 					case "シーン判定 : 母港": {
-							if(SupplyStore.UpdateSupplyValue(screenShot, "燃料"))
+							if(SupplyStore.UpdateSupplyValue(screenShot, "燃料", AutoSupplyScreenShotFlg))
 								PutLog("資材量追記：燃料");
-							if (SupplyStore.UpdateSupplyValue(screenShot, "資金"))
+							if (SupplyStore.UpdateSupplyValue(screenShot, "資金", AutoSupplyScreenShotFlg))
 								PutLog("資材量追記：資金");
-							if (SupplyStore.UpdateSupplyValue(screenShot, "ダイヤ"))
+							if (SupplyStore.UpdateSupplyValue(screenShot, "ダイヤ", AutoSupplyScreenShotFlg))
 								PutLog("資材量追記：ダイヤ");
 						}
 						break;
 					case "シーン判定 : 建造": {
-							if (SupplyStore.UpdateSupplyValue(screenShot, "キューブ"))
+							if (SupplyStore.UpdateSupplyValue(screenShot, "キューブ", AutoSupplyScreenShotFlg))
 								PutLog("資材量追記：キューブ");
 						}
 						break;
 					case "シーン判定 : 建造中": {
-							if (SupplyStore.UpdateSupplyValue(screenShot, "ドリル"))
+							if (SupplyStore.UpdateSupplyValue(screenShot, "ドリル", AutoSupplyScreenShotFlg))
 								PutLog("資材量追記：ドリル");
 						}
 						break;
 					case "シーン判定 : 支援": {
-							if (SupplyStore.UpdateSupplyValue(screenShot, "勲章"))
+							if (SupplyStore.UpdateSupplyValue(screenShot, "勲章", AutoSupplyScreenShotFlg))
 								PutLog("資材量追記：勲章");
 						}
 						break;
 					case "シーン判定 : 家具屋": {
-							if (SupplyStore.UpdateSupplyValue(screenShot, "家具コイン"))
+							if (SupplyStore.UpdateSupplyValue(screenShot, "家具コイン", AutoSupplyScreenShotFlg))
 								PutLog("資材量追記：家具コイン");
 						}
 						break;
