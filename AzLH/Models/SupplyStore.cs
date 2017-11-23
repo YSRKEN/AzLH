@@ -64,11 +64,11 @@ namespace AzLH.Models {
 			return output;
 		}
 		// 資材量を更新できれば更新する
-		public static bool UpdateSupplyValue(Bitmap bitmap, string supplyType, bool debugFlg = false) {
+		public static bool UpdateSupplyValue(Bitmap bitmap, string supplyType, bool autoSupplyScreenShotFlg, bool putCharacterRecognitionFlg) {
 			var nowDateTime = DateTime.Now;
 			if ((nowDateTime - lastWriteDateTime[supplyType]).TotalMinutes < updateInterval)
 				return false;
-			int value = GetValueOCR(bitmap, supplyType);
+			int value = GetValueOCR(bitmap, supplyType, putCharacterRecognitionFlg);
 			if (value < 0)
 				return false;
 			try {
@@ -81,7 +81,7 @@ namespace AzLH.Models {
 					}
 				}
 				lastWriteDateTime[supplyType] = nowDateTime;
-				if(debugFlg)
+				if(autoSupplyScreenShotFlg)
 					bitmap.Save($"debug\\{Utility.GetTimeStrLong(nowDateTime)} {supplyType} {value}.png");
 				return true;
 			}

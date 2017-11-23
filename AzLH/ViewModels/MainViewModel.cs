@@ -33,6 +33,10 @@ namespace AzLH.ViewModels {
 		public ReactiveProperty<bool> AutoSearchPositionFlg { get; }
 		// 資材記録時にスクショでロギングするか？
 		public ReactiveProperty<bool> AutoSupplyScreenShotFlg { get; }
+		// 資材記録時に画像処理結果を出力するか？
+		public ReactiveProperty<bool> PutCharacterRecognitionFlg { get; }
+		// ドラッグ＆ドロップでシーン認識するか？
+		public ReactiveProperty<bool> DragAndDropPictureFlg { get; }
 
 		// 座標取得ボタン
 		public ReactiveCommand GetGameWindowPositionCommand { get; }
@@ -92,6 +96,8 @@ namespace AzLH.ViewModels {
 			MemoryWindowPositionFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.MemoryWindowPositionFlg);
 			AutoSearchPositionFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.AutoSearchPositionFlg);
 			AutoSupplyScreenShotFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.AutoSupplyScreenShotFlg);
+			PutCharacterRecognitionFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.PutCharacterRecognitionFlg);
+			DragAndDropPictureFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.DragAndDropPictureFlg);
 			// コマンドを設定
 			GetGameWindowPositionCommand = new ReactiveCommand();
 			SaveScreenshotCommand = new ReactiveCommand();
