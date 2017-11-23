@@ -7,6 +7,7 @@
 	xmlns:local="clr-namespace:AzLH.ViewModels"
 	mc:Ignorable="d"
 	Topmost="True"
+	AllowDrop="{Binding DragAndDropPictureFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 	Title="{Binding SoftwareTitle.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 	Top="{Binding MainWindowPositionTop.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 	Left ="{Binding MainWindowPositionLeft.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -16,6 +17,9 @@
 	<Window.DataContext>
 		<local:MainViewModel/>
 	</Window.DataContext>
+	<i:Interaction.Behaviors>
+		<local:FileDragAndDropToWindowBehavior />
+	</i:Interaction.Behaviors>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto"/>
