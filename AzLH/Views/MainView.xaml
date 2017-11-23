@@ -7,6 +7,7 @@
 	xmlns:local="clr-namespace:AzLH.ViewModels"
 	mc:Ignorable="d"
 	Topmost="True"
+	AllowDrop="{Binding DragAndDropPictureFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 	Title="{Binding SoftwareTitle.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 	Top="{Binding MainWindowPositionTop.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 	Left ="{Binding MainWindowPositionLeft.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -16,6 +17,9 @@
 	<Window.DataContext>
 		<local:MainViewModel/>
 	</Window.DataContext>
+	<i:Interaction.Behaviors>
+		<local:FileDragAndDropToWindowBehavior />
+	</i:Interaction.Behaviors>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto"/>
@@ -55,7 +59,14 @@
 						IsChecked="{Binding MemoryWindowPositionFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<MenuItem IsCheckable="True" Header="常時座標認識(_A)"
 						IsChecked="{Binding AutoSearchPositionFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
+				<MenuItem Header="デバッグモード(_D)">
+					<MenuItem IsCheckable="True" Header="資材記録時にスクショでロギング(_S)"
+						IsChecked="{Binding AutoSupplyScreenShotFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+					<MenuItem IsCheckable="True" Header="資材記録時に画像処理結果を出力(_C)"
+						IsChecked="{Binding PutCharacterRecognitionFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+					<MenuItem IsCheckable="True" Header="ドラッグ＆ドロップでシーン認識(_D)"
+						IsChecked="{Binding DragAndDropPictureFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+			</MenuItem>
 			</MenuItem>
 			<MenuItem Header="ヘルプ(_H)">
 				<MenuItem Header="バージョン情報...(_A)" Command="{Binding SoftwareInfoCommand}"/>

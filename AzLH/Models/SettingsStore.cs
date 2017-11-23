@@ -24,6 +24,12 @@ namespace AzLH.Models {
 		// 資材記録画面が表示されているか？
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public bool ShowSupplyWindowFlg { get; set; }
+		// 資材記録時にスクショでロギングするか？
+		public bool AutoSupplyScreenShotFlg { get; set; }
+		// 資材記録時に画像処理結果を出力するか？
+		public bool PutCharacterRecognitionFlg { get; set; }
+		// ドラッグ＆ドロップでシーン認識するか？
+		public bool DragAndDropPictureFlg { get; set; }
 
 		// デフォルト設定
 		private void SetDefaultSettings() {
@@ -33,6 +39,9 @@ namespace AzLH.Models {
 			MemoryWindowPositionFlg = true;
 			AutoSearchPositionFlg = true;
 			AutoSupplyWindowFlg = false;
+			AutoSupplyScreenShotFlg = false;
+			PutCharacterRecognitionFlg = false;
+			DragAndDropPictureFlg = false;
 		}
 		// JSONから読み込み
 		public bool LoadSettings(string path) {
@@ -48,6 +57,9 @@ namespace AzLH.Models {
 					MemoryWindowPositionFlg = model.MemoryWindowPositionFlg;
 					AutoSearchPositionFlg = model.AutoSearchPositionFlg;
 					AutoSupplyWindowFlg = model.AutoSupplyWindowFlg;
+					AutoSupplyScreenShotFlg = model.AutoSupplyScreenShotFlg;
+					PutCharacterRecognitionFlg = model.PutCharacterRecognitionFlg;
+					DragAndDropPictureFlg = model.DragAndDropPictureFlg;
 				}
 				return true;
 			}

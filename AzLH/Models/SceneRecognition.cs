@@ -166,11 +166,23 @@ namespace AzLH.Models {
 								return "不明";
 						}
 						break;
+					case "建造": {
+							var aveColor = GetAverageColor(bitmap, new RectangleF(81.48f, 65.56f, 2.813f, 5.000f));
+							if (GetColorDistance(aveColor, Color.FromArgb(237, 196, 85)) > 50)
+								return "不明";
+						}
+						break;
 					case "支援": {
 							var aveColor = GetAverageColor(bitmap, new RectangleF(48.20f, 16.11f, 1.172f, 2.083f));
 							if (GetColorDistance(aveColor, Color.FromArgb(222, 210, 159)) > 50)
 								return "不明";
 						}
+						break;
+					case "家具屋": {
+							var aveColor = GetAverageColor(bitmap, new RectangleF(61.41f, 8.056f, 1.641f, 2.917f));
+							if (GetColorDistance(aveColor, Color.FromArgb(231, 192, 98)) > 50)
+								return "不明";
+							}
 						break;
 					}
 					return scene.Key;

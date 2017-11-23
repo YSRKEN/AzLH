@@ -20,12 +20,11 @@
     "InverseFlg" : true, "Threshold" : 75, "Name" : "medal"
   },
   "ダイヤ" : {
-    "Color": [255, 69, 115],
-    "RectFloat": [ 87.88, 3.111, 7.500, 2.667 ], "MainSupplyFlg" : false, "SecondaryAxisFlg" : true,
+    "Color": [255, 69, 115], "RectFloat": [ 87.88, 3.111, 7.500, 2.667 ], "MainSupplyFlg" : false, "SecondaryAxisFlg" : true,
     "InverseFlg" : true, "Threshold" : 15, "Name" : "diamond"
   },
   "家具コイン" : {
-    "Color" : [247, 190, 82], "RectFloat" : [65.47, 10.00, 8.594, 4.167], "MainSupplyFlg" : false, "SecondaryAxisFlg" : true,
-    "InverseFlg" : false, "Threshold" : 128, "Name" : "furniture_coin"
+    "Color" : [247, 190, 82], "RectFloat" : [64.38, 8.750, 8.750, 3.889], "MainSupplyFlg" : false, "SecondaryAxisFlg" : true,
+    "InverseFlg" : false, "Threshold" : 100, "Name" : "furniture_coin"
   }
 }
