@@ -179,8 +179,8 @@ namespace AzLH.Models {
 						}
 						break;
 					case "家具屋": {
-							var aveColor = GetAverageColor(bitmap, new RectangleF(62.50f, 9.861f, 1.563f, 2.778f));
-							if (GetColorDistance(aveColor, Color.FromArgb(230, 188, 95)) > 50)
+							var aveColor = GetAverageColor(bitmap, new RectangleF(61.41f, 8.056f, 1.641f, 2.917f));
+							if (GetColorDistance(aveColor, Color.FromArgb(231, 192, 98)) > 50)
 								return "不明";
 							}
 						break;
