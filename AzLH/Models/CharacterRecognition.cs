@@ -164,7 +164,7 @@ namespace AzLH.Models {
 				var desRect = new Rectangle(0, 0, canvas.Width, canvas.Height);
 				g.DrawImage(bitmap, desRect, srcRect, GraphicsUnit.Pixel);
 			}
-			if (debugFlg) canvas.Save("pic\\digit1.png");
+			if (debugFlg) canvas.Save($"debug\\digit-{supplyType}-step1.png");
 			// ダイヤを勘定する時だけ、黄色部分を黒く塗りつぶす処理を行う
 			if (supplyType == "ダイヤ") {
 				for (int y = 0; y < canvas.Height; ++y) {
@@ -181,11 +181,11 @@ namespace AzLH.Models {
 				Cv2.CvtColor(mat1, mat2, ColorConversionCodes.BGR2GRAY);
 				if (SupplyParameters[supplyType].InverseFlg)
 					Cv2.BitwiseNot(mat2, mat2);
-				if (debugFlg) mat2.SaveImage("pic\\digit2.png");
+				if (debugFlg) mat2.SaveImage($"debug\\digit-{supplyType}-step2.png");
 				Cv2.Threshold(mat2, mat2, SupplyParameters[supplyType].Threshold, 255, ThresholdTypes.Binary);
 				canvas = mat2.ToBitmap();
 			}
-			if (debugFlg) canvas.Save("pic\\digit3.png");
+			if (debugFlg) canvas.Save($"debug\\digit-{supplyType}-step3.png");
 			// 境界部分を認識させる
 			var splitRectList = new List<Rectangle>();
 			{
@@ -233,7 +233,7 @@ namespace AzLH.Models {
 					var desRect = new Rectangle(0, 0, canvas2.Width, canvas2.Height);
 					g.DrawImage(canvas, desRect, srcRect, GraphicsUnit.Pixel);
 				}
-				if (debugFlg) canvas2.Save($"pic\\digit4-{k + 1}-1.png");
+				if (debugFlg) canvas2.Save($"debug\\digit-{supplyType}-step4-{k + 1}-1.png");
 				// 認識用の大きさにリサイズする
 				var canvas3 = new Bitmap(ocrTemplateSize2.Width, ocrTemplateSize2.Height);
 				using (var g = Graphics.FromImage(canvas3)) {
@@ -245,7 +245,7 @@ namespace AzLH.Models {
 					var desRect = new Rectangle(1, 1, ocrTemplateSize1.Width, ocrTemplateSize1.Height);
 					g.DrawImage(canvas2, desRect, srcRect, GraphicsUnit.Pixel);
 				}
-				if (debugFlg) canvas3.Save($"pic\\digit4-{k + 1}-2.png");
+				if (debugFlg) canvas3.Save($"debug\\digit-{supplyType}-step4-{k + 1}-2.png");
 				// マッチングを行う
 				using (var image = BitmapConverter.ToMat(canvas3)) {
 					// テンプレートを読み込み、そこから検索を行う
