@@ -26,6 +26,6 @@
   },
   "家具コイン" : {
     "Color" : [247, 190, 82], "RectFloat" : [65.47, 10.00, 8.594, 4.167], "MainSupplyFlg" : false, "SecondaryAxisFlg" : true,
-    "InverseFlg" : false, "Threshold" : 128, "Name" : "furniture_coin"
+    "InverseFlg" : false, "Threshold" : 100, "Name" : "furniture_coin"
   }
 }
