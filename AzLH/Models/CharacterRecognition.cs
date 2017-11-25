@@ -10,6 +10,7 @@ using System.Text;
 
 namespace AzLH.Models {
 	using dSize = System.Drawing.Size;
+	using bitmapArray = List<byte>;
 	static class CharacterRecognition {
 		// OCRする際にリサイズするサイズ
 		private static readonly dSize ocrTemplateSize1 = new dSize(32, 32);
@@ -21,6 +22,7 @@ namespace AzLH.Models {
 		public static Dictionary<string, SupplyParameter> SupplyParameters { get; } = LoadSupplyParameters();
 		// OCRする際に使用する画像
 		private static readonly Mat templateSource = MakeTemplateSource();
+		private static readonly List<bitmapArray> templateSource2 = MakeTemplateSource2();
 
 		// 認識パラメーターを読み込む
 		private static Dictionary<string, SupplyParameter> LoadSupplyParameters() {
@@ -91,6 +93,63 @@ namespace AzLH.Models {
 				}
 			}
 			return BitmapConverter.ToMat(output);
+		}
+		private static List<bitmapArray> MakeTemplateSource2(){
+			string templateChar = "0123456789 ";
+			var output = new List<bitmapArray>();
+			// 適当なバッファに文字を出力しつつ、切り取ってテンプレートとする
+			for (int k = 0; k < templateChar.Length; ++k)
+			{
+				var canvas = new Bitmap(ocrStretchSize * 2, ocrStretchSize * 2);
+				using (var g = Graphics.FromImage(canvas))
+				{
+					g.FillRectangle(new SolidBrush(Color.White), new Rectangle(0, 0, canvas.Width, canvas.Height));
+					g.DrawString(templateChar.Substring(k, 1), new Font("Impact", ocrStretchSize), new SolidBrush(Color.Black), new PointF(0, 0));
+				}
+				var canvas2 = new Bitmap(ocrTemplateSize1.Width, ocrTemplateSize1.Height);
+				using (var g = Graphics.FromImage(canvas2))
+				{
+					// 切り取られる位置・大きさ
+					var srcRect = GetTrimmingRectangle(canvas);
+					// 貼り付ける位置・大きさ
+					var desRect = new Rectangle(0, 0, ocrTemplateSize1.Width, ocrTemplateSize1.Height);
+					g.DrawImage(canvas, desRect, srcRect, GraphicsUnit.Pixel);
+				}
+				output.Add(BitmapToMonoArray(canvas2));
+			}
+			return output;
+		}
+		// 画像を配列化する
+		// 参考→
+		// 　https://dobon.net/vb/dotnet/graphics/drawnegativeimage.html#lockbits
+		// 　http://blueclouds.blog.so-net.ne.jp/2011-04-29
+		private static bitmapArray BitmapToMonoArray(Bitmap bitmap){
+			var bmpArr = new bitmapArray();
+			var bitmapData = bitmap.LockBits(
+				new Rectangle(System.Drawing.Point.Empty, bitmap.Size),
+				System.Drawing.Imaging.ImageLockMode.ReadOnly,
+				System.Drawing.Imaging.PixelFormat.Format32bppArgb
+			);
+			//ピクセルデータをバイト型配列で取得する
+			var pointer = bitmapData.Scan0;
+			byte[] pixels = new byte[bitmapData.Stride * bitmap.Height];
+			System.Runtime.InteropServices.Marshal.Copy(pointer, pixels, 0, pixels.Length);
+			//すべてのピクセルのデータを取得する
+			for (int y = 0; y < bitmapData.Height; ++y){
+				for (int x = 0; x < bitmapData.Width; ++x){
+					//ピクセルデータでのピクセル(x,y)の開始位置を計算する
+					int pos = y * bitmapData.Stride + x * 4;
+					byte b = pixels[pos];
+					byte g = pixels[pos + 1];
+					byte r = pixels[pos + 2];
+					byte a = pixels[pos + 3];
+					byte grayColor = (byte)(0.299 * r + 0.587 * g + 0.114 * b);
+					bmpArr.Add(grayColor);
+					continue;
+				}
+			}
+			bitmap.UnlockBits(bitmapData);
+			return bmpArr;
 		}
 		// 周囲をトリミングする
 		static Rectangle GetTrimmingRectangle(Bitmap bitmap) {
