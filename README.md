@@ -59,7 +59,5 @@ The AzurLane Helper II by C#
  - JSONファイルの読み書きに使用
 - [System.Data.SQLite.Core](https://www.nuget.org/packages/System.Data.SQLite.Core/)
  - 資材データベースの読み書きに使用
-- [OpenCvSharp3-AnyCPU](https://www.nuget.org/packages/OpenCvSharp3-AnyCPU/)
- - 画像中の文字認識に使用
 - [OxyPlot.Wpf](https://www.nuget.org/packages/OxyPlot.Wpf/)
  - 資材量のグラフ表示に使用
