@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using OpenCvSharp;
-using OpenCvSharp.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -9,20 +6,18 @@ using System.Linq;
 using System.Text;
 
 namespace AzLH.Models {
-	using dSize = System.Drawing.Size;
 	using bitmapArray = List<byte>;
 	static class CharacterRecognition {
 		// OCRする際にリサイズするサイズ
-		private static readonly dSize ocrTemplateSize1 = new dSize(32, 32);
+		private static readonly Size ocrTemplateSize1 = new Size(32, 32);
 		// OCRする際にマッチングさせる元のサイズ
-		private static readonly dSize ocrTemplateSize2 = new dSize(ocrTemplateSize1.Width + 2, ocrTemplateSize1.Height + 2);
+		private static readonly Size ocrTemplateSize2 = new Size(ocrTemplateSize1.Width + 2, ocrTemplateSize1.Height + 2);
 		// OCRする際に引き伸ばす際の短辺長
 		private static readonly int ocrStretchSize = 64;
 		// 各資材における認識パラメーター
 		public static Dictionary<string, SupplyParameter> SupplyParameters { get; } = LoadSupplyParameters();
 		// OCRする際に使用する画像
-		private static readonly Mat templateSource = MakeTemplateSource();
-		private static readonly List<bitmapArray> templateSource2 = MakeTemplateSource2();
+		private static readonly List<bitmapArray> templateSource = MakeTemplateSource();
 
 		// 認識パラメーターを読み込む
 		private static Dictionary<string, SupplyParameter> LoadSupplyParameters() {
@@ -64,37 +59,7 @@ namespace AzLH.Models {
 			return output;
 		}
 		// OCR用の画像データを生成する
-		private static Mat MakeTemplateSource() {
-			string templateChar = "0123456789 ";
-			var output = new Bitmap(ocrTemplateSize2.Width * (templateChar.Length * 2 - 1), ocrTemplateSize2.Height);
-			// 適当なバッファに文字を出力しつつ、切り取ってテンプレートとする
-			for(int k = 0; k < templateChar.Length; ++k) {
-				var canvas = new Bitmap(ocrStretchSize * 2, ocrStretchSize * 2);
-				using (var g = Graphics.FromImage(canvas)) {
-					g.FillRectangle(new SolidBrush(Color.White), new Rectangle(0, 0, canvas.Width, canvas.Height));
-					g.DrawString(templateChar.Substring(k, 1), new Font("Impact", ocrStretchSize), new SolidBrush(Color.Black), new PointF(0, 0));
-				}
-				var canvas2 = new Bitmap(ocrTemplateSize2.Width, ocrTemplateSize2.Height);
-				using (var g = Graphics.FromImage(canvas2)) {
-					// 事前にcanvas3を赤色に塗りつぶす
-					g.FillRectangle(Brushes.Red, 0, 0, canvas2.Width, canvas2.Height);
-					// 切り取られる位置・大きさ
-					var srcRect = GetTrimmingRectangle(canvas);
-					// 貼り付ける位置・大きさ
-					var desRect = new Rectangle(1, 1, ocrTemplateSize1.Width, ocrTemplateSize1.Height);
-					g.DrawImage(canvas, desRect, srcRect, GraphicsUnit.Pixel);
-				}
-				using (var g = Graphics.FromImage(output)) {
-					// 切り取られる位置・大きさ
-					var srcRect = new Rectangle(0, 0, canvas2.Width, canvas2.Height);
-					// 貼り付ける位置・大きさ
-					var desRect = new Rectangle(k * 2 * ocrTemplateSize2.Width, 0, ocrTemplateSize2.Width, ocrTemplateSize2.Height);
-					g.DrawImage(canvas2, desRect, srcRect, GraphicsUnit.Pixel);
-				}
-			}
-			return BitmapConverter.ToMat(output);
-		}
-		private static List<bitmapArray> MakeTemplateSource2(){
+		private static List<bitmapArray> MakeTemplateSource(){
 			string templateChar = "0123456789 ";
 			var output = new List<bitmapArray>();
 			// 適当なバッファに文字を出力しつつ、切り取ってテンプレートとする
@@ -116,6 +81,18 @@ namespace AzLH.Models {
 					g.DrawImage(canvas, desRect, srcRect, GraphicsUnit.Pixel);
 				}
 				output.Add(BitmapToMonoArray(canvas2));
+			}
+			return output;
+		}
+		// bitmapArrayを画像化する
+		private static Bitmap ArrayToBitmap(bitmapArray bitmapArray, int width, int height)
+		{
+			var output = new Bitmap(width, height);
+			for(int y = 0; y < height; ++y){
+				for(int x = 0;x < width; ++x){
+					byte grayScale = bitmapArray[x + y * width];
+					output.SetPixel(x, y, Color.FromArgb(grayScale, grayScale, grayScale));
+				}
 			}
 			return output;
 		}
@@ -201,6 +178,15 @@ namespace AzLH.Models {
 			}
 			return rect;
 		}
+		// 差分を計算する
+		static ulong CalcArrayDiff(bitmapArray a, bitmapArray b) {
+			ulong diff = 0;
+			for(int i = 0; i < a.Count; ++i) {
+				int c = a[i] - b[i];
+				diff += (ulong)(c * c);
+			}
+			return diff;
+		}
 		// 資材量を読み取る(-1＝読み取り不可)
 		public static int GetValueOCR(Bitmap bitmap, string supplyType, bool debugFlg = false) {
 			// 対応している資材名ではない場合は無視する
@@ -235,14 +221,28 @@ namespace AzLH.Models {
 				}
 			}
 			// 色の反転処理・二値化処理を行う
-			using (var mat1 = BitmapConverter.ToMat(canvas))
-			using (var mat2 = new Mat(mat1.Size(), MatType.CV_8U)) {
-				Cv2.CvtColor(mat1, mat2, ColorConversionCodes.BGR2GRAY);
-				if (SupplyParameters[supplyType].InverseFlg)
-					Cv2.BitwiseNot(mat2, mat2);
-				if (debugFlg) mat2.SaveImage($"debug\\digit-{supplyType}-step2.png");
-				Cv2.Threshold(mat2, mat2, SupplyParameters[supplyType].Threshold, 255, ThresholdTypes.Binary);
-				canvas = mat2.ToBitmap();
+			{
+				var mat1 = BitmapToMonoArray(canvas);
+				var mat2 = new bitmapArray();
+				if (SupplyParameters[supplyType].InverseFlg){
+					foreach (byte data in mat1){
+						if (255 - data >= SupplyParameters[supplyType].Threshold) {
+							mat2.Add(255);
+						} else {
+							mat2.Add(0);
+						}
+					}
+				}
+				else{
+					foreach (byte data in mat1){
+						if(data >= SupplyParameters[supplyType].Threshold) {
+							mat2.Add(255);
+						} else {
+							mat2.Add(0);
+						}
+					}
+				}
+				canvas = ArrayToBitmap(mat2, canvas.Width, canvas.Height);
 			}
 			if (debugFlg) canvas.Save($"debug\\digit-{supplyType}-step3.png");
 			// 境界部分を認識させる
@@ -294,32 +294,28 @@ namespace AzLH.Models {
 				}
 				if (debugFlg) canvas2.Save($"debug\\digit-{supplyType}-step4-{k + 1}-1.png");
 				// 認識用の大きさにリサイズする
-				var canvas3 = new Bitmap(ocrTemplateSize2.Width, ocrTemplateSize2.Height);
+				var canvas3 = new Bitmap(ocrTemplateSize1.Width, ocrTemplateSize1.Height);
 				using (var g = Graphics.FromImage(canvas3)) {
-					// 事前にcanvas3を赤色に塗りつぶす
-					g.FillRectangle(Brushes.Red, 0, 0, canvas3.Width, canvas3.Height);
 					// 切り取られる位置・大きさ
 					var srcRect = GetTrimmingRectangle(canvas2);
 					// 貼り付ける位置・大きさ
-					var desRect = new Rectangle(1, 1, ocrTemplateSize1.Width, ocrTemplateSize1.Height);
+					var desRect = new Rectangle(0, 0, ocrTemplateSize1.Width, ocrTemplateSize1.Height);
 					g.DrawImage(canvas2, desRect, srcRect, GraphicsUnit.Pixel);
 				}
 				if (debugFlg) canvas3.Save($"debug\\digit-{supplyType}-step4-{k + 1}-2.png");
 				// マッチングを行う
-				using (var image = BitmapConverter.ToMat(canvas3)) {
-					// テンプレートを読み込み、そこから検索を行う
-					var resultSize = new OpenCvSharp.Size(templateSource.Width - image.Width + 1, templateSource.Height - image.Height + 1);
-					using (var resultImage = new Mat(resultSize, MatType.CV_32F)) {
-						Cv2.MatchTemplate(templateSource, image, resultImage, TemplateMatchModes.SqDiff);
-						OpenCvSharp.Point minPosition, maxPosition;
-						Cv2.MinMaxLoc(resultImage, out minPosition, out maxPosition);
-						int xpos = minPosition.X;
-						// 検索した座標から、数字を特定する
-						int matchNumber = (int)Math.Round(1.0 * xpos / ocrTemplateSize2.Width / 2, 0);
-						matchNumber = (matchNumber < 0 ? 0 : matchNumber >= 10 ? 0 : matchNumber);
-						digit.Add(matchNumber);
+				var digitBitmapArray = BitmapToMonoArray(canvas3);
+				int matchIndex = -1;
+				ulong matchDiff = ulong.MaxValue;
+				for(int i = 0; i < templateSource.Count; ++i) {
+					ulong diff = CalcArrayDiff(digitBitmapArray, templateSource[i]);
+					if(diff < matchDiff) {
+						matchIndex = i;
+						matchDiff = diff;
 					}
 				}
+				int matchNumber = (matchIndex < 0 ? 0 : matchIndex >= 10 ? 0 : matchIndex);
+				digit.Add(matchNumber);
 			}
 			// 結果を数値化する
 			int retVal = 0;
