@@ -62,7 +62,7 @@ namespace AzLH.Models {
 		public static async Task<string> NewestSoftwareVerAsync() {
 			try {
 				var client = new HttpClient();
-				var response = await client.GetStringAsync("https://raw.githubusercontent.com/YSRKEN/AzLH/master/version.txt");
+				string response = await client.GetStringAsync("https://raw.githubusercontent.com/YSRKEN/AzLH/master/version.txt");
 				return response;
 			}
 			catch {

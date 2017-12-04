@@ -25,6 +25,8 @@ namespace AzLH.Models {
 
 		// nullではない場合、スクリーンショットを取得可能ということになる
 		public static Rectangle? GameWindowRect { get; set; }
+		// nullではない場合、特殊なスクショ取得メソッドを使用可能ということになる
+		public static IntPtr? GameWindowHandle { get; set; }
 
 		// 枠検出に利用する定数を初期化
 		private static List<DSize> InitializeGameWindowSizeList() {
@@ -41,7 +43,7 @@ namespace AzLH.Models {
 			return list;
 		}
 		// スクリーンショットを保存する
-		public static Bitmap GetScreenshot(bool forTwitterFlg = false) {
+		public static Bitmap GetScreenshot(bool forTwitterFlg = false, bool specialScreenShotMethodFlg = false) {
 			// スクショを取得する
 			var screenShot = GetScreenBitmap((Rectangle)GameWindowRect);
 			// Twitter用に左上を僅かに透過させる
@@ -125,11 +127,9 @@ namespace AzLH.Models {
 				return GetGameWindowPosition(virtualScreenBitmap);
 			}
 		}
-
 		public static Task<List<Rectangle>> GetGameWindowPositionAsync() {
 			return Task.Run(() => GetGameWindowPosition());
 		}
-
 		public static List<Rectangle> GetGameWindowPosition(Bitmap bitmap) {
 			// 上辺の候補を検索する
 			// 1. GameWindowSearchStep.Width ピクセルごとに画素を読み取る(Y=yとY=y+1)
@@ -324,6 +324,11 @@ namespace AzLH.Models {
 				}
 			}
 			return rectList;
+		}
+
+		// ゲーム画面を表示しているエミュレーターのウィンドウハンドルを取得する
+		public static void TryGetGameWindowHandle() {
+
 		}
 	}
 }

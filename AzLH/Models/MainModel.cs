@@ -221,13 +221,16 @@ namespace AzLH.Models {
 		private void SelectGameWindow(Rectangle? rect) {
 			if (rect == null) {
 				ScreenShotProvider.GameWindowRect = null;
+				ScreenShotProvider.GameWindowHandle = null;
 				PutLog("座標取得 : 失敗");
 				SaveScreenshotFlg = false;
 			}
 			else {
 				ScreenShotProvider.GameWindowRect = rect;
+				ScreenShotProvider.TryGetGameWindowHandle();
 				PutLog("座標取得 : 成功");
 				PutLog($"ゲーム座標 : {Utility.GetRectStr((Rectangle)ScreenShotProvider.GameWindowRect)}");
+				PutLog($"ウィンドウハンドル : {(ScreenShotProvider.GameWindowHandle.HasValue ? $"0x{ScreenShotProvider.GameWindowHandle.Value.ToString("X")}" : "不明")}");
 				SaveScreenshotFlg = true;
 			}
 		}
@@ -275,6 +278,7 @@ namespace AzLH.Models {
 				case 0: {
 						// 候補なしと表示する
 						ScreenShotProvider.GameWindowRect = null;
+						ScreenShotProvider.GameWindowHandle = null;
 						PutLog("座標取得 : 失敗");
 						SaveScreenshotFlg = false;
 					}
@@ -282,8 +286,10 @@ namespace AzLH.Models {
 				case 1: {
 						// 即座にその候補で確定させる
 						ScreenShotProvider.GameWindowRect = rectList[0];
+						ScreenShotProvider.TryGetGameWindowHandle();
 						PutLog("座標取得 : 成功");
 						PutLog($"ゲーム座標 : {Utility.GetRectStr((Rectangle)ScreenShotProvider.GameWindowRect)}");
+						PutLog($"ウィンドウハンドル : {(ScreenShotProvider.GameWindowHandle.HasValue ? $"0x{ScreenShotProvider.GameWindowHandle.Value.ToString("X")}" : "不明")}");
 						SaveScreenshotFlg = true;
 					}
 					break;
@@ -309,8 +315,10 @@ namespace AzLH.Models {
 						case 1: {
 								// 即座にその候補で確定させる
 								ScreenShotProvider.GameWindowRect = rectList2[0];
+								ScreenShotProvider.TryGetGameWindowHandle();
 								PutLog("座標取得 : 成功");
 								PutLog($"ゲーム座標 : {Utility.GetRectStr((Rectangle)ScreenShotProvider.GameWindowRect)}");
+								PutLog($"ウィンドウハンドル : {(ScreenShotProvider.GameWindowHandle.HasValue ? $"0x{ScreenShotProvider.GameWindowHandle.Value.ToString("X")}" : "不明")}");
 								SaveScreenshotFlg = true;
 							}
 							break;
@@ -328,6 +336,8 @@ namespace AzLH.Models {
 				}
 			}
 			catch (Exception) {
+				ScreenShotProvider.GameWindowRect = null;
+				ScreenShotProvider.GameWindowHandle = null;
 				PutLog($"座標取得 : 失敗");
 			}
 		}
@@ -335,7 +345,7 @@ namespace AzLH.Models {
 		public void SaveScreenshot() {
 			try {
 				string fileName = $"{Utility.GetTimeStrLong()}.png";
-				ScreenShotProvider.GetScreenshot(ForTwitterFlg).Save($"pic\\{fileName}");
+				ScreenShotProvider.GetScreenshot(ForTwitterFlg, SpecialScreenShotMethodFlg).Save($"pic\\{fileName}");
 				PutLog($"スクリーンショット : 成功");
 				PutLog($"ファイル名 : {fileName}");
 			}
@@ -498,7 +508,7 @@ namespace AzLH.Models {
 		public void HelperTaskF() {
 			if (!SaveScreenshotFlg)
 				return;
-			using (var screenShot = ScreenShotProvider.GetScreenshot()) {
+			using (var screenShot = ScreenShotProvider.GetScreenshot(false, SpecialScreenShotMethodFlg)) {
 				// スクショが取得できるとscreenShotがnullにならない
 				if (screenShot != null) {
 					// シーン文字列を取得し、表示する
