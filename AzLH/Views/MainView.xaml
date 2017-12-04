@@ -59,6 +59,8 @@
 						IsChecked="{Binding MemoryWindowPositionFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<MenuItem IsCheckable="True" Header="常時座標認識(_A)"
 						IsChecked="{Binding AutoSearchPositionFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<MenuItem IsCheckable="True" Header="スクショ取得メソッドを切り替える(_S)"
+						IsChecked="{Binding SpecialScreenShotMethodFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<MenuItem Header="デバッグモード(_D)">
 					<MenuItem IsCheckable="True" Header="資材記録時にスクショでロギング(_S)"
 						IsChecked="{Binding AutoSupplyScreenShotFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>

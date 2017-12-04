@@ -176,6 +176,20 @@ namespace AzLH.Models {
 				}
 			}
 		}
+		// 特殊なスクショ取得メソッドを使用するか？
+		private bool specialScreenShotMethodFlg = false;
+		public bool SpecialScreenShotMethodFlg {
+			get => specialScreenShotMethodFlg;
+			set {
+				SetProperty(ref specialScreenShotMethodFlg, value);
+				var settings = SettingsStore.Instance;
+				settings.SpecialScreenShotMethodFlg = specialScreenShotMethodFlg;
+				if (!settings.SaveSettings()) {
+					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				}
+			}
+		}
+		
 
 		// コンストラクタ
 		public MainModel() {
@@ -197,6 +211,7 @@ namespace AzLH.Models {
 			AutoSupplyScreenShotFlg = settings.AutoSupplyScreenShotFlg;
 			PutCharacterRecognitionFlg = settings.PutCharacterRecognitionFlg;
 			DragAndDropPictureFlg = settings.DragAndDropPictureFlg;
+			SpecialScreenShotMethodFlg = settings.SpecialScreenShotMethodFlg;
 		}
 		// 実行ログに追記する
 		private void PutLog(string message) {

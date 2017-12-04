@@ -37,6 +37,8 @@ namespace AzLH.ViewModels {
 		public ReactiveProperty<bool> PutCharacterRecognitionFlg { get; }
 		// ドラッグ＆ドロップでシーン認識するか？
 		public ReactiveProperty<bool> DragAndDropPictureFlg { get; }
+		// 特殊なスクショ取得メソッドを使用するか？
+		public ReactiveProperty<bool> SpecialScreenShotMethodFlg { get; }
 
 		// 座標取得ボタン
 		public ReactiveCommand GetGameWindowPositionCommand { get; }
@@ -98,6 +100,7 @@ namespace AzLH.ViewModels {
 			AutoSupplyScreenShotFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.AutoSupplyScreenShotFlg);
 			PutCharacterRecognitionFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.PutCharacterRecognitionFlg);
 			DragAndDropPictureFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.DragAndDropPictureFlg);
+			SpecialScreenShotMethodFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.SpecialScreenShotMethodFlg);
 			// コマンドを設定
 			GetGameWindowPositionCommand = new ReactiveCommand();
 			SaveScreenshotCommand = new ReactiveCommand();

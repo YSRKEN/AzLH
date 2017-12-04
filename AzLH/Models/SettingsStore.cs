@@ -30,6 +30,8 @@ namespace AzLH.Models {
 		public bool PutCharacterRecognitionFlg { get; set; }
 		// ドラッグ＆ドロップでシーン認識するか？
 		public bool DragAndDropPictureFlg { get; set; }
+		// 特殊なスクショ取得メソッドを使用するか？
+		public bool SpecialScreenShotMethodFlg { get; set; }
 
 		// デフォルト設定
 		private void SetDefaultSettings() {
@@ -42,6 +44,7 @@ namespace AzLH.Models {
 			AutoSupplyScreenShotFlg = false;
 			PutCharacterRecognitionFlg = false;
 			DragAndDropPictureFlg = false;
+			SpecialScreenShotMethodFlg = false;
 		}
 		// JSONから読み込み
 		public bool LoadSettings(string path) {
@@ -60,6 +63,7 @@ namespace AzLH.Models {
 					AutoSupplyScreenShotFlg = model.AutoSupplyScreenShotFlg;
 					PutCharacterRecognitionFlg = model.PutCharacterRecognitionFlg;
 					DragAndDropPictureFlg = model.DragAndDropPictureFlg;
+					SpecialScreenShotMethodFlg = model.SpecialScreenShotMethodFlg;
 				}
 				return true;
 			}
