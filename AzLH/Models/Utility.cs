@@ -70,7 +70,7 @@ namespace AzLH.Models {
 			}
 		}
 	}
-	internal static class NativeMethods {
+	internal static partial class NativeMethods {
 		[DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool DeleteObject([In] IntPtr hObject);

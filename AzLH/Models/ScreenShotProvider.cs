@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -328,7 +329,34 @@ namespace AzLH.Models {
 
 		// ゲーム画面を表示しているエミュレーターのウィンドウハンドルを取得する
 		public static void TryGetGameWindowHandle() {
-
+			// 通常のスクショすら取得できない場合は無理
+			if (!GameWindowRect.HasValue)
+				return;
+			// 「中央の位置」を計算する
+			int centerPointX = GameWindowRect.Value.X + GameWindowRect.Value.Width / 2;
+			int centerPointY = GameWindowRect.Value.Y + GameWindowRect.Value.Height / 2;
+			// そこからウィンドウハンドルを取得する
+			var handle = NativeMethods.WindowFromPoint(
+				new NativeMethods.POINT {
+					x = centerPointX,
+					y = centerPointY
+				}
+			);
+			if(handle == IntPtr.Zero) {
+				GameWindowHandle = null;
+			} else {
+				GameWindowHandle = handle;
+			}
 		}
+	}
+	internal static partial class NativeMethods
+	{
+		[StructLayout(LayoutKind.Sequential)]
+		public struct POINT {
+			public int x;
+			public int y;
+		}
+		[DllImport("user32.dll")]
+		public static extern IntPtr WindowFromPoint(POINT Point);
 	}
 }
