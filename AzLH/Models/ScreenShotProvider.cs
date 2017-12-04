@@ -47,7 +47,12 @@ namespace AzLH.Models {
 		// スクリーンショットを保存する
 		public static Bitmap GetScreenshot(bool forTwitterFlg = false, bool specialScreenShotMethodFlg = false) {
 			// スクショを取得する
-			var screenShot = GetScreenBitmap((Rectangle)GameWindowRect);
+			Bitmap screenShot;
+			if (specialScreenShotMethodFlg) {
+				screenShot = GetGameWindowBitmap((Rectangle)GameWindowRect, (IntPtr)GameWindowHandle);
+			} else {
+				screenShot = GetScreenBitmap((Rectangle)GameWindowRect);
+			}
 			// Twitter用に左上を僅かに透過させる
 			if (forTwitterFlg) {
 				var color = screenShot.GetPixel(0, 0);
@@ -110,13 +115,26 @@ namespace AzLH.Models {
 			}
 			return virtualScreenBitmap;
 		}
-
 		public static Bitmap GetScreenBitmap(Rectangle rect) {
 			var virtualScreenBitmap = new Bitmap(rect.Width, rect.Height, PixelFormat.Format32bppArgb);
 			using (var bitmapGraphics = Graphics.FromImage(virtualScreenBitmap)) {
 				bitmapGraphics.CopyFromScreen(rect.Left, rect.Top, 0, 0, virtualScreenBitmap.Size);
 			}
 			return virtualScreenBitmap;
+		}
+		// 特殊なスクショ取得メソッド
+		public static Bitmap GetGameWindowBitmap(Rectangle rect, IntPtr handle) {
+			var hSrcDC = NativeMethods.GetWindowDC(handle);
+			var bitmap = new Bitmap(rect.Width, rect.Height);
+			using (var g = Graphics.FromImage(bitmap)) {
+				var hDestDC = g.GetHdc();
+				NativeMethods.BitBlt(hDestDC, 0, 0, bitmap.Width, bitmap.Height,
+					hSrcDC, rect.X, rect.Y, NativeMethods.SRCCOPY);
+				g.ReleaseHdc();
+			}
+			NativeMethods.ReleaseDC(handle, hSrcDC);
+			bitmap.Save(@"debug\bitblt.bmp");
+			return bitmap;
 		}
 
 		// ゲーム画面の位置を全ディスプレイから検索し、取得する
@@ -227,6 +245,7 @@ namespace AzLH.Models {
 				}
 			}
 			//稀にpointListの内容がダブることがあるので修正
+			//参考→http://www.atmarkit.co.jp/ait/articles/1703/29/news027.html
 			pointList = pointList.GroupBy(p => p).Select(group => group.First()).ToList();
 			// 上辺・左辺から決まる各候補について、Rectとしての条件を満たせるかをチェックする
 			var rectList = new List<Rectangle>();
@@ -375,6 +394,8 @@ namespace AzLH.Models {
 	}
 	internal static partial class NativeMethods
 	{
+		public const int SRCCOPY = 0xCC0020;
+		public const int CAPTUREBLT = 0x40000000;
 		[StructLayout(LayoutKind.Sequential)]
 		public struct POINT {
 			public int x;
@@ -391,5 +412,20 @@ namespace AzLH.Models {
 		public static extern IntPtr WindowFromPoint(POINT point);
 		[DllImport("user32.dll")]
 		public static extern int GetWindowRect(IntPtr hwnd, ref RECT lpRect);
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetWindowDC(IntPtr hwnd);
+		[DllImport("gdi32.dll")]
+		public static extern int BitBlt(IntPtr hDestDC,
+			int x,
+			int y,
+			int nWidth,
+			int nHeight,
+			IntPtr hSrcDC,
+			int xSrc,
+			int ySrc,
+			int dwRop
+		);
+		[DllImport("user32.dll")]
+		public static extern IntPtr ReleaseDC(IntPtr hwnd, IntPtr hdc);
 	}
 }
