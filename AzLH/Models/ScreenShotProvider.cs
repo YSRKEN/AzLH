@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -225,6 +226,8 @@ namespace AzLH.Models {
 					pointList.Add(new KeyValuePair<int, int>(x, y));
 				}
 			}
+			//稀にpointListの内容がダブることがあるので修正
+			pointList = pointList.GroupBy(p => p).Select(group => group.First()).ToList();
 			// 上辺・左辺から決まる各候補について、Rectとしての条件を満たせるかをチェックする
 			var rectList = new List<Rectangle>();
 			foreach (var point in pointList) {
@@ -330,8 +333,10 @@ namespace AzLH.Models {
 		// ゲーム画面を表示しているエミュレーターのウィンドウハンドルを取得する
 		public static void TryGetGameWindowHandle() {
 			// 通常のスクショすら取得できない場合は無理
-			if (!GameWindowRect.HasValue)
+			if (!GameWindowRect.HasValue) {
+				GameWindowHandle = null;
 				return;
+			}
 			// 「中央の位置」を計算する
 			int centerPointX = GameWindowRect.Value.X + GameWindowRect.Value.Width / 2;
 			int centerPointY = GameWindowRect.Value.Y + GameWindowRect.Value.Height / 2;
@@ -344,9 +349,28 @@ namespace AzLH.Models {
 			);
 			if(handle == IntPtr.Zero) {
 				GameWindowHandle = null;
-			} else {
-				GameWindowHandle = handle;
+				return;
 			}
+			GameWindowHandle = handle;
+			// 取得したハンドルを元に、ゲームウィンドウのrectを取得する
+			var rect = new NativeMethods.RECT();
+			if(NativeMethods.GetWindowRect(handle, ref rect) == 0){
+				GameWindowHandle = null;
+				return;
+			}
+			// ゲームウィンドウのrectからスクリーンショットを取得し、そこを基準にしたゲーム画面の位置を算出する
+			// 1ピクセル大きめに取得するのは、GetWindowRectで取得したrectがゲーム画面そのものズバリである際、
+			// そこにゲーム画面らしきものがあるとGetGameWindowPositionメソッドが判断できなくなるため
+			var gameWindowBitmap = GetScreenBitmap(
+				new Rectangle(rect.left - 1, rect.top - 1, rect.right - rect.left + 2, rect.bottom - rect.top + 2)
+			);
+			var gameRect = GetGameWindowPosition(gameWindowBitmap);
+			if(gameRect.Count != 1) {
+				GameWindowHandle = null;
+				return;
+			}
+			//1ピクセル大きめに取得したので修正
+			GameWindowRect = new Rectangle(gameRect[0].Left - 1, gameRect[0].Top - 1, gameRect[0].Width, gameRect[0].Height);
 		}
 	}
 	internal static partial class NativeMethods
@@ -356,7 +380,16 @@ namespace AzLH.Models {
 			public int x;
 			public int y;
 		}
+		[StructLayout(LayoutKind.Sequential)]
+		public struct RECT {
+			public int left;
+			public int top;
+			public int right;
+			public int bottom;
+		}
 		[DllImport("user32.dll")]
-		public static extern IntPtr WindowFromPoint(POINT Point);
+		public static extern IntPtr WindowFromPoint(POINT point);
+		[DllImport("user32.dll")]
+		public static extern int GetWindowRect(IntPtr hwnd, ref RECT lpRect);
 	}
 }
