@@ -293,6 +293,9 @@ namespace AzLH.Models {
 					g.DrawImage(canvas, desRect, srcRect, GraphicsUnit.Pixel);
 				}
 				if (debugFlg) canvas2.Save($"debug\\digit-{supplyType}-step4-{k + 1}-1.png");
+				// 幅が狭すぎる場合は、認識ミスと判断して飛ばす
+				if (1.0 * canvas2.Height / canvas2.Width >= 5.0)
+					continue;
 				// 認識用の大きさにリサイズする
 				var canvas3 = new Bitmap(ocrTemplateSize1.Width, ocrTemplateSize1.Height);
 				using (var g = Graphics.FromImage(canvas3)) {
