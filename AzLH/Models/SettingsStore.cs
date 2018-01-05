@@ -15,15 +15,22 @@ namespace AzLH.Models {
 		public double[] MainWindowRect { get; set; }
 		// 資材記録画面の位置・大きさ
 		public double[] SupplyWindowRect { get; set; }
+		// 各種タイマー画面の位置・大きさ
+		public double[] TimerWindowRect { get; set; }
 		// ウィンドウの座標を記憶するか？
 		public bool MemoryWindowPositionFlg { get; set; }
 		// 常時座標を捕捉し続けるか？
 		public bool AutoSearchPositionFlg { get; set; }
 		// 資材記録画面を最初から表示するか？
 		public bool AutoSupplyWindowFlg { get; set; }
+		// 各種タイマー画面を最初から表示するか？
+		public bool AutoTimerWindowFlg { get; set; }
 		// 資材記録画面が表示されているか？
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
 		public bool ShowSupplyWindowFlg { get; set; }
+		// 各種タイマー画面が表示されているか？
+		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+		public bool ShowTimerWindowFlg { get; set; }
 		// 資材記録時にスクショでロギングするか？
 		public bool AutoSupplyScreenShotFlg { get; set; }
 		// 資材記録時に画像処理結果を出力するか？
@@ -36,9 +43,11 @@ namespace AzLH.Models {
 			ForTwitterFlg = false;
 			MainWindowRect = new double[] { double.NaN, double.NaN, 400.0, 300.0 };
 			SupplyWindowRect = new double[] { double.NaN, double.NaN, 600.0, 400.0 };
+			TimerWindowRect = new double[] { double.NaN, double.NaN, 400.0, 250.0 };
 			MemoryWindowPositionFlg = true;
 			AutoSearchPositionFlg = true;
 			AutoSupplyWindowFlg = false;
+			AutoTimerWindowFlg = false;
 			AutoSupplyScreenShotFlg = false;
 			PutCharacterRecognitionFlg = false;
 			DragAndDropPictureFlg = false;
@@ -54,9 +63,11 @@ namespace AzLH.Models {
 					ForTwitterFlg = model.ForTwitterFlg;
 					MainWindowRect = model.MainWindowRect;
 					SupplyWindowRect = model.SupplyWindowRect;
+					TimerWindowRect = model.TimerWindowRect;
 					MemoryWindowPositionFlg = model.MemoryWindowPositionFlg;
 					AutoSearchPositionFlg = model.AutoSearchPositionFlg;
 					AutoSupplyWindowFlg = model.AutoSupplyWindowFlg;
+					AutoTimerWindowFlg = model.AutoTimerWindowFlg;
 					AutoSupplyScreenShotFlg = model.AutoSupplyScreenShotFlg;
 					PutCharacterRecognitionFlg = model.PutCharacterRecognitionFlg;
 					DragAndDropPictureFlg = model.DragAndDropPictureFlg;

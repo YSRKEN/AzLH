@@ -405,6 +405,16 @@ namespace AzLH.Models {
 			view.Show();
 			settings.ShowSupplyWindowFlg = true;
 		}
+		// 各種タイマー画面を表示
+		public void OpenTimerView() {
+			var settings = SettingsStore.Instance;
+			if (settings.ShowTimerWindowFlg)
+				return;
+			var vm = new ViewModels.TimerViewModel();
+			var view = new Views.TimerView { DataContext = vm };
+			view.Show();
+			settings.ShowTimerWindowFlg = true;
+		}
 		// 資材のインポート機能(燃料・資金・ダイヤ)
 		public async void ImportMainSupply() {
 			// インスタンスを作成
