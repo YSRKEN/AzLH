@@ -248,7 +248,13 @@ namespace AzLH.Models {
 					int yPixelPoint = (int)Math.Round(yPoint * bitmap.Height / 100, 0);
 					var pixelColor = bitmap.GetPixel(xPixelPoint, yPixelPoint);
 					if(GetColorDistance(pixelColor, Color.FromArgb(255,215,66)) < 50) {
-						gauge[ti] = doublePer;
+						// doublePerが特定の範囲内にある場合、ゲージ下にある「数字」と
+						// 重なってしまうため測定精度が下がる。そこで、度数法だと140°～220°、
+						// [0, 1)に正規化すると0.38～0.61までの範囲にあるなら「無視」するようにした
+						if(380 <= intPer && intPer <= 610)
+							gauge[ti] = -1.0;
+						else
+							gauge[ti] = doublePer;
 						break;
 					}
 				}

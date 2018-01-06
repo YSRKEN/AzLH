@@ -179,6 +179,7 @@ namespace AzLH.Models {
 
 		// 1秒前のゲージ量
 		double[] oldGauge = new double[] { -1.0, -1.0, -1.0 };
+		double[] remainTime = new double[] { 0.0, 0.0, 0.0 };
 
 		// コンストラクタ
 		public MainModel() {
@@ -603,7 +604,6 @@ namespace AzLH.Models {
 						// 各種のゲージ毎に判定を行う
 						string output = "残りチャージ時間：";
 						var label = new string[] { "空撃", "雷撃", "砲撃" };
-						var remainTime = new double[] { 0.0, 0.0, 0.0 };
 						for (int ti = 0; ti < SceneRecognition.GaugeTypeCount; ++ti) {
 							bool flg = false;
 							if (gauge[ti] >= 0.0) {
