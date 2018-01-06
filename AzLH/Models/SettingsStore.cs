@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.Text;
 
@@ -25,18 +26,26 @@ namespace AzLH.Models {
 		public bool AutoSupplyWindowFlg { get; set; }
 		// 各種タイマー画面を最初から表示するか？
 		public bool AutoTimerWindowFlg { get; set; }
-		// 資材記録画面が表示されているか？
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public bool ShowSupplyWindowFlg { get; set; }
-		// 各種タイマー画面が表示されているか？
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public bool ShowTimerWindowFlg { get; set; }
 		// 資材記録時にスクショでロギングするか？
 		public bool AutoSupplyScreenShotFlg { get; set; }
 		// 資材記録時に画像処理結果を出力するか？
 		public bool PutCharacterRecognitionFlg { get; set; }
 		// ドラッグ＆ドロップでシーン認識するか？
 		public bool DragAndDropPictureFlg { get; set; }
+
+		// 資材記録画面が表示されているか？
+		[JsonIgnore]
+		public bool ShowSupplyWindowFlg { get; set; }
+		// 各種タイマー画面が表示されているか？
+		[JsonIgnore]
+		public bool ShowTimerWindowFlg { get; set; }
+		// 各種ボムのチャージ完了時刻をメモする
+		[JsonIgnore]
+		public DateTime? BombChageTime1 { get; set; }
+		[JsonIgnore]
+		public DateTime? BombChageTime2 { get; set; }
+		[JsonIgnore]
+		public DateTime? BombChageTime3 { get; set; }
 
 		// デフォルト設定
 		private void SetDefaultSettings() {
@@ -51,6 +60,9 @@ namespace AzLH.Models {
 			AutoSupplyScreenShotFlg = false;
 			PutCharacterRecognitionFlg = false;
 			DragAndDropPictureFlg = false;
+			BombChageTime1 = null;
+			BombChageTime2 = null;
+			BombChageTime3 = null;
 		}
 		// JSONから読み込み
 		public bool LoadSettings(string path) {

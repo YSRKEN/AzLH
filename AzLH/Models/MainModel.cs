@@ -602,17 +602,28 @@ namespace AzLH.Models {
 					if (SceneRecognition.JudgeGameScene(screenShot) == "戦闘中") {
 						var gauge = SceneRecognition.GetBattleBombGauge(screenShot);
 						// 各種のゲージ毎に判定を行う
-						string output = "残りチャージ時間：";
-						var label = new string[] { "空撃", "雷撃", "砲撃" };
+						//string output = "残りチャージ時間：";
+						//var label = new string[] { "空撃", "雷撃", "砲撃" };
 						for (int ti = 0; ti < SceneRecognition.GaugeTypeCount; ++ti) {
-							bool flg = false;
 							if (gauge[ti] >= 0.0) {
 								if (oldGauge[ti] >= 0.0) {
 									// 前回のゲージ量が残っているので、チャージ完了に要する時間が計算できる
 									// ただしゲージが変化していないようにみえる場合は無視する
 									if (gauge[ti] > oldGauge[ti]) {
 										remainTime[ti] = (1.0 - gauge[ti]) / (gauge[ti] - oldGauge[ti]);
-										flg = true;
+										//
+										var setting = SettingsStore.Instance;
+										switch (ti) {
+										case 0:
+											setting.BombChageTime1 = DateTime.Now.AddSeconds(remainTime[ti]);
+											break;
+										case 1:
+											setting.BombChageTime2 = DateTime.Now.AddSeconds(remainTime[ti]);
+											break;
+										case 2:
+											setting.BombChageTime3 = DateTime.Now.AddSeconds(remainTime[ti]);
+											break;
+										}
 									} else {
 										// 読み取り失敗した祭の処理
 										if (remainTime[ti] > 0.0) remainTime[ti] -= 1.0;
@@ -627,9 +638,7 @@ namespace AzLH.Models {
 								// 読み取り失敗した祭の処理
 								if(remainTime[ti]> 0.0) remainTime[ti] -= 1.0;
 							}
-							output += $"{(flg ? "*" : "")}{label[ti]} {Math.Round(remainTime[ti], 1)}[s]／";
 						}
-						PutLog(output);
 					}
 				}
 			}
