@@ -19,6 +19,14 @@ namespace AzLH.Models {
 			new RectangleF(79.14f, 82.22f, 0.7813f, 1.389f),
 			new RectangleF(94.14f, 83.61f, 0.8594f, 1.111f),
 		};
+		// 戦闘中の各種ゲージの中央座標のPoint
+		static PointF[] gaugeChargePoint = new PointF[] {
+			new PointF(65.586f, 84.375f),
+			new PointF(79.180f, 84.375f),
+			new PointF(92.695f, 84.375f),
+		};
+		// 戦闘中の各種ゲージの円の半径(横・縦の比率)
+		static SizeF gaugeChargeR = new SizeF(4.6875f, 8.3333f);
 
 		// 認識パラメーターを読み込む
 		private static Dictionary<string, SceneParameter[]> LoadSceneParameters() {
@@ -217,12 +225,32 @@ namespace AzLH.Models {
 		public static double[] GetBattleBombGauge(Bitmap bitmap) {
 			var gauge = new double[gaugeTypeCount];
 			for(int ti = 0; ti < gaugeTypeCount; ++ti) {
+				// 読み取れなかった際の割合を0.0とする
+				gauge[ti] = 0.0;
 				// ゲージが最大まで溜まっている場合は、常に1を返す
 				// (そうでない場合、(189,186,189)になる)
 				var centerColor = GetAverageColor(bitmap, gaugeChargeRect[ti]);
 				if(GetColorDistance(centerColor, Color.FromArgb(247, 251, 247)) < 500) {
 					gauge[ti] = 1.0;
 					continue;
+				}
+				// そうでない場合は、ゲージがどこまでどこまで読み取れるかを返す
+				for(int intPer = 999; intPer >= 0; --intPer) {
+					// doublePerは[0, 1)の範囲内で、ゲージの割合を表す
+					double doublePer = 0.001 * intPer;
+					// doublePerを座標変換して円形にしつつ、ピクセル座標まで落とし込む
+					double radianAngle = doublePer * Math.PI * 2;
+					double xOffset = Math.Sin(radianAngle);
+					double yOffset = -Math.Cos(radianAngle);
+					double xPoint = gaugeChargePoint[ti].X + xOffset * gaugeChargeR.Width;
+					double yPoint = gaugeChargePoint[ti].Y + yOffset * gaugeChargeR.Height;
+					int xPixelPoint = (int)Math.Round(xPoint * bitmap.Width / 100, 0);
+					int yPixelPoint = (int)Math.Round(yPoint * bitmap.Height / 100, 0);
+					var pixelColor = bitmap.GetPixel(xPixelPoint, yPixelPoint);
+					if(GetColorDistance(pixelColor, Color.FromArgb(255,215,66)) < 50) {
+						gauge[ti] = doublePer;
+						break;
+					}
 				}
 			}
 			return gauge;

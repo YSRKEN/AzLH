@@ -74,7 +74,6 @@ namespace AzLH.ViewModels
 						}
 						output += otherMessage;
 						MessageBox.Show(output, Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Information);
-						
 					}
 					catch
 					{
