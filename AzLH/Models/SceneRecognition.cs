@@ -12,21 +12,21 @@ namespace AzLH.Models {
 		// 各シーンにおける認識パラメーター
 		private static Dictionary<string, SceneParameter[]> sceneParameters = LoadSceneParameters();
 		// 戦闘中の各種ゲージの種類数
-		static int gaugeTypeCount = 3;
+		public static int GaugeTypeCount { get; } = 3;
 		// 戦闘中の各種ゲージが光っているかを判定するためのRect
-		static RectangleF[] gaugeChargeRect = new RectangleF[] {
+		private static RectangleF[] gaugeChargeRect = new RectangleF[] {
 			new RectangleF(65.63f, 84.72f, 1.406f, 1.250f),
 			new RectangleF(79.14f, 82.22f, 0.7813f, 1.389f),
 			new RectangleF(94.14f, 83.61f, 0.8594f, 1.111f),
 		};
 		// 戦闘中の各種ゲージの中央座標のPoint
-		static PointF[] gaugeChargePoint = new PointF[] {
+		private static PointF[] gaugeChargePoint = new PointF[] {
 			new PointF(65.586f, 84.375f),
 			new PointF(79.180f, 84.375f),
 			new PointF(92.695f, 84.375f),
 		};
 		// 戦闘中の各種ゲージの円の半径(横・縦の比率)
-		static SizeF gaugeChargeR = new SizeF(4.6875f, 8.3333f);
+		private static SizeF gaugeChargeR = new SizeF(4.6875f, 8.3333f);
 
 		// 認識パラメーターを読み込む
 		private static Dictionary<string, SceneParameter[]> LoadSceneParameters() {
@@ -223,8 +223,8 @@ namespace AzLH.Models {
 		}
 		// 戦闘中の画面にて、空爆・魚雷・砲撃のゲージ量を読み取って返す
 		public static double[] GetBattleBombGauge(Bitmap bitmap) {
-			var gauge = new double[gaugeTypeCount];
-			for(int ti = 0; ti < gaugeTypeCount; ++ti) {
+			var gauge = new double[GaugeTypeCount];
+			for(int ti = 0; ti < GaugeTypeCount; ++ti) {
 				// 読み取れなかった際の割合を0.0とする
 				gauge[ti] = 0.0;
 				// ゲージが最大まで溜まっている場合は、常に1を返す
