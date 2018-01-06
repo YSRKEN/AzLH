@@ -535,6 +535,13 @@ namespace AzLH.Models {
 						}
 						break;
 					}
+					// 戦闘中でなくなった場合、速やかにボムタイマーをリセットする
+					if(JudgedScene != "シーン判定 : 戦闘中" && JudgedScene != "シーン判定 : 不明") {
+						var setting = SettingsStore.Instance;
+						setting.BombChageTime1 = null;
+						setting.BombChageTime2 = null;
+						setting.BombChageTime3 = null;
+					}
 				} else {
 					// スクショが取得できなくなったのでその旨を通知する
 					PutLog("エラー：スクショが取得できなくなりました");
