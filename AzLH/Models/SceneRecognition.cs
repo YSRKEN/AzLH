@@ -184,6 +184,12 @@ namespace AzLH.Models {
 								return "不明";
 							}
 						break;
+					case "戦闘中": {
+							var aveColor = GetAverageColor(bitmap, new RectangleF(95.94f, 8.750f, 0.3906f, 0.6944f));
+							if (GetColorDistance(aveColor, Color.FromArgb(222, 223, 222)) > 50)
+								return "不明";
+						}
+						break;
 					}
 					return scene.Key;
 				}
