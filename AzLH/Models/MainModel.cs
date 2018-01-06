@@ -644,6 +644,7 @@ namespace AzLH.Models {
 							} else {
 								// 読み取り失敗した祭の処理
 								if(remainTime[ti]> 0.0) remainTime[ti] -= 1.0;
+								oldGauge[ti] = -1.0;
 							}
 						}
 					}
