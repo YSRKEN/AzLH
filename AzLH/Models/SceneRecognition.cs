@@ -11,6 +11,14 @@ namespace AzLH.Models {
 	static class SceneRecognition {
 		// 各シーンにおける認識パラメーター
 		private static Dictionary<string, SceneParameter[]> sceneParameters = LoadSceneParameters();
+		// 戦闘中の各種ゲージの種類数
+		static int gaugeTypeCount = 3;
+		// 戦闘中の各種ゲージが光っているかを判定するためのRect
+		static RectangleF[] gaugeChargeRect = new RectangleF[] {
+			new RectangleF(65.63f, 84.72f, 1.406f, 1.250f),
+			new RectangleF(79.14f, 82.22f, 0.7813f, 1.389f),
+			new RectangleF(94.14f, 83.61f, 0.8594f, 1.111f),
+		};
 
 		// 認識パラメーターを読み込む
 		private static Dictionary<string, SceneParameter[]> LoadSceneParameters() {
@@ -146,6 +154,7 @@ namespace AzLH.Models {
 			int bDiff = a.B - b.B;
 			return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
 		}
+
 		// どのシーンかを判定する("不明"＝判定不可)
 		public static string JudgeGameScene(Bitmap bitmap) {
 			foreach(var scene in sceneParameters) {
@@ -186,8 +195,16 @@ namespace AzLH.Models {
 						break;
 					case "戦闘中": {
 							var aveColor = GetAverageColor(bitmap, new RectangleF(95.94f, 8.750f, 0.3906f, 0.6944f));
-							if (GetColorDistance(aveColor, Color.FromArgb(222, 223, 222)) > 50)
+							if (GetColorDistance(aveColor, Color.FromArgb(222, 223, 222)) > 50) {
 								return "不明";
+							}
+							foreach(var rect in gaugeChargeRect){
+								var centerColor = GetAverageColor(bitmap, rect);
+								if (GetColorDistance(centerColor, Color.FromArgb(247, 251, 247)) >= 500
+								&& GetColorDistance(centerColor, Color.FromArgb(189, 186, 189)) >= 500) {
+									return "不明";
+								}
+							}
 						}
 						break;
 					}
@@ -195,6 +212,20 @@ namespace AzLH.Models {
 				}
 			}
 			return "不明";
+		}
+		// 戦闘中の画面にて、空爆・魚雷・砲撃のゲージ量を読み取って返す
+		public static double[] GetBattleBombGauge(Bitmap bitmap) {
+			var gauge = new double[gaugeTypeCount];
+			for(int ti = 0; ti < gaugeTypeCount; ++ti) {
+				// ゲージが最大まで溜まっている場合は、常に1を返す
+				// (そうでない場合、(189,186,189)になる)
+				var centerColor = GetAverageColor(bitmap, gaugeChargeRect[ti]);
+				if(GetColorDistance(centerColor, Color.FromArgb(247, 251, 247)) < 500) {
+					gauge[ti] = 1.0;
+					continue;
+				}
+			}
+			return gauge;
 		}
 
 		// シーンの認識パラメーターを表すクラス

@@ -499,6 +499,7 @@ namespace AzLH.Models {
 					// シーン文字列を取得し、表示する
 					JudgedScene = SceneRecognition.JudgeGameScene(screenShot);
 					// 資材量を取得する
+					// (戦闘中なら各種ボムの分量と残り秒数を読み取る)
 					switch (JudgedScene) {
 					case "シーン判定 : 母港": {
 							if(SupplyStore.UpdateSupplyValue(screenShot, "燃料", AutoSupplyScreenShotFlg, PutCharacterRecognitionFlg))
@@ -527,6 +528,10 @@ namespace AzLH.Models {
 					case "シーン判定 : 家具屋": {
 							if (SupplyStore.UpdateSupplyValue(screenShot, "家具コイン", AutoSupplyScreenShotFlg, PutCharacterRecognitionFlg))
 								PutLog("資材量追記：家具コイン");
+						}
+						break;
+					case "シーン判定 : 戦闘中": {
+							var gauge = SceneRecognition.GetBattleBombGauge(screenShot);
 						}
 						break;
 					}

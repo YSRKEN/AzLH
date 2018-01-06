@@ -1,4 +1,5 @@
 ﻿using AzLH.Models;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows;
@@ -37,6 +38,7 @@ namespace AzLH.ViewModels
 						var bitmap = new Bitmap(fileName);
 						string scene = SceneRecognition.JudgeGameScene(bitmap);
 						var supplyValueDic = new Dictionary<string, int>();
+						string otherMessage = "";
 						var settings = SettingsStore.Instance;
 						switch (scene)
 						{
@@ -57,11 +59,20 @@ namespace AzLH.ViewModels
 							case "家具屋":
 								supplyValueDic["家具コイン"] = CharacterRecognition.GetValueOCR(bitmap, "家具コイン", settings.PutCharacterRecognitionFlg);
 								break;
+							case "戦闘中": {
+								var gauge = SceneRecognition.GetBattleBombGauge(bitmap);
+								otherMessage += "読み取ったゲージ量：\n";
+								otherMessage += $"　空撃→{Math.Round(gauge[0] * 100.0, 1)}％\n";
+								otherMessage += $"　雷撃→{Math.Round(gauge[1] * 100.0, 1)}％\n";
+								otherMessage += $"　砲撃→{Math.Round(gauge[2] * 100.0, 1)}％\n";
+							}
+							break;
 						}
 						string output = $"シーン判定結果：{scene}\n読み取った資材量：\n";
 						foreach(var pair in supplyValueDic){
 							output += $"　{pair.Key}→{pair.Value}\n";
 						}
+						output += otherMessage;
 						MessageBox.Show(output, Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Information);
 						
 					}
