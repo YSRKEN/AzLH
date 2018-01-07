@@ -173,10 +173,13 @@ namespace AzLH.Models {
 		// どのシーンかを判定する("不明"＝判定不可)
 		public static string JudgeGameScene(Bitmap bitmap) {
 			foreach(var scene in sceneParameters) {
+				//Console.WriteLine(scene.Key);
 				bool flg = true;
 				foreach(var sceneParameter in scene.Value) {
-					if(sceneParameter is SceneParameterDH) {
+					if (sceneParameter is SceneParameterDH) {
+						//Console.WriteLine($"　{((SceneParameterDH)sceneParameter).Hash.ToString("X")}");
 						ulong hash = GetDifferenceHash(bitmap, ((SceneParameterDH)sceneParameter).Rect);
+						//Console.WriteLine($"　{hash.ToString("X")}");
 						if (GetHummingDistance(hash, ((SceneParameterDH)sceneParameter).Hash) >= 20) {
 							flg = false;
 							break;

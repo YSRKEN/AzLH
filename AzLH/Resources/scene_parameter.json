@@ -30,5 +30,9 @@
   "戦闘中" : [
     {"type" : "DifferenceHash", "rect" : [94.45, 3.472, 3.359, 5.972], "param" : "0x804c646464646400"},
     {"type" : "AverageColor",   "rect" : [95.94, 8.750, 0.3906, 0.6944], "param" : "0xDEDFDE"}
+  ],
+  "戦術教室" : [
+    {"type" : "DifferenceHash", "rect" : [18.05, 19.17, 2.344, 4.167], "param" : "0x161759f205c74682"},
+    {"type" : "DifferenceHash", "rect" : [4.766, 9.028, 1.953, 3.472], "param" : "0x000000381878B878"}
   ]
 }
