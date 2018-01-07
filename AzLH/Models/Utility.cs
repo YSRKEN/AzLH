@@ -103,10 +103,10 @@ namespace AzLH.Models {
 				}
 				break;
 			case "委託": {
-					ulong time1 = CharacterRecognition.GetTimeOCR(bitmap, "委託1");
-					ulong time2 = CharacterRecognition.GetTimeOCR(bitmap, "委託2");
-					ulong time3 = CharacterRecognition.GetTimeOCR(bitmap, "委託3");
-					ulong time4 = CharacterRecognition.GetTimeOCR(bitmap, "委託4");
+					long time1 = CharacterRecognition.GetTimeOCR(bitmap, "委託1", settings.PutCharacterRecognitionFlg);
+					long time2 = CharacterRecognition.GetTimeOCR(bitmap, "委託2", settings.PutCharacterRecognitionFlg);
+					long time3 = CharacterRecognition.GetTimeOCR(bitmap, "委託3", settings.PutCharacterRecognitionFlg);
+					long time4 = CharacterRecognition.GetTimeOCR(bitmap, "委託4", settings.PutCharacterRecognitionFlg);
 					otherMessage += "読み取った秒数：\n";
 					otherMessage += $"　1つ目→{time1}\n";
 					otherMessage += $"　2つ目→{time2}\n";

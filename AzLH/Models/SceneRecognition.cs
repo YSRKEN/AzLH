@@ -79,13 +79,47 @@ namespace AzLH.Models {
 			x = ((x & 0xffffffff00000000) >> 32) + (x & 0x00000000ffffffff);
 			return x;
 		}
+		// 画像の一部分の平均色を取得する
+		// (rectで指定する範囲は％単位)
+		private static Color GetAverageColor(Bitmap bitmap, RectangleF rect) {
+			// ％指定をピクセル指定に直す
+			int px = (int)(bitmap.Width * rect.X / 100 + 0.5);
+			int py = (int)(bitmap.Height * rect.Y / 100 + 0.5);
+			int wx = (int)(bitmap.Width * rect.Width / 100 + 0.5);
+			int wy = (int)(bitmap.Height * rect.Height / 100 + 0.5);
+			// 画素値の平均を取る
+			ulong rSum = 0, gSum = 0, bSum = 0;
+			for(int y = py; y < py + wy; ++y) {
+				for (int x = px; x < px + wx; ++x) {
+					var color = bitmap.GetPixel(x, y);
+					rSum += color.R;
+					gSum += color.G;
+					bSum += color.B;
+				}
+			}
+			int rAve = (int)(1.0 * rSum / wx / wy + 0.5);
+			int gAve = (int)(1.0 * gSum / wx / wy + 0.5);
+			int bAve = (int)(1.0 * bSum / wx / wy + 0.5);
+			rAve = (rAve < 0 ? 0 : rAve > 255 ? 255 : rAve);
+			gAve = (gAve < 0 ? 0 : gAve > 255 ? 255 : gAve);
+			bAve = (bAve < 0 ? 0 : bAve > 255 ? 255 : bAve);
+			return Color.FromArgb(rAve, gAve, bAve);
+		}
+		// 色間の距離を取得する(単純にR・G・Bの差の二乗の合計を出しているだけ)
+		private static int GetColorDistance(Color a, Color b) {
+			int rDiff = a.R - b.R;
+			int gDiff = a.G - b.G;
+			int bDiff = a.B - b.B;
+			return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
+		}
+
 		// ハミング距離を計算する
-		private static ulong GetHummingDistance(ulong a, ulong b) {
+		public static ulong GetHummingDistance(ulong a, ulong b) {
 			return Popcnt(a ^ b);
 		}
 		// 画像の一部分におけるDifferenceHashを取得する
 		// (rectで指定する範囲は％単位)
-		private static ulong GetDifferenceHash(Bitmap bitmap, RectangleF rect) {
+		public static ulong GetDifferenceHash(Bitmap bitmap, RectangleF rect) {
 			// 以下の3つの作業を同時に行う
 			// ・画像を切り取る
 			// ・横9ピクセル縦8ピクセルにリサイズする
@@ -134,40 +168,6 @@ namespace AzLH.Models {
 			}
 			return hash;
 		}
-		// 画像の一部分の平均色を取得する
-		// (rectで指定する範囲は％単位)
-		private static Color GetAverageColor(Bitmap bitmap, RectangleF rect) {
-			// ％指定をピクセル指定に直す
-			int px = (int)(bitmap.Width * rect.X / 100 + 0.5);
-			int py = (int)(bitmap.Height * rect.Y / 100 + 0.5);
-			int wx = (int)(bitmap.Width * rect.Width / 100 + 0.5);
-			int wy = (int)(bitmap.Height * rect.Height / 100 + 0.5);
-			// 画素値の平均を取る
-			ulong rSum = 0, gSum = 0, bSum = 0;
-			for(int y = py; y < py + wy; ++y) {
-				for (int x = px; x < px + wx; ++x) {
-					var color = bitmap.GetPixel(x, y);
-					rSum += color.R;
-					gSum += color.G;
-					bSum += color.B;
-				}
-			}
-			int rAve = (int)(1.0 * rSum / wx / wy + 0.5);
-			int gAve = (int)(1.0 * gSum / wx / wy + 0.5);
-			int bAve = (int)(1.0 * bSum / wx / wy + 0.5);
-			rAve = (rAve < 0 ? 0 : rAve > 255 ? 255 : rAve);
-			gAve = (gAve < 0 ? 0 : gAve > 255 ? 255 : gAve);
-			bAve = (bAve < 0 ? 0 : bAve > 255 ? 255 : bAve);
-			return Color.FromArgb(rAve, gAve, bAve);
-		}
-		// 色間の距離を取得する(単純にR・G・Bの差の二乗の合計を出しているだけ)
-		private static int GetColorDistance(Color a, Color b) {
-			int rDiff = a.R - b.R;
-			int gDiff = a.G - b.G;
-			int bDiff = a.B - b.B;
-			return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
-		}
-
 		// どのシーンかを判定する("不明"＝判定不可)
 		public static string JudgeGameScene(Bitmap bitmap) {
 			foreach(var scene in sceneParameters) {

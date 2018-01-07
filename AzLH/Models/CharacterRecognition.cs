@@ -15,13 +15,14 @@ namespace AzLH.Models {
 		private static readonly Size ocrTemplateSize2 = new Size(ocrTemplateSize1.Width + 2, ocrTemplateSize1.Height + 2);
 		// OCRする際に引き伸ばす際の短辺長
 		private static readonly int ocrStretchSize = 64;
+		// OCRする際に使用する画像(それぞれ資材認識用、時刻認識用)
+		private static readonly List<bitmapArray> templateSource1 = MakeTemplateSource("0123456789 ");
+		private static readonly List<bitmapArray> templateSource2 = MakeTemplateSource("0123456789: ");
+
 		// 各資材における認識パラメーター
 		public static Dictionary<string, SupplyParameter> SupplyParameters { get; } = LoadSupplyParameters();
 		// 各時刻表示における認識パラメーター
 		public static Dictionary<string, TimeParameter> TimeParameters { get; } = LoadTimeParameters();
-		// OCRする際に使用する画像(それぞれ資材認識用、時刻認識用)
-		private static readonly List<bitmapArray> templateSource1 = MakeTemplateSource("0123456789 ");
-		private static readonly List<bitmapArray> templateSource2 = MakeTemplateSource("0123456789: ");
 
 		// 認識パラメーターを読み込む
 		private static Dictionary<string, SupplyParameter> LoadSupplyParameters() {
@@ -174,7 +175,7 @@ namespace AzLH.Models {
 			return bmpArr;
 		}
 		// 周囲をトリミングする
-		static Rectangle GetTrimmingRectangle(Bitmap bitmap) {
+		private static Rectangle GetTrimmingRectangle(Bitmap bitmap) {
 			// Rangeを意図的に1スタートにしているのは、
 			// FirstOrDefaultメソッドが検索して見つからなかった際、
 			// Rangeが参照型ではなく値型なので0が帰ってくるから。
@@ -224,7 +225,7 @@ namespace AzLH.Models {
 			return rect;
 		}
 		// 差分を計算する
-		static ulong CalcArrayDiff(bitmapArray a, bitmapArray b) {
+		private static ulong CalcArrayDiff(bitmapArray a, bitmapArray b) {
 			ulong diff = 0;
 			for(int i = 0; i < a.Count; ++i) {
 				int c = a[i] - b[i];
@@ -232,18 +233,13 @@ namespace AzLH.Models {
 			}
 			return diff;
 		}
-		// 資材量を読み取る(-1＝読み取り不可)
-		public static int GetValueOCR(Bitmap bitmap, string supplyType, bool debugFlg = false) {
-			// 対応している資材名ではない場合は無視する
-			if (!SupplyParameters.ContainsKey(supplyType))
-				return -1;
+		// 画像を％指定で切り取り、縦をocrStretchSizeピクセルまで引き伸ばす
+		private static Bitmap CropZoomBitmap(Bitmap bitmap, RectangleF cropRect) {
 			// ％指定をピクセル指定に直す
-			var cropRect = SupplyParameters[supplyType].Rect;
 			int px = (int)(bitmap.Width * cropRect.X / 100 + 0.5);
 			int py = (int)(bitmap.Height * cropRect.Y / 100 + 0.5);
 			int wx = (int)(bitmap.Width * cropRect.Width / 100 + 0.5);
 			int wy = (int)(bitmap.Height * cropRect.Height / 100 + 0.5);
-			// 画像を必要な部分だけクロップし、同時に認識しやすいサイズまで拡大する
 			int cropWx = wx * ocrStretchSize / wy;
 			int cropWy = ocrStretchSize;
 			var canvas = new Bitmap(cropWx, cropWy);
@@ -254,6 +250,121 @@ namespace AzLH.Models {
 				var desRect = new Rectangle(0, 0, canvas.Width, canvas.Height);
 				g.DrawImage(bitmap, desRect, srcRect, GraphicsUnit.Pixel);
 			}
+			return canvas;
+		}
+		// 画像を必要ならば反転させ、二値化処理を行う
+		private static Bitmap BinarizeBitmap(Bitmap bitmap, int threshold, bool inverseFlg) {
+			var mat1 = BitmapToMonoArray(bitmap);
+			var mat2 = new bitmapArray();
+			if (inverseFlg) {
+				foreach (byte data in mat1) {
+					if (255 - data >= threshold) {
+						mat2.Add(255);
+					} else {
+						mat2.Add(0);
+					}
+				}
+			} else {
+				foreach (byte data in mat1) {
+					if (data >= threshold) {
+						mat2.Add(255);
+					} else {
+						mat2.Add(0);
+					}
+				}
+			}
+			return ArrayToBitmap(mat2, bitmap.Width, bitmap.Height);
+		}
+		// 二値化した画像の境界部分を認識して返す
+		private static List<Rectangle> GetSplitRectList(Bitmap bitmap) {
+			var splitRectList = new List<Rectangle>();
+			{
+				// x1は文字の左端、x2は文字の右端
+				for (int x1 = 0; x1 < bitmap.Width; ++x1) {
+					// まずは左端を検出する
+					bool flg1 = false;
+					for (int y = 0; y < bitmap.Height; ++y) {
+						if (bitmap.GetPixel(x1, y).R == 0)
+							flg1 = true;
+					}
+					if (!flg1)
+						continue;
+					// 次に右端を検出する
+					for (int x2 = x1 + 1; x2 <= bitmap.Width; ++x2) {
+						// x2 == canvas.Widthの時は、探索すらせず右端認定を行う
+						if (x2 == bitmap.Width) {
+							splitRectList.Add(new Rectangle(x1, 0, x2 - x1 + 1, bitmap.Height));
+							x1 = x2;
+							break;
+						}
+						// 通常の検出を行う
+						bool flg2 = true;
+						for (int y = 0; y < bitmap.Height; ++y) {
+							if (bitmap.GetPixel(x2, y).R == 0)
+								flg2 = false;
+						}
+						if (!flg2)
+							continue;
+						splitRectList.Add(new Rectangle(x1, 0, x2 - x1, bitmap.Height));
+						x1 = x2 - 1;
+						break;
+					}
+				}
+			}
+			return splitRectList;
+		}
+		// 画像と境界部分と比較用テンプレートを投げると認識結果を返す
+		private static List<int> GetDigit(Bitmap bitmap, List<Rectangle> splitRectList, List<bitmapArray> templateSource, bool debugFlg, string memo = "") {
+			var digit = new List<int>();
+			for (int k = 0; k < splitRectList.Count; ++k) {
+				// 1つの数字分だけ取り出す
+				var canvas2 = new Bitmap(splitRectList[k].Width, splitRectList[k].Height);
+				using (var g = Graphics.FromImage(canvas2)) {
+					// 切り取られる位置・大きさ
+					var srcRect = splitRectList[k];
+					// 貼り付ける位置・大きさ
+					var desRect = new Rectangle(0, 0, canvas2.Width, canvas2.Height);
+					g.DrawImage(bitmap, desRect, srcRect, GraphicsUnit.Pixel);
+				}
+				if (debugFlg) canvas2.Save($"debug\\digit-{memo}-step4-{k + 1}-1.png");
+				// 幅が狭すぎる場合は、認識ミスと判断して飛ばす
+				if (templateSource.Count == templateSource1.Count && 1.0 * canvas2.Height / canvas2.Width >= 5.0)
+					continue;
+				// 認識用の大きさにリサイズする
+				var canvas3 = new Bitmap(ocrTemplateSize1.Width, ocrTemplateSize1.Height);
+				using (var g = Graphics.FromImage(canvas3)) {
+					// 切り取られる位置・大きさ
+					var srcRect = GetTrimmingRectangle(canvas2);
+					// 貼り付ける位置・大きさ
+					var desRect = new Rectangle(0, 0, ocrTemplateSize1.Width, ocrTemplateSize1.Height);
+					g.DrawImage(canvas2, desRect, srcRect, GraphicsUnit.Pixel);
+				}
+				if (debugFlg) canvas3.Save($"debug\\digit-{memo}-step4-{k + 1}-2.png");
+				// マッチングを行う
+				var digitBitmapArray = BitmapToMonoArray(canvas3);
+				int matchIndex = -1;
+				ulong matchDiff = ulong.MaxValue;
+				for (int i = 0; i < templateSource.Count; ++i) {
+					ulong diff = CalcArrayDiff(digitBitmapArray, templateSource[i]);
+					if (diff < matchDiff) {
+						matchIndex = i;
+						matchDiff = diff;
+					}
+				}
+				int matchNumber = matchIndex;
+				digit.Add(matchNumber);
+			}
+			return digit;
+		}
+
+		// 資材量を読み取る(-1＝読み取り不可)
+		public static int GetValueOCR(Bitmap bitmap, string supplyType, bool debugFlg = false) {
+			// 対応している資材名ではない場合は無視する
+			if (!SupplyParameters.ContainsKey(supplyType))
+				return -1;
+			var supplyParameter = SupplyParameters[supplyType];
+			// 画像を必要な部分だけクロップし、同時に認識しやすいサイズまで拡大する
+			var canvas = CropZoomBitmap(bitmap, supplyParameter.Rect);
 			if (debugFlg) canvas.Save($"debug\\digit-{supplyType}-step1.png");
 			// ダイヤを勘定する時だけ、黄色部分を黒く塗りつぶす処理を行う
 			if (supplyType == "ダイヤ") {
@@ -266,117 +377,48 @@ namespace AzLH.Models {
 				}
 			}
 			// 色の反転処理・二値化処理を行う
-			{
-				var mat1 = BitmapToMonoArray(canvas);
-				var mat2 = new bitmapArray();
-				if (SupplyParameters[supplyType].InverseFlg){
-					foreach (byte data in mat1){
-						if (255 - data >= SupplyParameters[supplyType].Threshold) {
-							mat2.Add(255);
-						} else {
-							mat2.Add(0);
-						}
-					}
-				}
-				else{
-					foreach (byte data in mat1){
-						if(data >= SupplyParameters[supplyType].Threshold) {
-							mat2.Add(255);
-						} else {
-							mat2.Add(0);
-						}
-					}
-				}
-				canvas = ArrayToBitmap(mat2, canvas.Width, canvas.Height);
-			}
+			canvas = BinarizeBitmap(canvas, supplyParameter.Threshold, supplyParameter.InverseFlg);
 			if (debugFlg) canvas.Save($"debug\\digit-{supplyType}-step3.png");
 			// 境界部分を認識させる
-			var splitRectList = new List<Rectangle>();
-			{
-				// x1は文字の左端、x2は文字の右端
-				for (int x1 = 0; x1 < canvas.Width; ++x1) {
-					// まずは左端を検出する
-					bool flg1 = false;
-					for (int y = 0; y < canvas.Height; ++y) {
-						if (canvas.GetPixel(x1, y).R == 0)
-							flg1 = true;
-					}
-					if (!flg1)
-						continue;
-					// 次に右端を検出する
-					for (int x2 = x1 + 1; x2 <= canvas.Width; ++x2) {
-						// x2 == canvas.Widthの時は、探索すらせず右端認定を行う
-						if(x2 == canvas.Width) {
-							splitRectList.Add(new Rectangle(x1, 0, x2 - x1 + 1, canvas.Height));
-							x1 = x2;
-							break;
-						}
-						// 通常の検出を行う
-						bool flg2 = true;
-						for (int y = 0; y < canvas.Height; ++y) {
-							if (canvas.GetPixel(x2, y).R == 0)
-								flg2 = false;
-						}
-						if (!flg2)
-							continue;
-						splitRectList.Add(new Rectangle(x1, 0, x2 - x1, canvas.Height));
-						x1 = x2 - 1;
-						break;
-					}
-				}
-			}
+			var splitRectList = GetSplitRectList(canvas);
 			// 各カット毎に数値認識を行う
-			var digit = new List<int>();
-			for(int k = 0; k < splitRectList.Count; ++k) {
-				// 1つの数字分だけ取り出す
-				var canvas2 = new Bitmap(splitRectList[k].Width, splitRectList[k].Height);
-				using (var g = Graphics.FromImage(canvas2)) {
-					// 切り取られる位置・大きさ
-					var srcRect = splitRectList[k];
-					// 貼り付ける位置・大きさ
-					var desRect = new Rectangle(0, 0, canvas2.Width, canvas2.Height);
-					g.DrawImage(canvas, desRect, srcRect, GraphicsUnit.Pixel);
-				}
-				if (debugFlg) canvas2.Save($"debug\\digit-{supplyType}-step4-{k + 1}-1.png");
-				// 幅が狭すぎる場合は、認識ミスと判断して飛ばす
-				if (1.0 * canvas2.Height / canvas2.Width >= 5.0)
-					continue;
-				// 認識用の大きさにリサイズする
-				var canvas3 = new Bitmap(ocrTemplateSize1.Width, ocrTemplateSize1.Height);
-				using (var g = Graphics.FromImage(canvas3)) {
-					// 切り取られる位置・大きさ
-					var srcRect = GetTrimmingRectangle(canvas2);
-					// 貼り付ける位置・大きさ
-					var desRect = new Rectangle(0, 0, ocrTemplateSize1.Width, ocrTemplateSize1.Height);
-					g.DrawImage(canvas2, desRect, srcRect, GraphicsUnit.Pixel);
-				}
-				if (debugFlg) canvas3.Save($"debug\\digit-{supplyType}-step4-{k + 1}-2.png");
-				// マッチングを行う
-				var digitBitmapArray = BitmapToMonoArray(canvas3);
-				int matchIndex = -1;
-				ulong matchDiff = ulong.MaxValue;
-				for(int i = 0; i < templateSource2.Count; ++i) {
-					ulong diff = CalcArrayDiff(digitBitmapArray, templateSource2[i]);
-					if(diff < matchDiff) {
-						matchIndex = i;
-						matchDiff = diff;
-					}
-				}
-				int matchNumber = (matchIndex < 0 ? 0 : matchIndex >= 10 ? 0 : matchIndex);
-				digit.Add(matchNumber);
-			}
+			var digit = GetDigit(bitmap, splitRectList, templateSource1, debugFlg, supplyType);
 			// 結果を数値化する
 			int retVal = 0;
 			foreach (int x in digit) {
 				retVal *= 10;
-				retVal += x;
+				retVal += (x < 0 ? 0 : x >= 10 ? 0 : x);
 			}
 			return retVal;
 		}
 		// 時間(秒数)を読み取る(-1＝読み取り不可)
-		public static ulong GetTimeOCR(Bitmap bitmap, string timeType, bool debugFlg = false) {
-			var hoge = TimeParameters;
-			return 0;	//スタブ
+		public static long GetTimeOCR(Bitmap bitmap, string timeType, bool debugFlg = false) {
+			// 対応している時刻名ではない場合は無視する
+			if (!TimeParameters.ContainsKey(timeType))
+				return -1;
+			var timeParameter = TimeParameters[timeType];
+			// 時刻に対応した「マーク」が確認できない場合は無視する
+			ulong markHash = SceneRecognition.GetDifferenceHash(bitmap, timeParameter.MarkRect);
+			if (SceneRecognition.GetHummingDistance(markHash, timeParameter.MarkHash) >= 20)
+				return -1;
+			// 画像を必要な部分だけクロップし、同時に認識しやすいサイズまで拡大する
+			var canvas = CropZoomBitmap(bitmap, timeParameter.TimeRect);
+			if (debugFlg) canvas.Save($"debug\\digit-{timeType}-step1.png");
+			// 色の反転処理・二値化処理を行う
+			canvas = BinarizeBitmap(canvas, timeParameter.Threshold, timeParameter.InverseFlg);
+			if (debugFlg) canvas.Save($"debug\\digit-{timeType}-step3.png");
+			// 境界部分を認識させる
+			var splitRectList = GetSplitRectList(canvas);
+			// 各カット毎に数値認識を行う
+			var digit = GetDigit(canvas, splitRectList, templateSource2, debugFlg, timeType);
+			// 結果を数値化する
+			if (digit.Count != 8)
+				return -1;
+			int hour   = (digit[0] > 5 ? 0 : digit[0]) * 10 + (digit[1] > 9 ? 0 : digit[1]);
+			int minute = (digit[3] > 5 ? 0 : digit[3]) * 10 + (digit[4] > 9 ? 0 : digit[4]);
+			int second = (digit[6] > 5 ? 0 : digit[6]) * 10 + (digit[7] > 9 ? 0 : digit[7]);
+			if (debugFlg) Console.WriteLine($"{timeType} {digit[0]}{digit[1]}:{digit[3]}{digit[4]}:{digit[6]}{digit[7]}");
+			return (hour * 60 + minute) * 60 + second;
 		}
 
 		// 資材の認識パラメーターを表すクラス
