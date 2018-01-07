@@ -114,6 +114,14 @@ namespace AzLH.Models {
 					otherMessage += $"　4つ目→{time4}\n";
 				}
 				break;
+			case "戦術教室": {
+					long time1 = CharacterRecognition.GetTimeOCR(bitmap, "戦術教室1", settings.PutCharacterRecognitionFlg);
+					long time2 = CharacterRecognition.GetTimeOCR(bitmap, "戦術教室2", settings.PutCharacterRecognitionFlg);
+					otherMessage += "読み取った秒数：\n";
+					otherMessage += $"　1つ目→{time1}\n";
+					otherMessage += $"　2つ目→{time2}\n";
+				}
+				break;
 			}
 			string output = $"シーン判定結果：{scene}\n";
 			if (supplyValueDic.Count > 0) {

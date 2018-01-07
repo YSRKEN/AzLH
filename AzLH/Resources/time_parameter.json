@@ -14,5 +14,13 @@
   "委託4" : {
     "TimeRectFloat" : [30.94, 80.56, 7.200, 2.778], "InverseFlg" : true, "Threshold" : 10,
     "MarkRectFloat" : [23.05, 75.42, 2.344, 4.167], "MarkHashStr" : "0x4e199ca52aa29732"
+  },
+  "戦術教室1" : {
+    "TimeRectFloat" : [62.11, 41.11, 7.109, 3.750], "InverseFlg" : true, "Threshold" : 75,
+    "MarkRectFloat" : [76.64, 38.47, 3.281, 5.417], "MarkHashStr" : "0x0000000c06050200"
+  },
+  "戦術教室2" : {
+    "TimeRectFloat" : [62.03, 85.69, 7.266, 3.889], "InverseFlg" : true, "Threshold" : 75,
+    "MarkRectFloat" : [76.95, 83.19, 2.969, 5.278], "MarkHashStr" : "0x0000000d12151010"
   }
 }
