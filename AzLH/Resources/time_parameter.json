@@ -1,0 +1,18 @@
+﻿{
+  "委託1" : {
+    "TimeRectFloat" : [30.94, 41.25, 7.200, 2.778], "InverseFlg" : true, "Threshold" : 10,
+    "MarkRectFloat" : [23.05, 36.11, 2.344, 4.167], "MarkHashStr" : "0x4e199ca52aa29732"
+  },
+  "委託2" : {
+    "TimeRectFloat" : [30.94, 54.31, 7.200, 2.778], "InverseFlg" : true, "Threshold" : 10,
+    "MarkRectFloat" : [23.05, 49.17, 2.344, 4.167], "MarkHashStr" : "0x4e199ca52aa29732"
+  },
+  "委託3" : {
+    "TimeRectFloat" : [30.94, 67.50, 7.200, 2.778], "InverseFlg" : true, "Threshold" : 10,
+    "MarkRectFloat" : [23.05, 62.36, 2.344, 4.167], "MarkHashStr" : "0x4e199ca52aa29732"
+  },
+  "委託4" : {
+    "TimeRectFloat" : [30.94, 80.56, 7.200, 2.778], "InverseFlg" : true, "Threshold" : 10,
+    "MarkRectFloat" : [23.05, 75.42, 2.344, 4.167], "MarkHashStr" : "0x4e199ca52aa29732"
+  }
+}

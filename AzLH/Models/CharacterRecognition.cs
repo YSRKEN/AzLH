@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -16,6 +17,8 @@ namespace AzLH.Models {
 		private static readonly int ocrStretchSize = 64;
 		// 各資材における認識パラメーター
 		public static Dictionary<string, SupplyParameter> SupplyParameters { get; } = LoadSupplyParameters();
+		// 各時刻表示における認識パラメーター
+		public static Dictionary<string, TimeParameter> TimeParameters { get; } = LoadTimeParameters();
 		// OCRする際に使用する画像(それぞれ資材認識用、時刻認識用)
 		private static readonly List<bitmapArray> templateSource1 = MakeTemplateSource("0123456789 ");
 		private static readonly List<bitmapArray> templateSource2 = MakeTemplateSource("0123456789: ");
@@ -54,6 +57,48 @@ namespace AzLH.Models {
 				}
 			}
 			finally {
+				if (ms != null)
+					ms.Dispose();
+			}
+			return output;
+		}
+		private static Dictionary<string, TimeParameter> LoadTimeParameters() {
+			// Dictionaryを準備
+			var output = new Dictionary<string, TimeParameter>();
+			// ファイルを読み込む
+			MemoryStream ms = null;
+			try {
+				ms = new MemoryStream(Properties.Resources.time_parameter, false);
+				using (var sr = new StreamReader(ms, Encoding.UTF8)) {
+					ms = null;
+					// 全体をstringに読み込む
+					string json = sr.ReadToEnd();
+					// Json.NETでパース
+					var model = JsonConvert.DeserializeObject<Dictionary<string, TimeParameterJson>>(json);
+					// パース結果をさらに変換
+					foreach (var pair in model) {
+						var tpj = pair.Value;
+						var timeRect = new RectangleF(
+								tpj.TimeRectFloat[0],
+								tpj.TimeRectFloat[1],
+								tpj.TimeRectFloat[2],
+								tpj.TimeRectFloat[3]);
+						var markRect = new RectangleF(
+								tpj.MarkRectFloat[0],
+								tpj.MarkRectFloat[1],
+								tpj.MarkRectFloat[2],
+								tpj.MarkRectFloat[3]);
+						var markHash = Convert.ToUInt64(tpj.MarkHashStr, 16);
+						output[pair.Key] = new TimeParameter {
+							TimeRect = timeRect,
+							InverseFlg = pair.Value.InverseFlg,
+							Threshold = pair.Value.Threshold,
+							MarkRect = markRect,
+							MarkHash = markHash
+						};
+					}
+				}
+			} finally {
 				if (ms != null)
 					ms.Dispose();
 			}
@@ -330,7 +375,7 @@ namespace AzLH.Models {
 		}
 		// 時間(秒数)を読み取る(-1＝読み取り不可)
 		public static ulong GetTimeOCR(Bitmap bitmap, string timeType, bool debugFlg = false) {
-
+			var hoge = TimeParameters;
 			return 0;	//スタブ
 		}
 
@@ -371,6 +416,22 @@ namespace AzLH.Models {
 			public bool InverseFlg { get; set; }
 			public int Threshold { get; set; }
 			public string Name { get; set; }
+		}
+		// 時刻の認識パラメーターを表すクラス
+		public struct TimeParameter {
+			public RectangleF TimeRect;
+			public bool InverseFlg;
+			public int Threshold;
+			public RectangleF MarkRect;
+			public ulong MarkHash;
+		}
+		[JsonObject("param")]
+		public struct TimeParameterJson {
+			public float[] TimeRectFloat;
+			public bool InverseFlg;
+			public int Threshold;
+			public float[] MarkRectFloat;
+			public string MarkHashStr;
 		}
 	}
 }

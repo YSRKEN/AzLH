@@ -214,6 +214,7 @@
     </None>
     <None Include="Resources\scene_parameter.json" />
     <None Include="Resources\supply_parameter.json" />
+    <None Include="Resources\time_parameter.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
