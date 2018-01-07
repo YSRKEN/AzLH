@@ -657,23 +657,25 @@ namespace AzLH.Models {
 							for (int ci = 0; ci < SceneRecognition.ConsignCount; ++ci) {
 								// 読み取り
 								long remainTime = CharacterRecognition.GetTimeOCR(screenShot, $"委託{ci + 1}");
-								if(remainTime <= 0)
-									continue;
 								// 委託完了時刻を逆算
-								var finalTime = DateTime.Now.AddSeconds(remainTime);
+								DateTime? finalTime = (remainTime > 0 ? DateTime.Now.AddSeconds(remainTime) : (DateTime?)null);
 								// 書き込み処理
 								switch (ci) {
 								case 0:
 									setting.ConsignFinalTime1 = finalTime;
+									setting.SaveSettings();
 									break;
 								case 1:
 									setting.ConsignFinalTime2 = finalTime;
+									setting.SaveSettings();
 									break;
 								case 2:
 									setting.ConsignFinalTime3 = finalTime;
+									setting.SaveSettings();
 									break;
 								case 3:
 									setting.ConsignFinalTime4 = finalTime;
+									setting.SaveSettings();
 									break;
 								}
 							}
@@ -685,17 +687,17 @@ namespace AzLH.Models {
 							for (int ci = 0; ci < SceneRecognition.LectureCount; ++ci) {
 								// 読み取り
 								long remainTime = CharacterRecognition.GetTimeOCR(screenShot, $"戦術教室{ci + 1}");
-								if (remainTime <= 0)
-									continue;
 								// 完了時刻を逆算
-								var finalTime = DateTime.Now.AddSeconds(remainTime);
+								DateTime? finalTime = (remainTime > 0 ? DateTime.Now.AddSeconds(remainTime) : (DateTime?)null);
 								// 書き込み処理
 								switch (ci) {
 								case 0:
 									setting.LectureFinalTime1 = finalTime;
+									setting.SaveSettings();
 									break;
 								case 1:
 									setting.LectureFinalTime2 = finalTime;
+									setting.SaveSettings();
 									break;
 								}
 							}

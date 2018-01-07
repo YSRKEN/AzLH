@@ -107,7 +107,6 @@ namespace AzLH.Models {
 				return true;
 			}
 			catch {
-				SetDefaultSettings();
 				return false;
 			}
 		}
@@ -138,6 +137,7 @@ namespace AzLH.Models {
 
 		// 設定項目を初期化
 		public bool Initialize() {
+			SetDefaultSettings();
 			if (LoadSettings()) {
 				return true;
 			}
