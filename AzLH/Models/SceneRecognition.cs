@@ -36,7 +36,7 @@ namespace AzLH.Models {
 			MemoryStream ms = null;
 			try {
 				ms = new MemoryStream(Properties.Resources.scene_parameter, false);
-				using (var sr = new System.IO.StreamReader(ms, Encoding.UTF8)) {
+				using (var sr = new StreamReader(ms, Encoding.UTF8)) {
 					ms = null;
 					// 全体をstringに読み込む
 					string json = sr.ReadToEnd();
@@ -45,14 +45,19 @@ namespace AzLH.Models {
 					// パース結果をさらに変換
 					foreach (var pair in model) {
 						// LINQを用いて一発で放り込む
-						output[pair.Key] = pair.Value.Select(
-							p => new SceneParameter(
-								Convert.ToUInt64(p.HashStr, 16),
-								p.RectFloat[0],
-								p.RectFloat[1],
-								p.RectFloat[2],
-								p.RectFloat[3]
-							)
+						output[pair.Key] = pair.Value.Select<SceneParameterJson, SceneParameter>(
+							p => {
+								var rect = new RectangleF(p.RectFloat[0], p.RectFloat[1], p.RectFloat[2], p.RectFloat[3]);
+								ulong param = Convert.ToUInt64(p.ParamStr, 16);
+								switch (p.TypeStr) {
+								case "DifferenceHash":
+									return new SceneParameterDH { Rect = rect, Hash = param };
+								case "AverageColor":
+									return new SceneParameterAC { Rect = rect, Color = Color.FromArgb((0xFF << 24) | (int)param) };
+								default:
+									return new SceneParameterDH();
+								}
+							}
 						).ToArray();
 					}
 				}
@@ -168,44 +173,24 @@ namespace AzLH.Models {
 			foreach(var scene in sceneParameters) {
 				bool flg = true;
 				foreach(var sceneParameter in scene.Value) {
-					ulong hash = GetDifferenceHash(bitmap, sceneParameter.Rect);
-					if(GetHummingDistance(hash, sceneParameter.Hash) >= 20) {
-						flg = false;
-						break;
+					if(sceneParameter is SceneParameterDH) {
+						ulong hash = GetDifferenceHash(bitmap, ((SceneParameterDH)sceneParameter).Rect);
+						if (GetHummingDistance(hash, ((SceneParameterDH)sceneParameter).Hash) >= 20) {
+							flg = false;
+							break;
+						}
+					} else if(sceneParameter is SceneParameterAC) {
+						var color = GetAverageColor(bitmap, ((SceneParameterAC)sceneParameter).Rect);
+						if(GetColorDistance(color, ((SceneParameterAC)sceneParameter).Color) >= 50) {
+							flg = false;
+							break;
+						}
 					}
 				}
 				if (flg) {
 					// 特定のシーンの時だけ判定を追加する
 					switch (scene.Key) {
-					case "母港": {
-							var aveColor = GetAverageColor(bitmap, new RectangleF(69.06f, 3.056f, 1.406f, 2.500f));
-							if (GetColorDistance(aveColor, Color.FromArgb(238, 200, 89)) > 50)
-								return "不明";
-						}
-						break;
-					case "建造": {
-							var aveColor = GetAverageColor(bitmap, new RectangleF(81.48f, 65.56f, 2.813f, 5.000f));
-							if (GetColorDistance(aveColor, Color.FromArgb(237, 196, 85)) > 50)
-								return "不明";
-						}
-						break;
-					case "支援": {
-							var aveColor = GetAverageColor(bitmap, new RectangleF(48.20f, 16.11f, 1.172f, 2.083f));
-							if (GetColorDistance(aveColor, Color.FromArgb(222, 210, 159)) > 50)
-								return "不明";
-						}
-						break;
-					case "家具屋": {
-							var aveColor = GetAverageColor(bitmap, new RectangleF(61.41f, 8.056f, 1.641f, 2.917f));
-							if (GetColorDistance(aveColor, Color.FromArgb(231, 192, 98)) > 50)
-								return "不明";
-							}
-						break;
 					case "戦闘中": {
-							var aveColor = GetAverageColor(bitmap, new RectangleF(95.94f, 8.750f, 0.3906f, 0.6944f));
-							if (GetColorDistance(aveColor, Color.FromArgb(222, 223, 222)) > 50) {
-								return "不明";
-							}
 							foreach(var rect in gaugeChargeRect){
 								var centerColor = GetAverageColor(bitmap, rect);
 								if (GetColorDistance(centerColor, Color.FromArgb(247, 251, 247)) >= 500
@@ -263,23 +248,27 @@ namespace AzLH.Models {
 		}
 
 		// シーンの認識パラメーターを表すクラス
-		private class SceneParameter {
-			// ハッシュ値
-			public ulong Hash { get; }
+		private interface SceneParameter { }
+		private struct SceneParameterDH : SceneParameter {
 			// 指定する範囲(％単位)
-			public RectangleF Rect { get; }
-			// コンストラクタ
-			public SceneParameter(ulong hash, float x, float y, float width, float height) {
-				Hash = hash;
-				Rect = new RectangleF(x, y, width, height);
-			}
+			public RectangleF Rect { get; set; }
+			// パラメーター
+			public ulong Hash { get; set; }
 		}
-		[JsonObject("param")]
+		private struct SceneParameterAC : SceneParameter {
+			// 指定する範囲(％単位)
+			public RectangleF Rect { get; set; }
+			// パラメーター
+			public Color Color { get; set; }
+		}
+		[JsonObject("param_pair")]
 		private class SceneParameterJson {
-			[JsonProperty("hash")]
-			public string HashStr { get; set; }
+			[JsonProperty("type")]
+			public string TypeStr { get; set; }
 			[JsonProperty("rect")]
 			public float[] RectFloat { get; set; }
+			[JsonProperty("param")]
+			public string ParamStr { get; set; }
 		}
 	}
 }
