@@ -652,14 +652,14 @@ namespace AzLH.Models {
 						}
 						break;
 					case "委託": {
-							// 遠征時間を読み取って反映させる
+							// 委託時間を読み取って反映させる
 							var setting = SettingsStore.Instance;
 							for (int ci = 0; ci < SceneRecognition.ConsignCount; ++ci) {
 								// 読み取り
 								long remainTime = CharacterRecognition.GetTimeOCR(screenShot, $"委託{ci + 1}");
 								if(remainTime <= 0)
 									continue;
-								// 遠征完了時刻を逆算
+								// 委託完了時刻を逆算
 								var finalTime = DateTime.Now.AddSeconds(remainTime);
 								// 書き込み処理
 								switch (ci) {
@@ -674,6 +674,28 @@ namespace AzLH.Models {
 									break;
 								case 3:
 									setting.ConsignFinalTime4 = finalTime;
+									break;
+								}
+							}
+						}
+						break;
+					case "戦術教室": {
+							// 残り時間を読み取って反映させる
+							var setting = SettingsStore.Instance;
+							for (int ci = 0; ci < SceneRecognition.LectureCount; ++ci) {
+								// 読み取り
+								long remainTime = CharacterRecognition.GetTimeOCR(screenShot, $"戦術教室{ci + 1}");
+								if (remainTime <= 0)
+									continue;
+								// 完了時刻を逆算
+								var finalTime = DateTime.Now.AddSeconds(remainTime);
+								// 書き込み処理
+								switch (ci) {
+								case 0:
+									setting.LectureFinalTime1 = finalTime;
+									break;
+								case 1:
+									setting.LectureFinalTime2 = finalTime;
 									break;
 								}
 							}

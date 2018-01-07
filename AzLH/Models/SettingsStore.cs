@@ -44,6 +44,9 @@ namespace AzLH.Models {
 		public DateTime? ConsignFinalTime2 { get; set; }
 		public DateTime? ConsignFinalTime3 { get; set; }
 		public DateTime? ConsignFinalTime4 { get; set; }
+		// 戦術教室の完了時刻をメモする
+		public DateTime? LectureFinalTime1 { get; set; }
+		public DateTime? LectureFinalTime2 { get; set; }
 		// 各種ボムのチャージ完了時刻をメモする
 		[JsonIgnore]
 		public DateTime? BombChageTime1 { get; set; }
@@ -69,6 +72,8 @@ namespace AzLH.Models {
 			ConsignFinalTime2 = null;
 			ConsignFinalTime3 = null;
 			ConsignFinalTime4 = null;
+			LectureFinalTime1 = null;
+			LectureFinalTime2 = null;
 			BombChageTime1 = null;
 			BombChageTime2 = null;
 			BombChageTime3 = null;
@@ -96,6 +101,8 @@ namespace AzLH.Models {
 					ConsignFinalTime2 = model.ConsignFinalTime2;
 					ConsignFinalTime3 = model.ConsignFinalTime3;
 					ConsignFinalTime4 = model.ConsignFinalTime4;
+					LectureFinalTime1 = model.LectureFinalTime1;
+					LectureFinalTime2 = model.LectureFinalTime2;
 				}
 				return true;
 			}

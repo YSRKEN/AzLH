@@ -15,6 +15,8 @@ namespace AzLH.Models {
 		public static int GaugeTypeCount { get; } = 3;
 		// 軍事委託の本数
 		public static int ConsignCount { get; } = 4;
+		// 戦術教室の生徒数
+		public static int LectureCount { get; } = 2;
 		// 戦闘中の各種ゲージが光っているかを判定するためのRect
 		private static RectangleF[] gaugeChargeRect = new RectangleF[] {
 			new RectangleF(65.63f, 84.72f, 1.406f, 1.250f),

@@ -26,6 +26,9 @@ namespace AzLH.ViewModels
 		public ReactiveProperty<string> ConsignRemainTime2 { get; } = new ReactiveProperty<string>("");
 		public ReactiveProperty<string> ConsignRemainTime3 { get; } = new ReactiveProperty<string>("");
 		public ReactiveProperty<string> ConsignRemainTime4 { get; } = new ReactiveProperty<string>("");
+		// 戦術教室の残時間
+		public ReactiveProperty<string> LectureRemainTime1 { get; } = new ReactiveProperty<string>("");
+		public ReactiveProperty<string> LectureRemainTime2 { get; } = new ReactiveProperty<string>("");
 		// 各種ボムの残時間
 		public ReactiveProperty<string> BombRemainTime1 { get; } = new ReactiveProperty<string>("");
 		public ReactiveProperty<string> BombRemainTime2 { get; } = new ReactiveProperty<string>("");
@@ -79,6 +82,29 @@ namespace AzLH.ViewModels
 				}
 			} else {
 				ConsignRemainTime4.Value = "00:00:00";
+			}
+			// 戦術教室の残時間
+			if (setting.LectureFinalTime1.HasValue) {
+				var remainTime = (setting.LectureFinalTime1.Value - nowTime);
+				if (remainTime.TotalSeconds >= 0.0) {
+					LectureRemainTime1.Value = remainTime.ToString(@"hh\:mm\:ss");
+				} else {
+					LectureRemainTime1.Value = "00:00:00";
+					setting.LectureFinalTime1 = null;
+				}
+			} else {
+				LectureRemainTime1.Value = "00:00:00";
+			}
+			if (setting.LectureFinalTime2.HasValue) {
+				var remainTime = (setting.LectureFinalTime2.Value - nowTime);
+				if (remainTime.TotalSeconds >= 0.0) {
+					LectureRemainTime2.Value = remainTime.ToString(@"hh\:mm\:ss");
+				} else {
+					LectureRemainTime2.Value = "00:00:00";
+					setting.LectureFinalTime2 = null;
+				}
+			} else {
+				LectureRemainTime2.Value = "00:00:00";
 			}
 			// 各種ボムの残時間
 			if (setting.BombChageTime1.HasValue) {
