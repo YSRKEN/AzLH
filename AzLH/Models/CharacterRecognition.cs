@@ -16,8 +16,9 @@ namespace AzLH.Models {
 		private static readonly int ocrStretchSize = 64;
 		// 各資材における認識パラメーター
 		public static Dictionary<string, SupplyParameter> SupplyParameters { get; } = LoadSupplyParameters();
-		// OCRする際に使用する画像
-		private static readonly List<bitmapArray> templateSource = MakeTemplateSource();
+		// OCRする際に使用する画像(それぞれ資材認識用、時刻認識用)
+		private static readonly List<bitmapArray> templateSource1 = MakeTemplateSource("0123456789 ");
+		private static readonly List<bitmapArray> templateSource2 = MakeTemplateSource("0123456789: ");
 
 		// 認識パラメーターを読み込む
 		private static Dictionary<string, SupplyParameter> LoadSupplyParameters() {
@@ -59,8 +60,7 @@ namespace AzLH.Models {
 			return output;
 		}
 		// OCR用の画像データを生成する
-		private static List<bitmapArray> MakeTemplateSource(){
-			string templateChar = "0123456789 ";
+		private static List<bitmapArray> MakeTemplateSource(string templateChar){
 			var output = new List<bitmapArray>();
 			// 適当なバッファに文字を出力しつつ、切り取ってテンプレートとする
 			for (int k = 0; k < templateChar.Length; ++k)
@@ -310,8 +310,8 @@ namespace AzLH.Models {
 				var digitBitmapArray = BitmapToMonoArray(canvas3);
 				int matchIndex = -1;
 				ulong matchDiff = ulong.MaxValue;
-				for(int i = 0; i < templateSource.Count; ++i) {
-					ulong diff = CalcArrayDiff(digitBitmapArray, templateSource[i]);
+				for(int i = 0; i < templateSource2.Count; ++i) {
+					ulong diff = CalcArrayDiff(digitBitmapArray, templateSource2[i]);
 					if(diff < matchDiff) {
 						matchIndex = i;
 						matchDiff = diff;
@@ -327,6 +327,11 @@ namespace AzLH.Models {
 				retVal += x;
 			}
 			return retVal;
+		}
+		// 時間(秒数)を読み取る(-1＝読み取り不可)
+		public static ulong GetTimeOCR(Bitmap bitmap, string timeType, bool debugFlg = false) {
+
+			return 0;	//スタブ
 		}
 
 		// 資材の認識パラメーターを表すクラス

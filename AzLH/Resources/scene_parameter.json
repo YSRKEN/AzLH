@@ -23,7 +23,7 @@
     {"type" : "DifferenceHash", "rect" : [23.05, 10.69, 3.047, 5.417], "param" : "0x0000002483000000"},
     {"type" : "AverageColor",   "rect" : [61.41, 8.056, 1.641, 2.917], "param" : "0xE7C062"}
   ],
-  "遠征" : [
+  "委託" : [
     {"type" : "DifferenceHash", "rect" : [3.047, 21.94, 3.438, 6.111], "param" : "0xb58b09d51a4ecc4d"},
     {"type" : "DifferenceHash", "rect" : [25.94, 20.28, 3.438, 6.111], "param" : "0x3ca8527a19944b27"}
   ],
