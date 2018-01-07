@@ -153,7 +153,7 @@ namespace AzLH.ViewModels
 					WindowPositionWidth.Value = settings.TimerWindowRect[2];
 					WindowPositionHeight.Value = settings.TimerWindowRect[3];
 				}
-				AutoOpenWindowFlg.Value = settings.AutoSupplyWindowFlg;
+				AutoOpenWindowFlg.Value = settings.AutoTimerWindowFlg;
 			}
 			// 画面の位置が変更された際、自動で設定ファイルに書き戻すようにする
 			WindowPositionLeft.Subscribe(value => {
