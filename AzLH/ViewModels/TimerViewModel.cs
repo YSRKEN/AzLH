@@ -21,6 +21,11 @@ namespace AzLH.ViewModels
 		public ReactiveProperty<double> WindowPositionTop { get; } = new ReactiveProperty<double>(double.NaN);
 		public ReactiveProperty<double> WindowPositionWidth { get; } = new ReactiveProperty<double>(400.0);
 		public ReactiveProperty<double> WindowPositionHeight { get; } = new ReactiveProperty<double>(250.0);
+		// 軍事委託の残時間
+		public ReactiveProperty<string> ConsignRemainTime1 { get; } = new ReactiveProperty<string>("");
+		public ReactiveProperty<string> ConsignRemainTime2 { get; } = new ReactiveProperty<string>("");
+		public ReactiveProperty<string> ConsignRemainTime3 { get; } = new ReactiveProperty<string>("");
+		public ReactiveProperty<string> ConsignRemainTime4 { get; } = new ReactiveProperty<string>("");
 		// 各種ボムの残時間
 		public ReactiveProperty<string> BombRemainTime1 { get; } = new ReactiveProperty<string>("");
 		public ReactiveProperty<string> BombRemainTime2 { get; } = new ReactiveProperty<string>("");
@@ -30,6 +35,52 @@ namespace AzLH.ViewModels
 		private void RedrawTimerWindow() {
 			var setting = SettingsStore.Instance;
 			var nowTime = DateTime.Now;
+			// 軍事委託の残時間
+			if (setting.ConsignFinalTime1.HasValue) {
+				var remainTime = (setting.ConsignFinalTime1.Value - nowTime);
+				if (remainTime.TotalSeconds >= 0.0) {
+					ConsignRemainTime1.Value = remainTime.ToString(@"hh\:mm\:ss");
+				} else {
+					ConsignRemainTime1.Value = "00:00:00";
+					setting.ConsignFinalTime1 = null;
+				}
+			} else {
+				ConsignRemainTime1.Value = "00:00:00";
+			}
+			if (setting.ConsignFinalTime2.HasValue) {
+				var remainTime = (setting.ConsignFinalTime2.Value - nowTime);
+				if (remainTime.TotalSeconds >= 0.0) {
+					ConsignRemainTime2.Value = remainTime.ToString(@"hh\:mm\:ss");
+				} else {
+					ConsignRemainTime2.Value = "00:00:00";
+					setting.ConsignFinalTime2 = null;
+				}
+			} else {
+				ConsignRemainTime2.Value = "00:00:00";
+			}
+			if (setting.ConsignFinalTime3.HasValue) {
+				var remainTime = (setting.ConsignFinalTime3.Value - nowTime);
+				if (remainTime.TotalSeconds >= 0.0) {
+					ConsignRemainTime3.Value = remainTime.ToString(@"hh\:mm\:ss");
+				} else {
+					ConsignRemainTime3.Value = "00:00:00";
+					setting.ConsignFinalTime3 = null;
+				}
+			} else {
+				ConsignRemainTime3.Value = "00:00:00";
+			}
+			if (setting.ConsignFinalTime4.HasValue) {
+				var remainTime = (setting.ConsignFinalTime4.Value - nowTime);
+				if (remainTime.TotalSeconds >= 0.0) {
+					ConsignRemainTime4.Value = remainTime.ToString(@"hh\:mm\:ss");
+				} else {
+					ConsignRemainTime4.Value = "00:00:00";
+					setting.ConsignFinalTime1 = null;
+				}
+			} else {
+				ConsignRemainTime4.Value = "00:00:00";
+			}
+			// 各種ボムの残時間
 			if (setting.BombChageTime1.HasValue) {
 				double remainTime = (setting.BombChageTime1.Value - nowTime).TotalSeconds;
 				if (remainTime >= 0.0) {
@@ -133,6 +184,8 @@ namespace AzLH.ViewModels
 				} finally { timer.Start(); }
 			};
 			timer.Start();
+			//
+			RedrawTimerWindow();
 		}
 	}
 }

@@ -604,49 +604,81 @@ namespace AzLH.Models {
 					}
 					return;
 				}
-				// 読み取ったゲージから、フルチャージに必要な秒数を計算する
+				// スクショから得られる情報を用いた修正
 				using(var screenShot = ScreenShotProvider.GetScreenshot()) {
-					if (SceneRecognition.JudgeGameScene(screenShot) == "戦闘中") {
-						var gauge = SceneRecognition.GetBattleBombGauge(screenShot);
-						// 各種のゲージ毎に判定を行う
-						//string output = "残りチャージ時間：";
-						//var label = new string[] { "空撃", "雷撃", "砲撃" };
-						for (int ti = 0; ti < SceneRecognition.GaugeTypeCount; ++ti) {
-							if (gauge[ti] >= 0.0) {
-								if (oldGauge[ti] >= 0.0) {
-									// 前回のゲージ量が残っているので、チャージ完了に要する時間が計算できる
-									// ただしゲージが変化していないようにみえる場合は無視する
-									if (gauge[ti] > oldGauge[ti]) {
-										remainTime[ti] = (1.0 - gauge[ti]) / (gauge[ti] - oldGauge[ti]);
-										//
-										var setting = SettingsStore.Instance;
-										switch (ti) {
-										case 0:
-											setting.BombChageTime1 = DateTime.Now.AddSeconds(remainTime[ti]);
-											break;
-										case 1:
-											setting.BombChageTime2 = DateTime.Now.AddSeconds(remainTime[ti]);
-											break;
-										case 2:
-											setting.BombChageTime3 = DateTime.Now.AddSeconds(remainTime[ti]);
-											break;
+					switch (SceneRecognition.JudgeGameScene(screenShot)) {
+					case "戦闘中": {
+							// 読み取ったゲージから、フルチャージに必要な秒数を計算する
+							var gauge = SceneRecognition.GetBattleBombGauge(screenShot);
+							// 各種のゲージ毎に判定を行う
+							//string output = "残りチャージ時間：";
+							//var label = new string[] { "空撃", "雷撃", "砲撃" };
+							for (int ti = 0; ti < SceneRecognition.GaugeTypeCount; ++ti) {
+								if (gauge[ti] >= 0.0) {
+									if (oldGauge[ti] >= 0.0) {
+										// 前回のゲージ量が残っているので、チャージ完了に要する時間が計算できる
+										// ただしゲージが変化していないようにみえる場合は無視する
+										if (gauge[ti] > oldGauge[ti]) {
+											remainTime[ti] = (1.0 - gauge[ti]) / (gauge[ti] - oldGauge[ti]);
+											//
+											var setting = SettingsStore.Instance;
+											switch (ti) {
+											case 0:
+												setting.BombChageTime1 = DateTime.Now.AddSeconds(remainTime[ti]);
+												break;
+											case 1:
+												setting.BombChageTime2 = DateTime.Now.AddSeconds(remainTime[ti]);
+												break;
+											case 2:
+												setting.BombChageTime3 = DateTime.Now.AddSeconds(remainTime[ti]);
+												break;
+											}
+										} else {
+											// 読み取り失敗した祭の処理
+											if (remainTime[ti] > 0.0) remainTime[ti] -= 1.0;
 										}
 									} else {
 										// 読み取り失敗した祭の処理
 										if (remainTime[ti] > 0.0) remainTime[ti] -= 1.0;
 									}
+									// oldGaugeに今回読み取った量を上書きする
+									oldGauge[ti] = gauge[ti];
 								} else {
 									// 読み取り失敗した祭の処理
 									if (remainTime[ti] > 0.0) remainTime[ti] -= 1.0;
+									oldGauge[ti] = -1.0;
 								}
-								// oldGaugeに今回読み取った量を上書きする
-								oldGauge[ti] = gauge[ti];
-							} else {
-								// 読み取り失敗した祭の処理
-								if(remainTime[ti]> 0.0) remainTime[ti] -= 1.0;
-								oldGauge[ti] = -1.0;
 							}
 						}
+						break;
+					case "委託": {
+							// 遠征時間を読み取って反映させる
+							var setting = SettingsStore.Instance;
+							for (int ci = 0; ci < SceneRecognition.ConsignCount; ++ci) {
+								// 読み取り
+								long remainTime = CharacterRecognition.GetTimeOCR(screenShot, $"委託{ci + 1}");
+								if(remainTime <= 0)
+									continue;
+								// 遠征完了時刻を逆算
+								var finalTime = DateTime.Now.AddSeconds(remainTime);
+								// 書き込み処理
+								switch (ci) {
+								case 0:
+									setting.ConsignFinalTime1 = finalTime;
+									break;
+								case 1:
+									setting.ConsignFinalTime2 = finalTime;
+									break;
+								case 2:
+									setting.ConsignFinalTime3 = finalTime;
+									break;
+								case 3:
+									setting.ConsignFinalTime4 = finalTime;
+									break;
+								}
+							}
+						}
+						break;
 					}
 				}
 			}

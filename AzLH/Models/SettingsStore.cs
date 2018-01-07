@@ -39,6 +39,11 @@ namespace AzLH.Models {
 		// 各種タイマー画面が表示されているか？
 		[JsonIgnore]
 		public bool ShowTimerWindowFlg { get; set; }
+		// 軍事委託の完了時刻をメモする
+		public DateTime? ConsignFinalTime1 { get; set; }
+		public DateTime? ConsignFinalTime2 { get; set; }
+		public DateTime? ConsignFinalTime3 { get; set; }
+		public DateTime? ConsignFinalTime4 { get; set; }
 		// 各種ボムのチャージ完了時刻をメモする
 		[JsonIgnore]
 		public DateTime? BombChageTime1 { get; set; }
@@ -60,6 +65,10 @@ namespace AzLH.Models {
 			AutoSupplyScreenShotFlg = false;
 			PutCharacterRecognitionFlg = false;
 			DragAndDropPictureFlg = false;
+			ConsignFinalTime1 = null;
+			ConsignFinalTime2 = null;
+			ConsignFinalTime3 = null;
+			ConsignFinalTime4 = null;
 			BombChageTime1 = null;
 			BombChageTime2 = null;
 			BombChageTime3 = null;
@@ -83,6 +92,10 @@ namespace AzLH.Models {
 					AutoSupplyScreenShotFlg = model.AutoSupplyScreenShotFlg;
 					PutCharacterRecognitionFlg = model.PutCharacterRecognitionFlg;
 					DragAndDropPictureFlg = model.DragAndDropPictureFlg;
+					ConsignFinalTime1 = model.ConsignFinalTime1;
+					ConsignFinalTime2 = model.ConsignFinalTime2;
+					ConsignFinalTime3 = model.ConsignFinalTime3;
+					ConsignFinalTime4 = model.ConsignFinalTime4;
 				}
 				return true;
 			}
