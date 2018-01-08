@@ -703,6 +703,18 @@ namespace AzLH.Models {
 							}
 						}
 						break;
+					case "寮舎": {
+							// 残り時間を読み取って反映させる
+							var setting = SettingsStore.Instance;
+							// 読み取り
+							long remainTime = CharacterRecognition.GetTimeOCR(screenShot, "食糧");
+							// 完了時刻を逆算
+							DateTime? finalTime = (remainTime > 0 ? DateTime.Now.AddSeconds(remainTime) : (DateTime?)null);
+							// 書き込み処理
+							setting.FoodFinalTime = finalTime;
+							setting.SaveSettings();
+						}
+						break;
 					}
 				}
 			}

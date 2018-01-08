@@ -29,6 +29,8 @@ namespace AzLH.ViewModels
 		// 戦術教室の残時間
 		public ReactiveProperty<string> LectureRemainTime1 { get; } = new ReactiveProperty<string>("");
 		public ReactiveProperty<string> LectureRemainTime2 { get; } = new ReactiveProperty<string>("");
+		// 食糧の残時間
+		public ReactiveProperty<string> FoodRemainTime { get; } = new ReactiveProperty<string>("");
 		// 各種ボムの残時間
 		public ReactiveProperty<string> BombRemainTime1 { get; } = new ReactiveProperty<string>("");
 		public ReactiveProperty<string> BombRemainTime2 { get; } = new ReactiveProperty<string>("");
@@ -105,6 +107,18 @@ namespace AzLH.ViewModels
 				}
 			} else {
 				LectureRemainTime2.Value = "00:00:00";
+			}
+			// 食糧の残時間
+			if (setting.FoodFinalTime.HasValue) {
+				var remainTime = (setting.FoodFinalTime.Value - nowTime);
+				if (remainTime.TotalSeconds >= 0.0) {
+					FoodRemainTime.Value = remainTime.ToString(@"hh\:mm\:ss");
+				} else {
+					FoodRemainTime.Value = "00:00:00";
+					setting.FoodFinalTime = null;
+				}
+			} else {
+				FoodRemainTime.Value = "00:00:00";
 			}
 			// 各種ボムの残時間
 			if (setting.BombChageTime1.HasValue) {

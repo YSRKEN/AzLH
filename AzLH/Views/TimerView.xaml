@@ -69,7 +69,7 @@
 					<RowDefinition/>
 				</Grid.RowDefinitions>
 				<TextBlock Grid.Row="0" Text="寮舎食料" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
-				<TextBlock Grid.Row="1" Text="00:00:00" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
+				<TextBlock Grid.Row="1" Text="{Binding FoodRemainTime.Value}" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
 			</Grid>
 		</Border>
 		<!-- 戦闘時の各種ボムのタイマー -->
