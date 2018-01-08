@@ -382,7 +382,7 @@ namespace AzLH.Models {
 			// 境界部分を認識させる
 			var splitRectList = GetSplitRectList(canvas);
 			// 各カット毎に数値認識を行う
-			var digit = GetDigit(bitmap, splitRectList, templateSource1, debugFlg, supplyType);
+			var digit = GetDigit(canvas, splitRectList, templateSource1, debugFlg, supplyType);
 			// 結果を数値化する
 			int retVal = 0;
 			foreach (int x in digit) {
