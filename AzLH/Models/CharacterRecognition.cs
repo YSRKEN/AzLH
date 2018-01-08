@@ -404,6 +404,17 @@ namespace AzLH.Models {
 			// 画像を必要な部分だけクロップし、同時に認識しやすいサイズまで拡大する
 			var canvas = CropZoomBitmap(bitmap, timeParameter.TimeRect);
 			if (debugFlg) canvas.Save($"debug\\digit-{timeType}-step1.png");
+			// 食糧残時間を勘定する時だけ、緑部分以外を白く塗りつぶす処理を行う
+			if (timeType == "食糧") {
+				for (int y = 0; y < canvas.Height; ++y) {
+					for (int x = 0; x < canvas.Width; ++x) {
+						var color = canvas.GetPixel(x, y);
+						if(SceneRecognition.GetColorDistance(color, Color.FromArgb(172,246,74)) >= 500) {
+							canvas.SetPixel(x, y, Color.FromArgb(0, 0, 0));
+						}
+					}
+				}
+			}
 			// 色の反転処理・二値化処理を行う
 			canvas = BinarizeBitmap(canvas, timeParameter.Threshold, timeParameter.InverseFlg);
 			if (debugFlg) canvas.Save($"debug\\digit-{timeType}-step3.png");

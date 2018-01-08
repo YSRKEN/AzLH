@@ -122,6 +122,12 @@ namespace AzLH.Models {
 					otherMessage += $"　2つ目→{time2}\n";
 				}
 				break;
+			case "寮舎": {
+					long time = CharacterRecognition.GetTimeOCR(bitmap, "食糧", settings.PutCharacterRecognitionFlg);
+					otherMessage += "読み取った秒数：\n";
+					otherMessage += $"　食糧→{time}\n";
+				}
+				break;
 			}
 			string output = $"シーン判定結果：{scene}\n";
 			if (supplyValueDic.Count > 0) {

@@ -109,13 +109,6 @@ namespace AzLH.Models {
 			bAve = (bAve < 0 ? 0 : bAve > 255 ? 255 : bAve);
 			return Color.FromArgb(rAve, gAve, bAve);
 		}
-		// 色間の距離を取得する(単純にR・G・Bの差の二乗の合計を出しているだけ)
-		private static int GetColorDistance(Color a, Color b) {
-			int rDiff = a.R - b.R;
-			int gDiff = a.G - b.G;
-			int bDiff = a.B - b.B;
-			return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
-		}
 
 		// ハミング距離を計算する
 		public static ulong GetHummingDistance(ulong a, ulong b) {
@@ -171,6 +164,13 @@ namespace AzLH.Models {
 				}
 			}
 			return hash;
+		}
+		// 色間の距離を取得する(単純にR・G・Bの差の二乗の合計を出しているだけ)
+		public static int GetColorDistance(Color a, Color b) {
+			int rDiff = a.R - b.R;
+			int gDiff = a.G - b.G;
+			int bDiff = a.B - b.B;
+			return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
 		}
 		// どのシーンかを判定する("不明"＝判定不可)
 		public static string JudgeGameScene(Bitmap bitmap) {

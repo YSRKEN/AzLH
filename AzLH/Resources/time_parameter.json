@@ -22,5 +22,9 @@
   "戦術教室2" : {
     "TimeRectFloat" : [62.03, 85.69, 7.266, 3.889], "InverseFlg" : true, "Threshold" : 75,
     "MarkRectFloat" : [76.95, 83.19, 2.969, 5.278], "MarkHashStr" : "0x0000000d12151010"
+  },
+  "食糧" : {
+    "TimeRectFloat" : [18.98, 89.17, 5.938, 3.056], "InverseFlg" : true, "Threshold" : 75,
+    "MarkRectFloat" : [4.063, 88.61, 1.094, 1.944], "MarkHashStr" : "0xA0A261000020A6A0"
   }
 }
