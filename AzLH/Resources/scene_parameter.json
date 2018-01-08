@@ -1,26 +1,47 @@
 ﻿{
   "母港" : [
-    {"hash" : "0x07718e133b13cc07", "rect" : [2.750, 18.89, 2.250, 4.444]},
-    {"hash" : "0x45a851a9c84b5566", "rect" : [78.75, 51.33, 5.375, 5.111]}
+    {"type" : "DifferenceHash", "rect" : [2.750, 18.89, 2.250, 4.444], "param" : "0x07718e133b13cc07"},
+    {"type" : "DifferenceHash", "rect" : [78.75, 51.33, 5.375, 5.111], "param" : "0x45a851a9c84b5566"},
+    {"type" : "AverageColor",   "rect" : [69.06, 3.056, 1.406, 2.500], "param" : "0xEEC859"}
   ],
   "建造" : [
-    {"hash" : "0x83190a8e55a02162", "rect" : [81.48, 65.56, 2.813, 5.000]},
-    {"hash" : "0x850504cc4051f449", "rect" : [2.734, 16.81, 3.281, 5.833]}
+    {"type" : "DifferenceHash", "rect" : [81.48, 65.56, 2.813, 5.000], "param" : "0x83190a8e55a02162"},
+    {"type" : "DifferenceHash", "rect" : [2.734, 16.81, 3.281, 5.833], "param" : "0x850504cc4051f449"},
+    {"type" : "AverageColor",   "rect" : [81.48, 65.56, 2.813, 5.000], "param" : "0xEDC455"}
   ],
   "建造中" : [
-    {"hash" : "0xc693524a496d50a5", "rect" : [2.656, 31.25, 3.438, 6.111]},
-    {"hash" : "0xd18c566de4551595", "rect" : [46.88, 13.89, 2.031, 3.611]}
+    {"type" : "DifferenceHash", "rect" : [2.656, 31.25, 3.438, 6.111], "param" : "0xc693524a496d50a5"},
+    {"type" : "DifferenceHash", "rect" : [46.88, 13.89, 2.031, 3.611], "param" : "0xd18c566de4551595"}
   ],
   "支援" : [
-    {"hash" : "0xc3a1c2591a054280", "rect" : [2.578, 46.39, 3.125, 5.556]},
-    {"hash" : "0x324ab361521a0840", "rect" : [47.89, 15.56, 1.250, 2.222]}
+    {"type" : "DifferenceHash", "rect" : [2.578, 46.39, 3.125, 5.556], "param" : "0xc3a1c2591a054280"},
+    {"type" : "DifferenceHash", "rect" : [47.89, 15.56, 1.250, 2.222], "param" : "0x324ab361521a0840"},
+    {"type" : "AverageColor",   "rect" : [48.20, 16.11, 1.172, 2.083], "param" : "0xDED29F"}
   ],
   "家具屋" : [
-    {"hash" : "0x269325c28d307010", "rect" : [61.41, 8.056, 1.641, 2.917]},
-    {"hash" : "0x0000002483000000", "rect" : [23.05, 10.69, 3.047, 5.417]}
+    {"type" : "DifferenceHash", "rect" : [61.41, 8.056, 1.641, 2.917], "param" : "0x269325c28d307010"},
+    {"type" : "DifferenceHash", "rect" : [23.05, 10.69, 3.047, 5.417], "param" : "0x0000002483000000"},
+    {"type" : "AverageColor",   "rect" : [61.41, 8.056, 1.641, 2.917], "param" : "0xE7C062"}
   ],
-  "遠征" : [
-    {"hash" : "0xb58b09d51a4ecc4d", "rect" : [3.047, 21.94, 3.438, 6.111]},
-    {"hash" : "0x3ca8527a19944b27", "rect" : [25.94, 20.28, 3.438, 6.111]}
+  "委託" : [
+    {"type" : "DifferenceHash", "rect" : [3.047, 21.94, 3.438, 6.111], "param" : "0xb58b09d51a4ecc4d"},
+    {"type" : "DifferenceHash", "rect" : [25.94, 20.28, 3.438, 6.111], "param" : "0x3ca8527a19944b27"}
+  ],
+  "戦闘中" : [
+    {"type" : "DifferenceHash", "rect" : [94.45, 3.472, 3.359, 5.972], "param" : "0x804c646464646400"},
+    {"type" : "AverageColor",   "rect" : [95.94, 8.750, 0.3906, 0.6944], "param" : "0xDEDFDE"}
+  ],
+  "戦術教室" : [
+    {"type" : "DifferenceHash", "rect" : [18.05, 19.17, 2.344, 4.167], "param" : "0x161759f205c74682"},
+    {"type" : "DifferenceHash", "rect" : [4.766, 9.028, 1.953, 3.472], "param" : "0x381878B878"}
+  ],
+  "寮舎" : [
+    {"type" : "DifferenceHash", "rect" : [4.063, 88.61, 1.094, 1.944], "param" : "0xA0A261000020A6A0"},
+    {"type" : "DifferenceHash", "rect" : [2.734, 6.667, 0.9375, 3.472], "param" : "0x3043F002020"},
+    {"type" : "AverageColor",   "rect" : [92.19, 88.47, 0.9375, 1.667], "param" : "0x42D3E7"}
+  ],
+  "戦闘結果" : [
+    {"type" : "AverageColor", "rect" : [12.27, 47.36, 1.250, 2.222], "param" : "0xA56508"},
+    {"type" : "AverageColor", "rect" : [87.97, 47.36, 1.250, 2.222], "param" : "0xA56508"}
   ]
 }

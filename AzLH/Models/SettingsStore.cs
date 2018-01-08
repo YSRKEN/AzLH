@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.Text;
 
@@ -15,15 +16,16 @@ namespace AzLH.Models {
 		public double[] MainWindowRect { get; set; }
 		// 資材記録画面の位置・大きさ
 		public double[] SupplyWindowRect { get; set; }
+		// 各種タイマー画面の位置・大きさ
+		public double[] TimerWindowRect { get; set; }
 		// ウィンドウの座標を記憶するか？
 		public bool MemoryWindowPositionFlg { get; set; }
 		// 常時座標を捕捉し続けるか？
 		public bool AutoSearchPositionFlg { get; set; }
 		// 資材記録画面を最初から表示するか？
 		public bool AutoSupplyWindowFlg { get; set; }
-		// 資材記録画面が表示されているか？
-		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-		public bool ShowSupplyWindowFlg { get; set; }
+		// 各種タイマー画面を最初から表示するか？
+		public bool AutoTimerWindowFlg { get; set; }
 		// 資材記録時にスクショでロギングするか？
 		public bool AutoSupplyScreenShotFlg { get; set; }
 		// 資材記録時に画像処理結果を出力するか？
@@ -31,17 +33,53 @@ namespace AzLH.Models {
 		// ドラッグ＆ドロップでシーン認識するか？
 		public bool DragAndDropPictureFlg { get; set; }
 
+		// 資材記録画面が表示されているか？
+		[JsonIgnore]
+		public bool ShowSupplyWindowFlg { get; set; }
+		// 各種タイマー画面が表示されているか？
+		[JsonIgnore]
+		public bool ShowTimerWindowFlg { get; set; }
+		// 軍事委託の完了時刻をメモする
+		public DateTime? ConsignFinalTime1 { get; set; }
+		public DateTime? ConsignFinalTime2 { get; set; }
+		public DateTime? ConsignFinalTime3 { get; set; }
+		public DateTime? ConsignFinalTime4 { get; set; }
+		// 戦術教室の完了時刻をメモする
+		public DateTime? LectureFinalTime1 { get; set; }
+		public DateTime? LectureFinalTime2 { get; set; }
+		// 食糧の枯渇時刻をメモする
+		public DateTime? FoodFinalTime { get; set; }
+		// 各種ボムのチャージ完了時刻をメモする
+		[JsonIgnore]
+		public DateTime? BombChageTime1 { get; set; }
+		[JsonIgnore]
+		public DateTime? BombChageTime2 { get; set; }
+		[JsonIgnore]
+		public DateTime? BombChageTime3 { get; set; }
+
 		// デフォルト設定
 		private void SetDefaultSettings() {
 			ForTwitterFlg = false;
 			MainWindowRect = new double[] { double.NaN, double.NaN, 400.0, 300.0 };
 			SupplyWindowRect = new double[] { double.NaN, double.NaN, 600.0, 400.0 };
+			TimerWindowRect = new double[] { double.NaN, double.NaN, 400.0, 250.0 };
 			MemoryWindowPositionFlg = true;
 			AutoSearchPositionFlg = true;
 			AutoSupplyWindowFlg = false;
+			AutoTimerWindowFlg = false;
 			AutoSupplyScreenShotFlg = false;
 			PutCharacterRecognitionFlg = false;
 			DragAndDropPictureFlg = false;
+			ConsignFinalTime1 = null;
+			ConsignFinalTime2 = null;
+			ConsignFinalTime3 = null;
+			ConsignFinalTime4 = null;
+			LectureFinalTime1 = null;
+			LectureFinalTime2 = null;
+			FoodFinalTime = null;
+			BombChageTime1 = null;
+			BombChageTime2 = null;
+			BombChageTime3 = null;
 		}
 		// JSONから読み込み
 		public bool LoadSettings(string path) {
@@ -54,17 +92,25 @@ namespace AzLH.Models {
 					ForTwitterFlg = model.ForTwitterFlg;
 					MainWindowRect = model.MainWindowRect;
 					SupplyWindowRect = model.SupplyWindowRect;
+					TimerWindowRect = model.TimerWindowRect;
 					MemoryWindowPositionFlg = model.MemoryWindowPositionFlg;
 					AutoSearchPositionFlg = model.AutoSearchPositionFlg;
 					AutoSupplyWindowFlg = model.AutoSupplyWindowFlg;
+					AutoTimerWindowFlg = model.AutoTimerWindowFlg;
 					AutoSupplyScreenShotFlg = model.AutoSupplyScreenShotFlg;
 					PutCharacterRecognitionFlg = model.PutCharacterRecognitionFlg;
 					DragAndDropPictureFlg = model.DragAndDropPictureFlg;
+					ConsignFinalTime1 = model.ConsignFinalTime1;
+					ConsignFinalTime2 = model.ConsignFinalTime2;
+					ConsignFinalTime3 = model.ConsignFinalTime3;
+					ConsignFinalTime4 = model.ConsignFinalTime4;
+					LectureFinalTime1 = model.LectureFinalTime1;
+					LectureFinalTime2 = model.LectureFinalTime2;
+					FoodFinalTime = model.FoodFinalTime;
 				}
 				return true;
 			}
 			catch {
-				SetDefaultSettings();
 				return false;
 			}
 		}
@@ -95,6 +141,7 @@ namespace AzLH.Models {
 
 		// 設定項目を初期化
 		public bool Initialize() {
+			SetDefaultSettings();
 			if (LoadSettings()) {
 				return true;
 			}

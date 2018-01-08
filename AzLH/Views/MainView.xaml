@@ -48,6 +48,8 @@
 				<MenuItem Header="ウィンドウを表示(_W)">
 					<MenuItem Header="資材記録画面(_S)"
 						Command="{Binding OpenSupplyViewCommand}"/>
+					<MenuItem Header="各種タイマー画面(_T)"
+						Command="{Binding OpenTimerViewCommand}"/>
 				</MenuItem>
 				<MenuItem Header="スクショ保存フォルダを表示(_O)"
 						Command="{Binding OpenPicFolderCommand}"/>

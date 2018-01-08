@@ -11,6 +11,26 @@ namespace AzLH.Models {
 	static class SceneRecognition {
 		// 各シーンにおける認識パラメーター
 		private static Dictionary<string, SceneParameter[]> sceneParameters = LoadSceneParameters();
+		// 戦闘中の各種ゲージの種類数
+		public static int GaugeTypeCount { get; } = 3;
+		// 軍事委託の本数
+		public static int ConsignCount { get; } = 4;
+		// 戦術教室の生徒数
+		public static int LectureCount { get; } = 2;
+		// 戦闘中の各種ゲージが光っているかを判定するためのRect
+		private static RectangleF[] gaugeChargeRect = new RectangleF[] {
+			new RectangleF(65.63f, 84.72f, 1.406f, 1.250f),
+			new RectangleF(79.14f, 82.22f, 0.7813f, 1.389f),
+			new RectangleF(94.14f, 83.61f, 0.8594f, 1.111f),
+		};
+		// 戦闘中の各種ゲージの中央座標のPoint
+		private static PointF[] gaugeChargePoint = new PointF[] {
+			new PointF(65.586f, 84.375f),
+			new PointF(79.180f, 84.375f),
+			new PointF(92.695f, 84.375f),
+		};
+		// 戦闘中の各種ゲージの円の半径(横・縦の比率)
+		private static SizeF gaugeChargeR = new SizeF(4.6875f, 8.3333f);
 
 		// 認識パラメーターを読み込む
 		private static Dictionary<string, SceneParameter[]> LoadSceneParameters() {
@@ -20,7 +40,7 @@ namespace AzLH.Models {
 			MemoryStream ms = null;
 			try {
 				ms = new MemoryStream(Properties.Resources.scene_parameter, false);
-				using (var sr = new System.IO.StreamReader(ms, Encoding.UTF8)) {
+				using (var sr = new StreamReader(ms, Encoding.UTF8)) {
 					ms = null;
 					// 全体をstringに読み込む
 					string json = sr.ReadToEnd();
@@ -29,14 +49,19 @@ namespace AzLH.Models {
 					// パース結果をさらに変換
 					foreach (var pair in model) {
 						// LINQを用いて一発で放り込む
-						output[pair.Key] = pair.Value.Select(
-							p => new SceneParameter(
-								Convert.ToUInt64(p.HashStr, 16),
-								p.RectFloat[0],
-								p.RectFloat[1],
-								p.RectFloat[2],
-								p.RectFloat[3]
-							)
+						output[pair.Key] = pair.Value.Select<SceneParameterJson, SceneParameter>(
+							p => {
+								var rect = new RectangleF(p.RectFloat[0], p.RectFloat[1], p.RectFloat[2], p.RectFloat[3]);
+								ulong param = Convert.ToUInt64(p.ParamStr, 16);
+								switch (p.TypeStr) {
+								case "DifferenceHash":
+									return new SceneParameterDH { Rect = rect, Hash = param };
+								case "AverageColor":
+									return new SceneParameterAC { Rect = rect, Color = Color.FromArgb((0xFF << 24) | (int)param) };
+								default:
+									return new SceneParameterDH();
+								}
+							}
 						).ToArray();
 					}
 				}
@@ -58,13 +83,40 @@ namespace AzLH.Models {
 			x = ((x & 0xffffffff00000000) >> 32) + (x & 0x00000000ffffffff);
 			return x;
 		}
+		// 画像の一部分の平均色を取得する
+		// (rectで指定する範囲は％単位)
+		private static Color GetAverageColor(Bitmap bitmap, RectangleF rect) {
+			// ％指定をピクセル指定に直す
+			int px = (int)(bitmap.Width * rect.X / 100 + 0.5);
+			int py = (int)(bitmap.Height * rect.Y / 100 + 0.5);
+			int wx = (int)(bitmap.Width * rect.Width / 100 + 0.5);
+			int wy = (int)(bitmap.Height * rect.Height / 100 + 0.5);
+			// 画素値の平均を取る
+			ulong rSum = 0, gSum = 0, bSum = 0;
+			for(int y = py; y < py + wy; ++y) {
+				for (int x = px; x < px + wx; ++x) {
+					var color = bitmap.GetPixel(x, y);
+					rSum += color.R;
+					gSum += color.G;
+					bSum += color.B;
+				}
+			}
+			int rAve = (int)(1.0 * rSum / wx / wy + 0.5);
+			int gAve = (int)(1.0 * gSum / wx / wy + 0.5);
+			int bAve = (int)(1.0 * bSum / wx / wy + 0.5);
+			rAve = (rAve < 0 ? 0 : rAve > 255 ? 255 : rAve);
+			gAve = (gAve < 0 ? 0 : gAve > 255 ? 255 : gAve);
+			bAve = (bAve < 0 ? 0 : bAve > 255 ? 255 : bAve);
+			return Color.FromArgb(rAve, gAve, bAve);
+		}
+
 		// ハミング距離を計算する
-		private static ulong GetHummingDistance(ulong a, ulong b) {
+		public static ulong GetHummingDistance(ulong a, ulong b) {
 			return Popcnt(a ^ b);
 		}
 		// 画像の一部分におけるDifferenceHashを取得する
 		// (rectで指定する範囲は％単位)
-		private static ulong GetDifferenceHash(Bitmap bitmap, RectangleF rect) {
+		public static ulong GetDifferenceHash(Bitmap bitmap, RectangleF rect) {
 			// 以下の3つの作業を同時に行う
 			// ・画像を切り取る
 			// ・横9ピクセル縦8ピクセルにリサイズする
@@ -113,34 +165,8 @@ namespace AzLH.Models {
 			}
 			return hash;
 		}
-		// 画像の一部分の平均色を取得する
-		// (rectで指定する範囲は％単位)
-		private static Color GetAverageColor(Bitmap bitmap, RectangleF rect) {
-			// ％指定をピクセル指定に直す
-			int px = (int)(bitmap.Width * rect.X / 100 + 0.5);
-			int py = (int)(bitmap.Height * rect.Y / 100 + 0.5);
-			int wx = (int)(bitmap.Width * rect.Width / 100 + 0.5);
-			int wy = (int)(bitmap.Height * rect.Height / 100 + 0.5);
-			// 画素値の平均を取る
-			ulong rSum = 0, gSum = 0, bSum = 0;
-			for(int y = py; y < py + wy; ++y) {
-				for (int x = px; x < px + wx; ++x) {
-					var color = bitmap.GetPixel(x, y);
-					rSum += color.R;
-					gSum += color.G;
-					bSum += color.B;
-				}
-			}
-			int rAve = (int)(1.0 * rSum / wx / wy + 0.5);
-			int gAve = (int)(1.0 * gSum / wx / wy + 0.5);
-			int bAve = (int)(1.0 * bSum / wx / wy + 0.5);
-			rAve = (rAve < 0 ? 0 : rAve > 255 ? 255 : rAve);
-			gAve = (gAve < 0 ? 0 : gAve > 255 ? 255 : gAve);
-			bAve = (bAve < 0 ? 0 : bAve > 255 ? 255 : bAve);
-			return Color.FromArgb(rAve, gAve, bAve);
-		}
 		// 色間の距離を取得する(単純にR・G・Bの差の二乗の合計を出しているだけ)
-		private static int GetColorDistance(Color a, Color b) {
+		public static int GetColorDistance(Color a, Color b) {
 			int rDiff = a.R - b.R;
 			int gDiff = a.G - b.G;
 			int bDiff = a.B - b.B;
@@ -149,40 +175,39 @@ namespace AzLH.Models {
 		// どのシーンかを判定する("不明"＝判定不可)
 		public static string JudgeGameScene(Bitmap bitmap) {
 			foreach(var scene in sceneParameters) {
+				//Console.WriteLine(scene.Key);
 				bool flg = true;
 				foreach(var sceneParameter in scene.Value) {
-					ulong hash = GetDifferenceHash(bitmap, sceneParameter.Rect);
-					if(GetHummingDistance(hash, sceneParameter.Hash) >= 20) {
-						flg = false;
-						break;
+					if (sceneParameter is SceneParameterDH) {
+						//Console.WriteLine($"　{((SceneParameterDH)sceneParameter).Hash.ToString("X")}");
+						ulong hash = GetDifferenceHash(bitmap, ((SceneParameterDH)sceneParameter).Rect);
+						//Console.WriteLine($"　{hash.ToString("X")}");
+						if (GetHummingDistance(hash, ((SceneParameterDH)sceneParameter).Hash) >= 20) {
+							flg = false;
+							break;
+						}
+					} else if(sceneParameter is SceneParameterAC) {
+						//Console.WriteLine($"　{((SceneParameterAC)sceneParameter).Color}");
+						var color = GetAverageColor(bitmap, ((SceneParameterAC)sceneParameter).Rect);
+						//Console.WriteLine($"　{color}");
+						if (GetColorDistance(color, ((SceneParameterAC)sceneParameter).Color) >= 50) {
+							flg = false;
+							break;
+						}
 					}
 				}
 				if (flg) {
 					// 特定のシーンの時だけ判定を追加する
 					switch (scene.Key) {
-					case "母港": {
-							var aveColor = GetAverageColor(bitmap, new RectangleF(69.06f, 3.056f, 1.406f, 2.500f));
-							if (GetColorDistance(aveColor, Color.FromArgb(238, 200, 89)) > 50)
-								return "不明";
-						}
-						break;
-					case "建造": {
-							var aveColor = GetAverageColor(bitmap, new RectangleF(81.48f, 65.56f, 2.813f, 5.000f));
-							if (GetColorDistance(aveColor, Color.FromArgb(237, 196, 85)) > 50)
-								return "不明";
-						}
-						break;
-					case "支援": {
-							var aveColor = GetAverageColor(bitmap, new RectangleF(48.20f, 16.11f, 1.172f, 2.083f));
-							if (GetColorDistance(aveColor, Color.FromArgb(222, 210, 159)) > 50)
-								return "不明";
-						}
-						break;
-					case "家具屋": {
-							var aveColor = GetAverageColor(bitmap, new RectangleF(61.41f, 8.056f, 1.641f, 2.917f));
-							if (GetColorDistance(aveColor, Color.FromArgb(231, 192, 98)) > 50)
-								return "不明";
+					case "戦闘中": {
+							foreach(var rect in gaugeChargeRect){
+								var centerColor = GetAverageColor(bitmap, rect);
+								if (GetColorDistance(centerColor, Color.FromArgb(247, 251, 247)) >= 500
+								&& GetColorDistance(centerColor, Color.FromArgb(189, 186, 189)) >= 500) {
+									return "不明";
+								}
 							}
+						}
 						break;
 					}
 					return scene.Key;
@@ -190,25 +215,69 @@ namespace AzLH.Models {
 			}
 			return "不明";
 		}
+		// 戦闘中の画面にて、空爆・魚雷・砲撃のゲージ量を読み取って返す
+		public static double[] GetBattleBombGauge(Bitmap bitmap) {
+			var gauge = new double[GaugeTypeCount];
+			for(int ti = 0; ti < GaugeTypeCount; ++ti) {
+				// 読み取れなかった際の割合を0.0とする
+				gauge[ti] = 0.0;
+				// ゲージが最大まで溜まっている場合は、常に1を返す
+				// (そうでない場合、(189,186,189)になる)
+				var centerColor = GetAverageColor(bitmap, gaugeChargeRect[ti]);
+				if(GetColorDistance(centerColor, Color.FromArgb(247, 251, 247)) < 500) {
+					gauge[ti] = 1.0;
+					continue;
+				}
+				// そうでない場合は、ゲージがどこまでどこまで読み取れるかを返す
+				for(int intPer = 999; intPer >= 0; --intPer) {
+					// doublePerは[0, 1)の範囲内で、ゲージの割合を表す
+					double doublePer = 0.001 * intPer;
+					// doublePerを座標変換して円形にしつつ、ピクセル座標まで落とし込む
+					double radianAngle = doublePer * Math.PI * 2;
+					double xOffset = Math.Sin(radianAngle);
+					double yOffset = -Math.Cos(radianAngle);
+					double xPoint = gaugeChargePoint[ti].X + xOffset * gaugeChargeR.Width;
+					double yPoint = gaugeChargePoint[ti].Y + yOffset * gaugeChargeR.Height;
+					int xPixelPoint = (int)Math.Round(xPoint * bitmap.Width / 100, 0);
+					int yPixelPoint = (int)Math.Round(yPoint * bitmap.Height / 100, 0);
+					var pixelColor = bitmap.GetPixel(xPixelPoint, yPixelPoint);
+					if(GetColorDistance(pixelColor, Color.FromArgb(255,215,66)) < 50) {
+						// doublePerが特定の範囲内にある場合、ゲージ下にある「数字」と
+						// 重なってしまうため測定精度が下がる。そこで、度数法だと140°～220°、
+						// [0, 1)に正規化すると0.38～0.61までの範囲にあるなら「無視」するようにした
+						if(380 <= intPer && intPer <= 610)
+							gauge[ti] = -1.0;
+						else
+							gauge[ti] = doublePer;
+						break;
+					}
+				}
+			}
+			return gauge;
+		}
 
 		// シーンの認識パラメーターを表すクラス
-		private class SceneParameter {
-			// ハッシュ値
-			public ulong Hash { get; }
+		private interface SceneParameter { }
+		private struct SceneParameterDH : SceneParameter {
 			// 指定する範囲(％単位)
-			public RectangleF Rect { get; }
-			// コンストラクタ
-			public SceneParameter(ulong hash, float x, float y, float width, float height) {
-				Hash = hash;
-				Rect = new RectangleF(x, y, width, height);
-			}
+			public RectangleF Rect { get; set; }
+			// パラメーター
+			public ulong Hash { get; set; }
 		}
-		[JsonObject("param")]
+		private struct SceneParameterAC : SceneParameter {
+			// 指定する範囲(％単位)
+			public RectangleF Rect { get; set; }
+			// パラメーター
+			public Color Color { get; set; }
+		}
+		[JsonObject("param_pair")]
 		private class SceneParameterJson {
-			[JsonProperty("hash")]
-			public string HashStr { get; set; }
+			[JsonProperty("type")]
+			public string TypeStr { get; set; }
 			[JsonProperty("rect")]
 			public float[] RectFloat { get; set; }
+			[JsonProperty("param")]
+			public string ParamStr { get; set; }
 		}
 	}
 }
