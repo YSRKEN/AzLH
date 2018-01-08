@@ -38,5 +38,9 @@
   "寮舎" : [
     {"type" : "DifferenceHash", "rect" : [4.063, 88.61, 1.094, 1.944], "param" : "0xA0A261000020A6A0"},
     {"type" : "DifferenceHash", "rect" : [2.734, 6.667, 0.9375, 3.472], "param" : "0x3043F002020"}
+  ],
+  "戦闘結果" : [
+    {"type" : "AverageColor", "rect" : [12.27, 47.36, 1.250, 2.222], "param" : "0xA56508"},
+    {"type" : "AverageColor", "rect" : [87.97, 47.36, 1.250, 2.222], "param" : "0xA56508"}
   ]
 }

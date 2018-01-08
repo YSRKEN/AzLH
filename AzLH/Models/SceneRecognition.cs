@@ -187,8 +187,10 @@ namespace AzLH.Models {
 							break;
 						}
 					} else if(sceneParameter is SceneParameterAC) {
+						//Console.WriteLine($"　{((SceneParameterAC)sceneParameter).Color}");
 						var color = GetAverageColor(bitmap, ((SceneParameterAC)sceneParameter).Rect);
-						if(GetColorDistance(color, ((SceneParameterAC)sceneParameter).Color) >= 50) {
+						//Console.WriteLine($"　{color}");
+						if (GetColorDistance(color, ((SceneParameterAC)sceneParameter).Color) >= 50) {
 							flg = false;
 							break;
 						}
