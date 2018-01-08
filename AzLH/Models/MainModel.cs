@@ -177,6 +177,10 @@ namespace AzLH.Models {
 			}
 		}
 
+		// 1秒前のゲージ量
+		double[] oldGauge = new double[] { -1.0, -1.0, -1.0 };
+		double[] remainTime = new double[] { 0.0, 0.0, 0.0 };
+
 		// コンストラクタ
 		public MainModel() {
 			SetSettings();
@@ -405,6 +409,16 @@ namespace AzLH.Models {
 			view.Show();
 			settings.ShowSupplyWindowFlg = true;
 		}
+		// 各種タイマー画面を表示
+		public void OpenTimerView() {
+			var settings = SettingsStore.Instance;
+			if (settings.ShowTimerWindowFlg)
+				return;
+			var vm = new ViewModels.TimerViewModel();
+			var view = new Views.TimerView { DataContext = vm };
+			view.Show();
+			settings.ShowTimerWindowFlg = true;
+		}
 		// 資材のインポート機能(燃料・資金・ダイヤ)
 		public async void ImportMainSupply() {
 			// インスタンスを作成
@@ -483,15 +497,16 @@ namespace AzLH.Models {
 		public void HelperTaskF() {
 			if (!SaveScreenshotFlg)
 				return;
-			using (var screenShot = ScreenShotProvider.GetScreenshot()) {
+			using(var screenShot = ScreenShotProvider.GetScreenshot()) {
 				// スクショが取得できるとscreenShotがnullにならない
 				if (screenShot != null) {
 					// シーン文字列を取得し、表示する
 					JudgedScene = SceneRecognition.JudgeGameScene(screenShot);
 					// 資材量を取得する
+					// (戦闘中なら各種ボムの分量と残り秒数を読み取る)
 					switch (JudgedScene) {
 					case "シーン判定 : 母港": {
-							if(SupplyStore.UpdateSupplyValue(screenShot, "燃料", AutoSupplyScreenShotFlg, PutCharacterRecognitionFlg))
+							if (SupplyStore.UpdateSupplyValue(screenShot, "燃料", AutoSupplyScreenShotFlg, PutCharacterRecognitionFlg))
 								PutLog("資材量追記：燃料");
 							if (SupplyStore.UpdateSupplyValue(screenShot, "資金", AutoSupplyScreenShotFlg, PutCharacterRecognitionFlg))
 								PutLog("資材量追記：資金");
@@ -520,8 +535,14 @@ namespace AzLH.Models {
 						}
 						break;
 					}
-				}
-				else {
+					// 戦闘中でなくなった場合、速やかにボムタイマーをリセットする
+					if(JudgedScene != "シーン判定 : 戦闘中" && JudgedScene != "シーン判定 : 不明") {
+						var setting = SettingsStore.Instance;
+						setting.BombChageTime1 = null;
+						setting.BombChageTime2 = null;
+						setting.BombChageTime3 = null;
+					}
+				} else {
 					// スクショが取得できなくなったのでその旨を通知する
 					PutLog("エラー：スクショが取得できなくなりました");
 					SaveScreenshotFlg = false;
@@ -580,6 +601,120 @@ namespace AzLH.Models {
 						ScreenShotProvider.GameWindowRect = null;
 						PutLog($"位置ズレ自動修正 : 失敗");
 						SaveScreenshotFlg = false;
+					}
+					return;
+				}
+				// スクショから得られる情報を用いた修正
+				using(var screenShot = ScreenShotProvider.GetScreenshot()) {
+					switch (SceneRecognition.JudgeGameScene(screenShot)) {
+					case "戦闘中": {
+							// 読み取ったゲージから、フルチャージに必要な秒数を計算する
+							var gauge = SceneRecognition.GetBattleBombGauge(screenShot);
+							// 各種のゲージ毎に判定を行う
+							//string output = "残りチャージ時間：";
+							//var label = new string[] { "空撃", "雷撃", "砲撃" };
+							for (int ti = 0; ti < SceneRecognition.GaugeTypeCount; ++ti) {
+								if (gauge[ti] >= 0.0) {
+									if (oldGauge[ti] >= 0.0) {
+										// 前回のゲージ量が残っているので、チャージ完了に要する時間が計算できる
+										// ただしゲージが変化していないようにみえる場合は無視する
+										if (gauge[ti] > oldGauge[ti]) {
+											remainTime[ti] = (1.0 - gauge[ti]) / (gauge[ti] - oldGauge[ti]);
+											//
+											var setting = SettingsStore.Instance;
+											switch (ti) {
+											case 0:
+												setting.BombChageTime1 = DateTime.Now.AddSeconds(remainTime[ti]);
+												break;
+											case 1:
+												setting.BombChageTime2 = DateTime.Now.AddSeconds(remainTime[ti]);
+												break;
+											case 2:
+												setting.BombChageTime3 = DateTime.Now.AddSeconds(remainTime[ti]);
+												break;
+											}
+										} else {
+											// 読み取り失敗した祭の処理
+											if (remainTime[ti] > 0.0) remainTime[ti] -= 1.0;
+										}
+									} else {
+										// 読み取り失敗した祭の処理
+										if (remainTime[ti] > 0.0) remainTime[ti] -= 1.0;
+									}
+									// oldGaugeに今回読み取った量を上書きする
+									oldGauge[ti] = gauge[ti];
+								} else {
+									// 読み取り失敗した祭の処理
+									if (remainTime[ti] > 0.0) remainTime[ti] -= 1.0;
+									oldGauge[ti] = -1.0;
+								}
+							}
+						}
+						break;
+					case "委託": {
+							// 委託時間を読み取って反映させる
+							var setting = SettingsStore.Instance;
+							for (int ci = 0; ci < SceneRecognition.ConsignCount; ++ci) {
+								// 読み取り
+								long remainTime = CharacterRecognition.GetTimeOCR(screenShot, $"委託{ci + 1}");
+								// 委託完了時刻を逆算
+								DateTime? finalTime = (remainTime > 0 ? DateTime.Now.AddSeconds(remainTime) : (DateTime?)null);
+								// 書き込み処理
+								switch (ci) {
+								case 0:
+									setting.ConsignFinalTime1 = finalTime;
+									setting.SaveSettings();
+									break;
+								case 1:
+									setting.ConsignFinalTime2 = finalTime;
+									setting.SaveSettings();
+									break;
+								case 2:
+									setting.ConsignFinalTime3 = finalTime;
+									setting.SaveSettings();
+									break;
+								case 3:
+									setting.ConsignFinalTime4 = finalTime;
+									setting.SaveSettings();
+									break;
+								}
+							}
+						}
+						break;
+					case "戦術教室": {
+							// 残り時間を読み取って反映させる
+							var setting = SettingsStore.Instance;
+							for (int ci = 0; ci < SceneRecognition.LectureCount; ++ci) {
+								// 読み取り
+								long remainTime = CharacterRecognition.GetTimeOCR(screenShot, $"戦術教室{ci + 1}");
+								// 完了時刻を逆算
+								DateTime? finalTime = (remainTime > 0 ? DateTime.Now.AddSeconds(remainTime) : (DateTime?)null);
+								// 書き込み処理
+								switch (ci) {
+								case 0:
+									setting.LectureFinalTime1 = finalTime;
+									setting.SaveSettings();
+									break;
+								case 1:
+									setting.LectureFinalTime2 = finalTime;
+									setting.SaveSettings();
+									break;
+								}
+							}
+						}
+						break;
+					case "寮舎": {
+							// 残り時間を読み取って反映させる
+							var setting = SettingsStore.Instance;
+							// 読み取り
+							long remainTime = CharacterRecognition.GetTimeOCR(screenShot, "食糧");
+							// 完了時刻を逆算
+							DateTime? finalTime = (remainTime > 0 ? DateTime.Now.AddSeconds(remainTime) : (DateTime?)null);
+							// 書き込み処理
+							setting.FoodFinalTime = finalTime;
+							setting.SaveSettings();
+						}
+						break;
 					}
 				}
 			}

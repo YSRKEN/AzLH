@@ -79,5 +79,15 @@ namespace AzLH.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   型 System.Byte[] のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static byte[] time_parameter {
+            get {
+                object obj = ResourceManager.GetObject("time_parameter", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

@@ -54,6 +54,8 @@ namespace AzLH.ViewModels {
 		public ReactiveCommand OpenPicFolderCommand { get; }
 		// 資材記録画面を表示
 		public ReactiveCommand OpenSupplyViewCommand { get; }
+		// 各種タイマー画面を表示
+		public ReactiveCommand OpenTimerViewCommand { get; }
 		// 資材のインポート機能
 		public ReactiveCommand ImportMainSupplyCommand { get; }
 		public ReactiveCommand ImportSubSupply1Command { get; }
@@ -107,6 +109,7 @@ namespace AzLH.ViewModels {
 			ExportSettingsCommand = new ReactiveCommand();
 			OpenPicFolderCommand = new ReactiveCommand();
 			OpenSupplyViewCommand = new ReactiveCommand();
+			OpenTimerViewCommand = new ReactiveCommand();
 			ImportMainSupplyCommand = new ReactiveCommand();
 			ImportSubSupply1Command = new ReactiveCommand();
 			ImportSubSupply2Command = new ReactiveCommand();
@@ -121,6 +124,7 @@ namespace AzLH.ViewModels {
 			ExportSettingsCommand.Subscribe(mainModel.ExportSettings);
 			OpenPicFolderCommand.Subscribe(mainModel.OpenPicFolder);
 			OpenSupplyViewCommand.Subscribe(mainModel.OpenSupplyView);
+			OpenTimerViewCommand.Subscribe(mainModel.OpenTimerView);
 			ImportMainSupplyCommand.Subscribe(mainModel.ImportMainSupply);
 			ImportSubSupply1Command.Subscribe(mainModel.ImportSubSupply1);
 			ImportSubSupply2Command.Subscribe(mainModel.ImportSubSupply2);
@@ -155,6 +159,9 @@ namespace AzLH.ViewModels {
 			// ウィンドウ表示関係
 			if (settings.AutoSupplyWindowFlg) {
 				OpenSupplyViewCommand.Execute();
+			}
+			if (settings.AutoTimerWindowFlg) {
+				OpenTimerViewCommand.Execute();
 			}
 
 			// 最新版をチェックする

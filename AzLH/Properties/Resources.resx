@@ -124,4 +124,7 @@
   <data name="supply_parameter" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\supply_parameter.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="time_parameter" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\time_parameter.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>
