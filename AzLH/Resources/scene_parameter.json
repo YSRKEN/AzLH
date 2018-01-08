@@ -33,6 +33,10 @@
   ],
   "戦術教室" : [
     {"type" : "DifferenceHash", "rect" : [18.05, 19.17, 2.344, 4.167], "param" : "0x161759f205c74682"},
-    {"type" : "DifferenceHash", "rect" : [4.766, 9.028, 1.953, 3.472], "param" : "0x000000381878B878"}
+    {"type" : "DifferenceHash", "rect" : [4.766, 9.028, 1.953, 3.472], "param" : "0x381878B878"}
+  ],
+  "寮舎" : [
+    {"type" : "DifferenceHash", "rect" : [4.063, 88.61, 1.094, 1.944], "param" : "0xA0A261000020A6A0"},
+    {"type" : "DifferenceHash", "rect" : [2.734, 6.667, 0.9375, 3.472], "param" : "0x3043F002020"}
   ]
 }
