@@ -4,6 +4,9 @@ using System.IO;
 using System.Text;
 
 namespace AzLH.Models {
+	static class SettingStore {
+		
+	}
 	internal sealed class SettingsStore {
 		// シングルトンパターン
 		// 参考→https://qiita.com/rohinomiya/items/6bca22211d1bddf581c4
