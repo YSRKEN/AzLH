@@ -39,9 +39,8 @@ namespace AzLH.Models {
 			get => forTwitterFlg;
 			set {
 				SetProperty(ref forTwitterFlg, value);
-				var settings = SettingsStore.Instance;
-				settings.ForTwitterFlg = forTwitterFlg;
-				if (!settings.SaveSettings()) {
+				SettingsStore.ForTwitterFlg = forTwitterFlg;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -59,10 +58,8 @@ namespace AzLH.Models {
 			set {
 				if (!MemoryWindowPositionFlg)
 					return;
-				SetProperty(ref mainWindowPositionLeft, value);
-				var settings = SettingsStore.Instance;
-				settings.MainWindowRect[0] = mainWindowPositionLeft;
-				if (!settings.SaveSettings()) {
+				SettingsStore.MainWindowRect[0] = mainWindowPositionLeft;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -74,9 +71,8 @@ namespace AzLH.Models {
 				if (!MemoryWindowPositionFlg)
 					return;
 				SetProperty(ref mainWindowPositionTop, value);
-				var settings = SettingsStore.Instance;
-				settings.MainWindowRect[1] = mainWindowPositionTop;
-				if (!settings.SaveSettings()) {
+				SettingsStore.MainWindowRect[1] = mainWindowPositionTop;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -88,9 +84,8 @@ namespace AzLH.Models {
 				if (!MemoryWindowPositionFlg)
 					return;
 				SetProperty(ref mainWindowPositionWidth, value);
-				var settings = SettingsStore.Instance;
-				settings.MainWindowRect[2] = mainWindowPositionWidth;
-				if (!settings.SaveSettings()) {
+				SettingsStore.MainWindowRect[2] = mainWindowPositionWidth;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -102,9 +97,8 @@ namespace AzLH.Models {
 				if (!MemoryWindowPositionFlg)
 					return;
 				SetProperty(ref mainWindowPositionHeight, value);
-				var settings = SettingsStore.Instance;
-				settings.MainWindowRect[3] = mainWindowPositionHeight;
-				if (!settings.SaveSettings()) {
+				SettingsStore.MainWindowRect[3] = mainWindowPositionHeight;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -115,9 +109,8 @@ namespace AzLH.Models {
 			get => memoryWindowPositionFlg;
 			set {
 				SetProperty(ref memoryWindowPositionFlg, value);
-				var settings = SettingsStore.Instance;
-				settings.MemoryWindowPositionFlg = memoryWindowPositionFlg;
-				if (!settings.SaveSettings()) {
+				SettingsStore.MemoryWindowPositionFlg = memoryWindowPositionFlg;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -128,9 +121,8 @@ namespace AzLH.Models {
 			get => autoSearchPositionFlg;
 			set {
 				SetProperty(ref autoSearchPositionFlg, value);
-				var settings = SettingsStore.Instance;
-				settings.AutoSearchPositionFlg = autoSearchPositionFlg;
-				if (!settings.SaveSettings()) {
+				SettingsStore.AutoSearchPositionFlg = autoSearchPositionFlg;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -141,9 +133,8 @@ namespace AzLH.Models {
 			get => autoSupplyScreenShotFlg;
 			set {
 				SetProperty(ref autoSupplyScreenShotFlg, value);
-				var settings = SettingsStore.Instance;
-				settings.AutoSupplyScreenShotFlg = autoSupplyScreenShotFlg;
-				if (!settings.SaveSettings()) {
+				SettingsStore.AutoSupplyScreenShotFlg = autoSupplyScreenShotFlg;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -154,9 +145,8 @@ namespace AzLH.Models {
 			get => putCharacterRecognitionFlg;
 			set {
 				SetProperty(ref putCharacterRecognitionFlg, value);
-				var settings = SettingsStore.Instance;
-				settings.PutCharacterRecognitionFlg = putCharacterRecognitionFlg;
-				if (!settings.SaveSettings())
+				SettingsStore.PutCharacterRecognitionFlg = putCharacterRecognitionFlg;
+				if (!SettingsStore.SaveSettings())
 				{
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
@@ -168,9 +158,8 @@ namespace AzLH.Models {
 			get => dragAndDropPictureFlg;
 			set {
 				SetProperty(ref dragAndDropPictureFlg, value);
-				var settings = SettingsStore.Instance;
-				settings.DragAndDropPictureFlg = dragAndDropPictureFlg;
-				if (!settings.SaveSettings())
+				SettingsStore.DragAndDropPictureFlg = dragAndDropPictureFlg;
+				if (!SettingsStore.SaveSettings())
 				{
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
@@ -188,19 +177,18 @@ namespace AzLH.Models {
 
 		// 設定内容を画面に反映する
 		private void SetSettings() {
-			var settings = SettingsStore.Instance;
-			ForTwitterFlg = settings.ForTwitterFlg;
-			MemoryWindowPositionFlg = settings.MemoryWindowPositionFlg;
+			ForTwitterFlg = SettingsStore.ForTwitterFlg;
+			MemoryWindowPositionFlg = SettingsStore.MemoryWindowPositionFlg;
 			if (MemoryWindowPositionFlg) {
-				MainWindowPositionLeft   = settings.MainWindowRect[0];
-				MainWindowPositionTop    = settings.MainWindowRect[1];
-				MainWindowPositionWidth  = settings.MainWindowRect[2];
-				MainWindowPositionHeight = settings.MainWindowRect[3];
+				MainWindowPositionLeft   = SettingsStore.MainWindowRect[0];
+				MainWindowPositionTop    = SettingsStore.MainWindowRect[1];
+				MainWindowPositionWidth  = SettingsStore.MainWindowRect[2];
+				MainWindowPositionHeight = SettingsStore.MainWindowRect[3];
 			}
-			AutoSearchPositionFlg = settings.AutoSearchPositionFlg;
-			AutoSupplyScreenShotFlg = settings.AutoSupplyScreenShotFlg;
-			PutCharacterRecognitionFlg = settings.PutCharacterRecognitionFlg;
-			DragAndDropPictureFlg = settings.DragAndDropPictureFlg;
+			AutoSearchPositionFlg = SettingsStore.AutoSearchPositionFlg;
+			AutoSupplyScreenShotFlg = SettingsStore.AutoSupplyScreenShotFlg;
+			PutCharacterRecognitionFlg = SettingsStore.PutCharacterRecognitionFlg;
+			DragAndDropPictureFlg = SettingsStore.DragAndDropPictureFlg;
 		}
 		// 実行ログに追記する
 		private void PutLog(string message) {
@@ -366,8 +354,7 @@ namespace AzLH.Models {
 			// ダイアログを表示
 			if ((bool)ofd.ShowDialog()) {
 				// 設定をインポート
-				var settings = SettingsStore.Instance;
-				if (!settings.LoadSettings(ofd.FileName)) {
+				if (!SettingsStore.LoadSettings(ofd.FileName)) {
 					PutLog("エラー：設定を読み込めませんでした");
 				}
 				else {
@@ -386,8 +373,7 @@ namespace AzLH.Models {
 			// ダイアログを表示
 			if ((bool)sfd.ShowDialog()) {
 				// 設定をエクスポート
-				var settings = SettingsStore.Instance;
-				if (!settings.SaveSettings(sfd.FileName)) {
+				if (!SettingsStore.SaveSettings(sfd.FileName)) {
 					PutLog("エラー：設定を保存できませんでした");
 				}
 				else {
@@ -401,23 +387,21 @@ namespace AzLH.Models {
 		}
 		// 資材記録画面を表示
 		public void OpenSupplyView() {
-			var settings = SettingsStore.Instance;
-			if (settings.ShowSupplyWindowFlg)
+			if (SettingsStore.ShowSupplyWindowFlg)
 				return;
 			var vm = new ViewModels.SupplyViewModel();
 			var view = new Views.SupplyView { DataContext = vm };
 			view.Show();
-			settings.ShowSupplyWindowFlg = true;
+			SettingsStore.ShowSupplyWindowFlg = true;
 		}
 		// 各種タイマー画面を表示
 		public void OpenTimerView() {
-			var settings = SettingsStore.Instance;
-			if (settings.ShowTimerWindowFlg)
+			if (SettingsStore.ShowTimerWindowFlg)
 				return;
 			var vm = new ViewModels.TimerViewModel();
 			var view = new Views.TimerView { DataContext = vm };
 			view.Show();
-			settings.ShowTimerWindowFlg = true;
+			SettingsStore.ShowTimerWindowFlg = true;
 		}
 		// 資材のインポート機能(燃料・資金・ダイヤ)
 		public async void ImportMainSupply() {
@@ -537,10 +521,9 @@ namespace AzLH.Models {
 					}
 					// 戦闘中でなくなった場合、速やかにボムタイマーをリセットする
 					if(JudgedScene != "シーン判定 : 戦闘中" && JudgedScene != "シーン判定 : 不明") {
-						var setting = SettingsStore.Instance;
-						setting.BombChageTime1 = null;
-						setting.BombChageTime2 = null;
-						setting.BombChageTime3 = null;
+						SettingsStore.BombChageTime1 = null;
+						SettingsStore.BombChageTime2 = null;
+						SettingsStore.BombChageTime3 = null;
 					}
 				} else {
 					// スクショが取得できなくなったのでその旨を通知する
@@ -621,16 +604,15 @@ namespace AzLH.Models {
 										if (gauge[ti] > oldGauge[ti]) {
 											remainTime[ti] = (1.0 - gauge[ti]) / (gauge[ti] - oldGauge[ti]);
 											//
-											var setting = SettingsStore.Instance;
 											switch (ti) {
 											case 0:
-												setting.BombChageTime1 = DateTime.Now.AddSeconds(remainTime[ti]);
+												SettingsStore.BombChageTime1 = DateTime.Now.AddSeconds(remainTime[ti]);
 												break;
 											case 1:
-												setting.BombChageTime2 = DateTime.Now.AddSeconds(remainTime[ti]);
+												SettingsStore.BombChageTime2 = DateTime.Now.AddSeconds(remainTime[ti]);
 												break;
 											case 2:
-												setting.BombChageTime3 = DateTime.Now.AddSeconds(remainTime[ti]);
+												SettingsStore.BombChageTime3 = DateTime.Now.AddSeconds(remainTime[ti]);
 												break;
 											}
 										} else {
@@ -653,7 +635,6 @@ namespace AzLH.Models {
 						break;
 					case "委託": {
 							// 委託時間を読み取って反映させる
-							var setting = SettingsStore.Instance;
 							for (int ci = 0; ci < SceneRecognition.ConsignCount; ++ci) {
 								// 読み取り
 								long remainTime = CharacterRecognition.GetTimeOCR(screenShot, $"委託{ci + 1}");
@@ -662,20 +643,20 @@ namespace AzLH.Models {
 								// 書き込み処理
 								switch (ci) {
 								case 0:
-									setting.ConsignFinalTime1 = finalTime;
-									setting.SaveSettings();
+									SettingsStore.ConsignFinalTime1 = finalTime;
+									SettingsStore.SaveSettings();
 									break;
 								case 1:
-									setting.ConsignFinalTime2 = finalTime;
-									setting.SaveSettings();
+									SettingsStore.ConsignFinalTime2 = finalTime;
+									SettingsStore.SaveSettings();
 									break;
 								case 2:
-									setting.ConsignFinalTime3 = finalTime;
-									setting.SaveSettings();
+									SettingsStore.ConsignFinalTime3 = finalTime;
+									SettingsStore.SaveSettings();
 									break;
 								case 3:
-									setting.ConsignFinalTime4 = finalTime;
-									setting.SaveSettings();
+									SettingsStore.ConsignFinalTime4 = finalTime;
+									SettingsStore.SaveSettings();
 									break;
 								}
 							}
@@ -683,7 +664,6 @@ namespace AzLH.Models {
 						break;
 					case "戦術教室": {
 							// 残り時間を読み取って反映させる
-							var setting = SettingsStore.Instance;
 							for (int ci = 0; ci < SceneRecognition.LectureCount; ++ci) {
 								// 読み取り
 								long remainTime = CharacterRecognition.GetTimeOCR(screenShot, $"戦術教室{ci + 1}");
@@ -692,12 +672,12 @@ namespace AzLH.Models {
 								// 書き込み処理
 								switch (ci) {
 								case 0:
-									setting.LectureFinalTime1 = finalTime;
-									setting.SaveSettings();
+									SettingsStore.LectureFinalTime1 = finalTime;
+									SettingsStore.SaveSettings();
 									break;
 								case 1:
-									setting.LectureFinalTime2 = finalTime;
-									setting.SaveSettings();
+									SettingsStore.LectureFinalTime2 = finalTime;
+									SettingsStore.SaveSettings();
 									break;
 								}
 							}
@@ -705,14 +685,13 @@ namespace AzLH.Models {
 						break;
 					case "寮舎": {
 							// 残り時間を読み取って反映させる
-							var setting = SettingsStore.Instance;
 							// 読み取り
 							long remainTime = CharacterRecognition.GetTimeOCR(screenShot, "食糧");
 							// 完了時刻を逆算
 							DateTime? finalTime = (remainTime > 0 ? DateTime.Now.AddSeconds(remainTime) : (DateTime?)null);
 							// 書き込み処理
-							setting.FoodFinalTime = finalTime;
-							setting.SaveSettings();
+							SettingsStore.FoodFinalTime = finalTime;
+							SettingsStore.SaveSettings();
 						}
 						break;
 					}

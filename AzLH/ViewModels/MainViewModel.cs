@@ -72,10 +72,9 @@ namespace AzLH.ViewModels {
 			if (!Directory.Exists(@"debug\"))
 				Directory.CreateDirectory(@"debug\");
 			// 設定項目を初期化する
-			var settings = SettingsStore.Instance;
-			if (!settings.Initialize()) {
+			if (!SettingsStore.Initialize()) {
 				MessageBox.Show("設定を読み込めませんでした。\nデフォルトの設定で起動します。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				if (!settings.SaveSettings()) {
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("デフォルト設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -157,10 +156,10 @@ namespace AzLH.ViewModels {
 			timer2.Start();
 
 			// ウィンドウ表示関係
-			if (settings.AutoSupplyWindowFlg) {
+			if (SettingsStore.AutoSupplyWindowFlg) {
 				OpenSupplyViewCommand.Execute();
 			}
-			if (settings.AutoTimerWindowFlg) {
+			if (SettingsStore.AutoTimerWindowFlg) {
 				OpenTimerViewCommand.Execute();
 			}
 

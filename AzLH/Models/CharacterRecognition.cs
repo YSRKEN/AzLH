@@ -89,7 +89,7 @@ namespace AzLH.Models {
 								tpj.MarkRectFloat[1],
 								tpj.MarkRectFloat[2],
 								tpj.MarkRectFloat[3]);
-						var markHash = Convert.ToUInt64(tpj.MarkHashStr, 16);
+						ulong markHash = Convert.ToUInt64(tpj.MarkHashStr, 16);
 						output[pair.Key] = new TimeParameter {
 							TimeRect = timeRect,
 							InverseFlg = pair.Value.InverseFlg,

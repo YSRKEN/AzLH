@@ -24,12 +24,11 @@ namespace AzLH.Models {
 		public double WindowPositionLeft {
 			get => windowPositionLeft;
 			set {
-				var settings = SettingsStore.Instance;
-				if (!settings.MemoryWindowPositionFlg)
+				if (!SettingsStore.MemoryWindowPositionFlg)
 					return;
 				SetProperty(ref windowPositionLeft, value);
-				settings.SupplyWindowRect[0] = windowPositionLeft;
-				if (!settings.SaveSettings()) {
+				SettingsStore.SupplyWindowRect[0] = windowPositionLeft;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -38,12 +37,11 @@ namespace AzLH.Models {
 		public double WindowPositionTop {
 			get => windowPositionTop;
 			set {
-				var settings = SettingsStore.Instance;
-				if (!settings.MemoryWindowPositionFlg)
+				if (!SettingsStore.MemoryWindowPositionFlg)
 					return;
 				SetProperty(ref windowPositionTop, value);
-				settings.SupplyWindowRect[1] = windowPositionTop;
-				if (!settings.SaveSettings()) {
+				SettingsStore.SupplyWindowRect[1] = windowPositionTop;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -52,12 +50,11 @@ namespace AzLH.Models {
 		public double WindowPositionWidth {
 			get => windowPositionWidth;
 			set {
-				var settings = SettingsStore.Instance;
-				if (!settings.MemoryWindowPositionFlg)
+				if (!SettingsStore.MemoryWindowPositionFlg)
 					return;
 				SetProperty(ref windowPositionWidth, value);
-				settings.SupplyWindowRect[2] = windowPositionWidth;
-				if (!settings.SaveSettings()) {
+				SettingsStore.SupplyWindowRect[2] = windowPositionWidth;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -66,12 +63,11 @@ namespace AzLH.Models {
 		public double WindowPositionHeight {
 			get { return windowPositionHeight; }
 			set {
-				var settings = SettingsStore.Instance;
-				if (!settings.MemoryWindowPositionFlg)
+				if (!SettingsStore.MemoryWindowPositionFlg)
 					return;
 				SetProperty(ref windowPositionHeight, value);
-				settings.SupplyWindowRect[3] = windowPositionHeight;
-				if (!settings.SaveSettings()) {
+				SettingsStore.SupplyWindowRect[3] = windowPositionHeight;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -82,9 +78,8 @@ namespace AzLH.Models {
 			get => autoOpenWindowFlg;
 			set {
 				SetProperty(ref autoOpenWindowFlg, value);
-				var settings = SettingsStore.Instance;
-				settings.AutoSupplyWindowFlg = autoOpenWindowFlg;
-				if (!settings.SaveSettings()) {
+				SettingsStore.AutoSupplyWindowFlg = autoOpenWindowFlg;
+				if (!SettingsStore.SaveSettings()) {
 					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
@@ -146,14 +141,13 @@ namespace AzLH.Models {
 
 		// 設定内容を画面に反映する
 		private void SetSettings() {
-			var settings = SettingsStore.Instance;
-			if (settings.MemoryWindowPositionFlg) {
-				WindowPositionLeft = settings.SupplyWindowRect[0];
-				WindowPositionTop = settings.SupplyWindowRect[1];
-				WindowPositionWidth = settings.SupplyWindowRect[2];
-				WindowPositionHeight = settings.SupplyWindowRect[3];
+			if (SettingsStore.MemoryWindowPositionFlg) {
+				WindowPositionLeft = SettingsStore.SupplyWindowRect[0];
+				WindowPositionTop = SettingsStore.SupplyWindowRect[1];
+				WindowPositionWidth = SettingsStore.SupplyWindowRect[2];
+				WindowPositionHeight = SettingsStore.SupplyWindowRect[3];
 			}
-			AutoOpenWindowFlg = settings.AutoSupplyWindowFlg;
+			AutoOpenWindowFlg = SettingsStore.AutoSupplyWindowFlg;
 		}
 		// 表示する資材のモードを切り替える
 		public void ChangeSupplyMode() {
@@ -208,8 +202,7 @@ namespace AzLH.Models {
 				var minDateTime = maxDateTime.AddDays(-NowGraphPeriodInfo.Days);
 				//縦軸
 				int maxYValue = AxisYList.Max(p => p.Value.Where(q => minDateTime <= q.Key).Max(r => r.Value));
-				int intervalY;
-				SpecialCeiling(ref maxYValue, out intervalY);
+				SpecialCeiling(ref maxYValue, out int intervalY);
 				string axisYStr = "";
 				for (int i = 0; i < AxisYList.Count; ++i) {
 					if (i != 0)
@@ -217,8 +210,7 @@ namespace AzLH.Models {
 					axisYStr += AxisYList.Keys.ToList()[i];
 				}
 				int maxY2Value = AxisY2List.Max(p => p.Value.Where(q => minDateTime <= q.Key).Max(r => r.Value));
-				int intervalY2;
-				SpecialCeiling(ref maxY2Value, out intervalY2);
+				SpecialCeiling(ref maxY2Value, out int intervalY2);
 				string axis2YStr = "";
 				for (int i = 0; i < AxisY2List.Count; ++i) {
 					if (i != 0)

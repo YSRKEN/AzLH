@@ -13,8 +13,7 @@ namespace AzLH.Views {
 		}
 		protected override void OnClosing(CancelEventArgs e) {
 			base.OnClosing(e);
-			var settings = SettingsStore.Instance;
-			settings.ShowSupplyWindowFlg = false;
+			SettingsStore.ShowSupplyWindowFlg = false;
 		}
 	}
 }
