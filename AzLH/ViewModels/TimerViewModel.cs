@@ -172,40 +172,29 @@ namespace AzLH.ViewModels
 				if (!SettingsStore.MemoryWindowPositionFlg)
 					return;
 				SettingsStore.TimerWindowRect[0] = value;
-				if (!SettingsStore.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.ChangeSettingFlg = true;
 			});
 			WindowPositionTop.Subscribe(value => {
 				if (!SettingsStore.MemoryWindowPositionFlg)
 					return;
 				SettingsStore.TimerWindowRect[1] = value;
-				if (!SettingsStore.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.ChangeSettingFlg = true;
 			});
 			WindowPositionWidth.Subscribe(value => {
 				if (!SettingsStore.MemoryWindowPositionFlg)
 					return;
 				SettingsStore.TimerWindowRect[2] = value;
-				if (!SettingsStore.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.ChangeSettingFlg = true;
 			});
 			WindowPositionHeight.Subscribe(value => {
 				if (!SettingsStore.MemoryWindowPositionFlg)
 					return;
 				SettingsStore.TimerWindowRect[3] = value;
-				if (!SettingsStore.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.ChangeSettingFlg = true;
 			});
 			// 起動時にこの画面を表示するか？
 			AutoOpenWindowFlg.Subscribe(value => {
 				SettingsStore.AutoTimerWindowFlg = value;
-				if (!SettingsStore.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
 			});
 			// タイマーを初期化し、定時タスクを登録して実行する
 			// http://takachan.hatenablog.com/entry/2017/09/09/225342

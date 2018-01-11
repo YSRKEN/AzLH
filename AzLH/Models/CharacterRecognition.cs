@@ -485,6 +485,6 @@ namespace AzLH.Models {
 			public int Threshold;
 			public float[] MarkRectFloat;
 			public string MarkHashStr;
-		}
+		};
 	}
 }

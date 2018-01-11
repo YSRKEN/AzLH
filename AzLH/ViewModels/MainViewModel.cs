@@ -74,9 +74,6 @@ namespace AzLH.ViewModels {
 			// 設定項目を初期化する
 			if (!SettingsStore.Initialize()) {
 				MessageBox.Show("設定を読み込めませんでした。\nデフォルトの設定で起動します。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				if (!SettingsStore.SaveSettings()) {
-					MessageBox.Show("デフォルト設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
 			}
 			// 資材データベースを初期化する
 			SupplyStore.Initialize();

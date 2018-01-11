@@ -28,9 +28,7 @@ namespace AzLH.Models {
 					return;
 				SetProperty(ref windowPositionLeft, value);
 				SettingsStore.SupplyWindowRect[0] = windowPositionLeft;
-				if (!SettingsStore.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.ChangeSettingFlg = true;
 			}
 		}
 		private double windowPositionTop = double.NaN;
@@ -41,9 +39,7 @@ namespace AzLH.Models {
 					return;
 				SetProperty(ref windowPositionTop, value);
 				SettingsStore.SupplyWindowRect[1] = windowPositionTop;
-				if (!SettingsStore.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.ChangeSettingFlg = true;
 			}
 		}
 		private double windowPositionWidth = 600.0;
@@ -54,9 +50,7 @@ namespace AzLH.Models {
 					return;
 				SetProperty(ref windowPositionWidth, value);
 				SettingsStore.SupplyWindowRect[2] = windowPositionWidth;
-				if (!SettingsStore.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.ChangeSettingFlg = true;
 			}
 		}
 		private double windowPositionHeight = 400.0;
@@ -67,9 +61,7 @@ namespace AzLH.Models {
 					return;
 				SetProperty(ref windowPositionHeight, value);
 				SettingsStore.SupplyWindowRect[3] = windowPositionHeight;
-				if (!SettingsStore.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.ChangeSettingFlg = true;
 			}
 		}
 		// 起動時にこの画面を表示するか？
@@ -79,9 +71,6 @@ namespace AzLH.Models {
 			set {
 				SetProperty(ref autoOpenWindowFlg, value);
 				SettingsStore.AutoSupplyWindowFlg = autoOpenWindowFlg;
-				if (!SettingsStore.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
 			}
 		}
 		// 表示する期間

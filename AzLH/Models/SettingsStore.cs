@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Timers;
+using System.Windows;
 
 namespace AzLH.Models {
 	internal class SettingsStore {
@@ -81,10 +82,6 @@ namespace AzLH.Models {
 		private DateTime? bombChageTime2;
 		[JsonIgnore]
 		private DateTime? bombChageTime3;
-
-		// ファイルが変更されたか？
-		[JsonIgnore]
-		private static bool changeSettingFlg;
 		#endregion
 
 		#region staticに処理するためのラッパー
@@ -94,7 +91,7 @@ namespace AzLH.Models {
 			get => @this.mainWindowRect;
 			set {
 				@this.mainWindowRect = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		// 資材記録画面の位置・大きさ
@@ -103,7 +100,7 @@ namespace AzLH.Models {
 			get => @this.supplyWindowRect;
 			set {
 				@this.supplyWindowRect = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		// 各種タイマー画面の位置・大きさ
@@ -112,7 +109,7 @@ namespace AzLH.Models {
 			get => @this.timerWindowRect;
 			set {
 				@this.timerWindowRect = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 
@@ -122,7 +119,7 @@ namespace AzLH.Models {
 			get => @this.forTwitterFlg;
 			set {
 				@this.forTwitterFlg = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		// ウィンドウの座標を記憶するか？
@@ -131,7 +128,7 @@ namespace AzLH.Models {
 			get => @this.memoryWindowPositionFlg;
 			set {
 				@this.memoryWindowPositionFlg = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		// 常時座標を捕捉し続けるか？
@@ -140,7 +137,7 @@ namespace AzLH.Models {
 			get => @this.autoSearchPositionFlg;
 			set {
 				@this.autoSearchPositionFlg = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		// 資材記録画面を最初から表示するか？
@@ -149,7 +146,7 @@ namespace AzLH.Models {
 			get => @this.autoSupplyWindowFlg;
 			set {
 				@this.autoSupplyWindowFlg = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		// 各種タイマー画面を最初から表示するか？
@@ -158,7 +155,7 @@ namespace AzLH.Models {
 			get => @this.autoTimerWindowFlg;
 			set {
 				@this.autoTimerWindowFlg = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		// 資材記録時にスクショでロギングするか？
@@ -167,7 +164,7 @@ namespace AzLH.Models {
 			get => @this.autoSupplyScreenShotFlg;
 			set {
 				@this.autoSupplyScreenShotFlg = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		// 資材記録時に画像処理結果を出力するか？
@@ -176,7 +173,7 @@ namespace AzLH.Models {
 			get => @this.putCharacterRecognitionFlg;
 			set {
 				@this.putCharacterRecognitionFlg = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		// ドラッグ＆ドロップでシーン認識するか？
@@ -185,7 +182,7 @@ namespace AzLH.Models {
 			get => @this.dragAndDropPictureFlg;
 			set {
 				@this.dragAndDropPictureFlg = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 
@@ -195,7 +192,7 @@ namespace AzLH.Models {
 			get => @this.consignFinalTime1;
 			set {
 				@this.consignFinalTime1 = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		[JsonIgnore]
@@ -203,7 +200,7 @@ namespace AzLH.Models {
 			get => @this.consignFinalTime2;
 			set {
 				@this.consignFinalTime2 = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		[JsonIgnore]
@@ -211,7 +208,7 @@ namespace AzLH.Models {
 			get => @this.consignFinalTime3;
 			set {
 				@this.consignFinalTime3 = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		[JsonIgnore]
@@ -219,7 +216,7 @@ namespace AzLH.Models {
 			get => @this.consignFinalTime4;
 			set {
 				@this.consignFinalTime4 = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		// 戦術教室の完了時刻をメモする
@@ -228,7 +225,7 @@ namespace AzLH.Models {
 			get => @this.lectureFinalTime1;
 			set {
 				@this.lectureFinalTime1 = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		[JsonIgnore]
@@ -236,7 +233,7 @@ namespace AzLH.Models {
 			get => @this.lectureFinalTime2;
 			set {
 				@this.lectureFinalTime2 = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 		// 食糧の枯渇時刻をメモする
@@ -245,7 +242,7 @@ namespace AzLH.Models {
 			get => @this.foodFinalTime;
 			set {
 				@this.foodFinalTime = value;
-				changeSettingFlg = true;
+				ChangeSettingFlg = true;
 			}
 		}
 
@@ -255,7 +252,6 @@ namespace AzLH.Models {
 			get => @this.showSupplyWindowFlg;
 			set {
 				@this.showSupplyWindowFlg = value;
-				changeSettingFlg = true;
 			}
 		}
 		// 各種タイマー画面が表示されているか？
@@ -264,7 +260,6 @@ namespace AzLH.Models {
 			get => @this.showTimerWindowFlg;
 			set {
 				@this.showTimerWindowFlg = value;
-				changeSettingFlg = true;
 			}
 		}
 
@@ -274,7 +269,6 @@ namespace AzLH.Models {
 			get => @this.bombChageTime1;
 			set {
 				@this.bombChageTime1 = value;
-				changeSettingFlg = true;
 			}
 		}
 		[JsonIgnore]
@@ -282,7 +276,6 @@ namespace AzLH.Models {
 			get => @this.bombChageTime2;
 			set {
 				@this.bombChageTime2 = value;
-				changeSettingFlg = true;
 			}
 		}
 		[JsonIgnore]
@@ -290,10 +283,13 @@ namespace AzLH.Models {
 			get => @this.bombChageTime3;
 			set {
 				@this.bombChageTime3 = value;
-				changeSettingFlg = true;
 			}
 		}
 		#endregion
+
+		// ファイルが変更されたか？
+		[JsonIgnore]
+		public static bool ChangeSettingFlg { get; set; }
 
 		// JSONから読み込み
 		public static bool LoadSettings(string path = "settings.json") {
@@ -310,7 +306,7 @@ namespace AzLH.Models {
 			}
 		}
 		// JSONに書き出し
-		public static bool SaveSettings(string path = "settings.json") {
+		public static bool SaveSettings(string path) {
 			try {
 				using (var sw = new StreamWriter(path, false, Encoding.UTF8)) {
 					// Json.NETでstring形式に書き出す
@@ -322,15 +318,16 @@ namespace AzLH.Models {
 				return true;
 			} catch {
 				Console.WriteLine("Save Failed.");
+				MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				return false;
 			}
 		}
 		// 設定に変更点があった場合、JSONに書き出し
 		public static bool SaveSettingsAuto() {
-			if (!changeSettingFlg)
+			if (!ChangeSettingFlg)
 				return false;
-			changeSettingFlg = false;
-			return SaveSettings();
+			ChangeSettingFlg = false;
+			return SaveSettings("settings.json");
 		}
 		// 設定項目を初期化
 		public static bool Initialize() {
@@ -338,7 +335,7 @@ namespace AzLH.Models {
 			bool successflg = LoadSettings();
 			// 正常に読み込めなかった場合、新規に設定ファイルを作成する
 			if (!successflg)
-				SaveSettings();
+				SaveSettings("settings.json");
 			// 定期的に設定を保存するようにする
 			var timer = new Timer(1000);
 			timer.Elapsed += (sender, e) => {
