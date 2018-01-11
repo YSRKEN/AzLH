@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Timers;
 
 namespace AzLH.Models {
 	internal class SettingStore {
@@ -12,13 +13,16 @@ namespace AzLH.Models {
 
 		#region ファイルに保存する設定
 		// メイン画面の位置・大きさ
-		public double[] MainWindowRect { get; set; }
+		[JsonProperty("MainWindowRect")]
+		private double[] mainWindowRect { get; set; }
 			= new double[] { double.NaN, double.NaN, 400.0, 300.0 };
 		// 資材記録画面の位置・大きさ
-		public double[] SupplyWindowRect { get; set; }
+		[JsonProperty("SupplyWindowRect")]
+		private double[] supplyWindowRect { get; set; }
 			= new double[] { double.NaN, double.NaN, 600.0, 400.0 };
 		// 各種タイマー画面の位置・大きさ
-		public double[] TimerWindowRect { get; set; }
+		[JsonProperty("TimerWindowRect")]
+		private double[] timerWindowRect { get; set; }
 			= new double[] { double.NaN, double.NaN, 400.0, 250.0 };
 
 		// Twitter用に加工するか？
@@ -65,10 +69,40 @@ namespace AzLH.Models {
 		public DateTime? BombChageTime2 { get; set; }
 		[JsonIgnore]
 		public DateTime? BombChageTime3 { get; set; }
+
+		// ファイルが変更されたか？
+		[JsonIgnore]
+		private static bool ChangeSettingFlg { get; set; }
 		#endregion
 
 		#region staticに処理するためのラッパー
-			
+		// メイン画面の位置・大きさ
+		[JsonIgnore]
+		public static double[] MainWindowRect {
+			get => This.mainWindowRect;
+			set {
+				This.mainWindowRect = value;
+				ChangeSettingFlg = true;
+			}
+		}
+		// 資材記録画面の位置・大きさ
+		[JsonIgnore]
+		public static double[] SupplyWindowRect {
+			get => This.supplyWindowRect;
+			set {
+				This.supplyWindowRect = value;
+				ChangeSettingFlg = true;
+			}
+		}
+		// 各種タイマー画面の位置・大きさ
+		[JsonIgnore]
+		public static double[] TimerWindowRect {
+			get => This.timerWindowRect;
+			set {
+				This.timerWindowRect = value;
+				ChangeSettingFlg = true;
+			}
+		}
 		#endregion
 
 		// JSONから読み込み
@@ -78,25 +112,7 @@ namespace AzLH.Models {
 					// 全体をstringに読み込む
 					string json = sr.ReadToEnd();
 					// Json.NETでパース
-					var model = JsonConvert.DeserializeObject<SettingStore>(json);
-					ForTwitterFlg = model.ForTwitterFlg;
-					MainWindowRect = model.MainWindowRect;
-					SupplyWindowRect = model.SupplyWindowRect;
-					TimerWindowRect = model.TimerWindowRect;
-					MemoryWindowPositionFlg = model.MemoryWindowPositionFlg;
-					AutoSearchPositionFlg = model.AutoSearchPositionFlg;
-					AutoSupplyWindowFlg = model.AutoSupplyWindowFlg;
-					AutoTimerWindowFlg = model.AutoTimerWindowFlg;
-					AutoSupplyScreenShotFlg = model.AutoSupplyScreenShotFlg;
-					PutCharacterRecognitionFlg = model.PutCharacterRecognitionFlg;
-					DragAndDropPictureFlg = model.DragAndDropPictureFlg;
-					ConsignFinalTime1 = model.ConsignFinalTime1;
-					ConsignFinalTime2 = model.ConsignFinalTime2;
-					ConsignFinalTime3 = model.ConsignFinalTime3;
-					ConsignFinalTime4 = model.ConsignFinalTime4;
-					LectureFinalTime1 = model.LectureFinalTime1;
-					LectureFinalTime2 = model.LectureFinalTime2;
-					FoodFinalTime = model.FoodFinalTime;
+					var This = JsonConvert.DeserializeObject<SettingStore>(json);
 				}
 				return true;
 			} catch {
@@ -112,19 +128,37 @@ namespace AzLH.Models {
 					// 書き込み
 					sw.Write(json);
 				}
+				Console.WriteLine("Save Success.");
 				return true;
 			} catch {
+				Console.WriteLine("Save Failed.");
 				return false;
 			}
 		}
+		// 設定に変更点があった場合、JSONに書き出し
+		public static bool SaveSettingsAuto() {
+			if (!ChangeSettingFlg)
+				return false;
+			ChangeSettingFlg = false;
+			return SaveSettings();
+		}
 		// 設定項目を初期化
 		public static bool Initialize() {
-			if (LoadSettings()) {
-				return true;
-			} else {
+			// 規定の位置から設定ファイルを読み込む
+			bool successflg = LoadSettings();
+			// 正常に読み込めなかった場合、新規に設定ファイルを作成する
+			if (!successflg)
 				SaveSettings();
-				return false;
-			}
+			// 定期的に設定を保存するようにする
+			var timer = new Timer(1000);
+			timer.Elapsed += (sender, e) => {
+				try {
+					timer.Stop();
+					SaveSettingsAuto();
+				} finally { timer.Start(); }
+			};
+			timer.Start();
+			return successflg;
 		}
 	}
 }
