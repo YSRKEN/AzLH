@@ -26,17 +26,35 @@ namespace AzLH.Models {
 		public static void Initialize() {
 			// テーブルが存在しない場合、テーブルを作成する
 			foreach (var supplyInfo in SupplyParameters) {
+				// テーブルの存在を確認(SQLite流)
+				bool hasTableFlg = false;
 				try {
 					using (var con = new SQLiteConnection(connectionString)) {
 						con.Open();
 						using (var cmd = con.CreateCommand()) {
-							string sql = $"CREATE TABLE [{supplyInfo.Value.Name}]([datetime] DATETIME, [value] INTEGER, PRIMARY KEY(datetime))";
+							string sql = $"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{supplyInfo.Value.Name}';";
 							cmd.CommandText = sql;
-							cmd.ExecuteNonQuery();
+							using (var reader = cmd.ExecuteReader()) {
+								if (reader.Read() && reader.GetInt32(0) == 1) {
+									hasTableFlg = true;
+								}
+							}
 						}
 					}
+				} catch { }
+				// テーブルを作成
+				if (!hasTableFlg) {
+					try {
+						using (var con = new SQLiteConnection(connectionString)) {
+							con.Open();
+							using (var cmd = con.CreateCommand()) {
+								string sql = $"CREATE TABLE [{supplyInfo.Value.Name}]([datetime] DATETIME, [value] INTEGER, PRIMARY KEY(datetime))";
+								cmd.CommandText = sql;
+								cmd.ExecuteNonQuery();
+							}
+						}
+					} catch { }
 				}
-				catch { }
 			}
 			// 最終更新日時のキャッシュを準備する
 			foreach (var supplyInfo in SupplyParameters) {
