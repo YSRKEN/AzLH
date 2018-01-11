@@ -63,7 +63,7 @@ namespace AzLH.Models {
 		public static async Task<string> NewestSoftwareVerAsync() {
 			try {
 				var client = new HttpClient();
-				var response = await client.GetStringAsync("https://raw.githubusercontent.com/YSRKEN/AzLH/master/version.txt");
+				string response = await client.GetStringAsync("https://raw.githubusercontent.com/YSRKEN/AzLH/master/version.txt");
 				return response;
 			}
 			catch {
@@ -75,24 +75,23 @@ namespace AzLH.Models {
 			string scene = SceneRecognition.JudgeGameScene(bitmap);
 			var supplyValueDic = new Dictionary<string, int>();
 			string otherMessage = "";
-			var settings = SettingsStore.Instance;
 			switch (scene) {
 			case "母港":
-				supplyValueDic["燃料"] = CharacterRecognition.GetValueOCR(bitmap, "燃料", settings.PutCharacterRecognitionFlg);
-				supplyValueDic["資金"] = CharacterRecognition.GetValueOCR(bitmap, "資金", settings.PutCharacterRecognitionFlg);
-				supplyValueDic["ダイヤ"] = CharacterRecognition.GetValueOCR(bitmap, "ダイヤ", settings.PutCharacterRecognitionFlg);
+				supplyValueDic["燃料"] = CharacterRecognition.GetValueOCR(bitmap, "燃料", SettingsStore.PutCharacterRecognitionFlg);
+				supplyValueDic["資金"] = CharacterRecognition.GetValueOCR(bitmap, "資金", SettingsStore.PutCharacterRecognitionFlg);
+				supplyValueDic["ダイヤ"] = CharacterRecognition.GetValueOCR(bitmap, "ダイヤ", SettingsStore.PutCharacterRecognitionFlg);
 				break;
 			case "建造":
-				supplyValueDic["キューブ"] = CharacterRecognition.GetValueOCR(bitmap, "キューブ", settings.PutCharacterRecognitionFlg);
+				supplyValueDic["キューブ"] = CharacterRecognition.GetValueOCR(bitmap, "キューブ", SettingsStore.PutCharacterRecognitionFlg);
 				break;
 			case "建造中":
-				supplyValueDic["ドリル"] = CharacterRecognition.GetValueOCR(bitmap, "ドリル", settings.PutCharacterRecognitionFlg);
+				supplyValueDic["ドリル"] = CharacterRecognition.GetValueOCR(bitmap, "ドリル", SettingsStore.PutCharacterRecognitionFlg);
 				break;
 			case "支援":
-				supplyValueDic["勲章"] = CharacterRecognition.GetValueOCR(bitmap, "勲章", settings.PutCharacterRecognitionFlg);
+				supplyValueDic["勲章"] = CharacterRecognition.GetValueOCR(bitmap, "勲章", SettingsStore.PutCharacterRecognitionFlg);
 				break;
 			case "家具屋":
-				supplyValueDic["家具コイン"] = CharacterRecognition.GetValueOCR(bitmap, "家具コイン", settings.PutCharacterRecognitionFlg);
+				supplyValueDic["家具コイン"] = CharacterRecognition.GetValueOCR(bitmap, "家具コイン", SettingsStore.PutCharacterRecognitionFlg);
 				break;
 			case "戦闘中": {
 					var gauge = SceneRecognition.GetBattleBombGauge(bitmap);
@@ -103,10 +102,10 @@ namespace AzLH.Models {
 				}
 				break;
 			case "委託": {
-					long time1 = CharacterRecognition.GetTimeOCR(bitmap, "委託1", settings.PutCharacterRecognitionFlg);
-					long time2 = CharacterRecognition.GetTimeOCR(bitmap, "委託2", settings.PutCharacterRecognitionFlg);
-					long time3 = CharacterRecognition.GetTimeOCR(bitmap, "委託3", settings.PutCharacterRecognitionFlg);
-					long time4 = CharacterRecognition.GetTimeOCR(bitmap, "委託4", settings.PutCharacterRecognitionFlg);
+					long time1 = CharacterRecognition.GetTimeOCR(bitmap, "委託1", SettingsStore.PutCharacterRecognitionFlg);
+					long time2 = CharacterRecognition.GetTimeOCR(bitmap, "委託2", SettingsStore.PutCharacterRecognitionFlg);
+					long time3 = CharacterRecognition.GetTimeOCR(bitmap, "委託3", SettingsStore.PutCharacterRecognitionFlg);
+					long time4 = CharacterRecognition.GetTimeOCR(bitmap, "委託4", SettingsStore.PutCharacterRecognitionFlg);
 					otherMessage += "読み取った秒数：\n";
 					otherMessage += $"　1つ目→{time1}\n";
 					otherMessage += $"　2つ目→{time2}\n";
@@ -115,15 +114,15 @@ namespace AzLH.Models {
 				}
 				break;
 			case "戦術教室": {
-					long time1 = CharacterRecognition.GetTimeOCR(bitmap, "戦術教室1", settings.PutCharacterRecognitionFlg);
-					long time2 = CharacterRecognition.GetTimeOCR(bitmap, "戦術教室2", settings.PutCharacterRecognitionFlg);
+					long time1 = CharacterRecognition.GetTimeOCR(bitmap, "戦術教室1", SettingsStore.PutCharacterRecognitionFlg);
+					long time2 = CharacterRecognition.GetTimeOCR(bitmap, "戦術教室2", SettingsStore.PutCharacterRecognitionFlg);
 					otherMessage += "読み取った秒数：\n";
 					otherMessage += $"　1つ目→{time1}\n";
 					otherMessage += $"　2つ目→{time2}\n";
 				}
 				break;
 			case "寮舎": {
-					long time = CharacterRecognition.GetTimeOCR(bitmap, "食糧", settings.PutCharacterRecognitionFlg);
+					long time = CharacterRecognition.GetTimeOCR(bitmap, "食糧", SettingsStore.PutCharacterRecognitionFlg);
 					otherMessage += "読み取った秒数：\n";
 					otherMessage += $"　食糧→{time}\n";
 				}

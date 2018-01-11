@@ -38,118 +38,117 @@ namespace AzLH.ViewModels
 
 		// タイマー表示の更新を行う
 		private void RedrawTimerWindow() {
-			var setting = SettingsStore.Instance;
 			var nowTime = DateTime.Now;
 			// 軍事委託の残時間
-			if (setting.ConsignFinalTime1.HasValue) {
-				var remainTime = (setting.ConsignFinalTime1.Value - nowTime);
+			if (SettingsStore.ConsignFinalTime1.HasValue) {
+				var remainTime = (SettingsStore.ConsignFinalTime1.Value - nowTime);
 				if (remainTime.TotalSeconds >= 0.0) {
 					ConsignRemainTime1.Value = remainTime.ToString(@"hh\:mm\:ss");
 				} else {
 					ConsignRemainTime1.Value = "00:00:00";
-					setting.ConsignFinalTime1 = null;
+					SettingsStore.ConsignFinalTime1 = null;
 				}
 			} else {
 				ConsignRemainTime1.Value = "00:00:00";
 			}
-			if (setting.ConsignFinalTime2.HasValue) {
-				var remainTime = (setting.ConsignFinalTime2.Value - nowTime);
+			if (SettingsStore.ConsignFinalTime2.HasValue) {
+				var remainTime = (SettingsStore.ConsignFinalTime2.Value - nowTime);
 				if (remainTime.TotalSeconds >= 0.0) {
 					ConsignRemainTime2.Value = remainTime.ToString(@"hh\:mm\:ss");
 				} else {
 					ConsignRemainTime2.Value = "00:00:00";
-					setting.ConsignFinalTime2 = null;
+					SettingsStore.ConsignFinalTime2 = null;
 				}
 			} else {
 				ConsignRemainTime2.Value = "00:00:00";
 			}
-			if (setting.ConsignFinalTime3.HasValue) {
-				var remainTime = (setting.ConsignFinalTime3.Value - nowTime);
+			if (SettingsStore.ConsignFinalTime3.HasValue) {
+				var remainTime = (SettingsStore.ConsignFinalTime3.Value - nowTime);
 				if (remainTime.TotalSeconds >= 0.0) {
 					ConsignRemainTime3.Value = remainTime.ToString(@"hh\:mm\:ss");
 				} else {
 					ConsignRemainTime3.Value = "00:00:00";
-					setting.ConsignFinalTime3 = null;
+					SettingsStore.ConsignFinalTime3 = null;
 				}
 			} else {
 				ConsignRemainTime3.Value = "00:00:00";
 			}
-			if (setting.ConsignFinalTime4.HasValue) {
-				var remainTime = (setting.ConsignFinalTime4.Value - nowTime);
+			if (SettingsStore.ConsignFinalTime4.HasValue) {
+				var remainTime = (SettingsStore.ConsignFinalTime4.Value - nowTime);
 				if (remainTime.TotalSeconds >= 0.0) {
 					ConsignRemainTime4.Value = remainTime.ToString(@"hh\:mm\:ss");
 				} else {
 					ConsignRemainTime4.Value = "00:00:00";
-					setting.ConsignFinalTime1 = null;
+					SettingsStore.ConsignFinalTime1 = null;
 				}
 			} else {
 				ConsignRemainTime4.Value = "00:00:00";
 			}
 			// 戦術教室の残時間
-			if (setting.LectureFinalTime1.HasValue) {
-				var remainTime = (setting.LectureFinalTime1.Value - nowTime);
+			if (SettingsStore.LectureFinalTime1.HasValue) {
+				var remainTime = (SettingsStore.LectureFinalTime1.Value - nowTime);
 				if (remainTime.TotalSeconds >= 0.0) {
 					LectureRemainTime1.Value = remainTime.ToString(@"hh\:mm\:ss");
 				} else {
 					LectureRemainTime1.Value = "00:00:00";
-					setting.LectureFinalTime1 = null;
+					SettingsStore.LectureFinalTime1 = null;
 				}
 			} else {
 				LectureRemainTime1.Value = "00:00:00";
 			}
-			if (setting.LectureFinalTime2.HasValue) {
-				var remainTime = (setting.LectureFinalTime2.Value - nowTime);
+			if (SettingsStore.LectureFinalTime2.HasValue) {
+				var remainTime = (SettingsStore.LectureFinalTime2.Value - nowTime);
 				if (remainTime.TotalSeconds >= 0.0) {
 					LectureRemainTime2.Value = remainTime.ToString(@"hh\:mm\:ss");
 				} else {
 					LectureRemainTime2.Value = "00:00:00";
-					setting.LectureFinalTime2 = null;
+					SettingsStore.LectureFinalTime2 = null;
 				}
 			} else {
 				LectureRemainTime2.Value = "00:00:00";
 			}
 			// 食糧の残時間
-			if (setting.FoodFinalTime.HasValue) {
-				var remainTime = (setting.FoodFinalTime.Value - nowTime);
+			if (SettingsStore.FoodFinalTime.HasValue) {
+				var remainTime = (SettingsStore.FoodFinalTime.Value - nowTime);
 				if (remainTime.TotalSeconds >= 0.0) {
 					FoodRemainTime.Value = remainTime.ToString(@"hh\:mm\:ss");
 				} else {
 					FoodRemainTime.Value = "00:00:00";
-					setting.FoodFinalTime = null;
+					SettingsStore.FoodFinalTime = null;
 				}
 			} else {
 				FoodRemainTime.Value = "00:00:00";
 			}
 			// 各種ボムの残時間
-			if (setting.BombChageTime1.HasValue) {
-				double remainTime = (setting.BombChageTime1.Value - nowTime).TotalSeconds;
+			if (SettingsStore.BombChageTime1.HasValue) {
+				double remainTime = (SettingsStore.BombChageTime1.Value - nowTime).TotalSeconds;
 				if (remainTime >= 0.0) {
 					BombRemainTime1.Value = remainTime.ToString("00.0");
 				} else {
 					BombRemainTime1.Value = "--.--";
-					setting.BombChageTime1 = null;
+					SettingsStore.BombChageTime1 = null;
 				}
 			} else {
 				BombRemainTime1.Value = "--.--";
 			}
-			if (setting.BombChageTime2.HasValue) {
-				double remainTime = (setting.BombChageTime2.Value - nowTime).TotalSeconds;
+			if (SettingsStore.BombChageTime2.HasValue) {
+				double remainTime = (SettingsStore.BombChageTime2.Value - nowTime).TotalSeconds;
 				if (remainTime >= 0.0) {
 					BombRemainTime2.Value = remainTime.ToString("00.0");
 				} else {
 					BombRemainTime2.Value = "--.--";
-					setting.BombChageTime2 = null;
+					SettingsStore.BombChageTime2 = null;
 				}
 			} else {
 				BombRemainTime2.Value = "--.--";
 			}
-			if (setting.BombChageTime3.HasValue) {
-				double remainTime = (setting.BombChageTime3.Value - nowTime).TotalSeconds;
+			if (SettingsStore.BombChageTime3.HasValue) {
+				double remainTime = (SettingsStore.BombChageTime3.Value - nowTime).TotalSeconds;
 				if (remainTime >= 0.0) {
 					BombRemainTime3.Value = remainTime.ToString("00.0");
 				} else {
 					BombRemainTime3.Value = "--.--";
-					setting.BombChageTime3 = null;
+					SettingsStore.BombChageTime3 = null;
 				}
 			} else {
 				BombRemainTime3.Value = "--.--";
@@ -160,59 +159,42 @@ namespace AzLH.ViewModels
 		public TimerViewModel() {
 			// 設定ファイルに記録していた情報を書き戻す
 			{
-				var settings = SettingsStore.Instance;
-				if (settings.MemoryWindowPositionFlg) {
-					WindowPositionLeft.Value = settings.TimerWindowRect[0];
-					WindowPositionTop.Value = settings.TimerWindowRect[1];
-					WindowPositionWidth.Value = settings.TimerWindowRect[2];
-					WindowPositionHeight.Value = settings.TimerWindowRect[3];
+				if (SettingsStore.MemoryWindowPositionFlg) {
+					WindowPositionLeft.Value = SettingsStore.TimerWindowRect[0];
+					WindowPositionTop.Value = SettingsStore.TimerWindowRect[1];
+					WindowPositionWidth.Value = SettingsStore.TimerWindowRect[2];
+					WindowPositionHeight.Value = SettingsStore.TimerWindowRect[3];
 				}
-				AutoOpenWindowFlg.Value = settings.AutoTimerWindowFlg;
+				AutoOpenWindowFlg.Value = SettingsStore.AutoTimerWindowFlg;
 			}
 			// 画面の位置が変更された際、自動で設定ファイルに書き戻すようにする
 			WindowPositionLeft.Subscribe(value => {
-				var settings = SettingsStore.Instance;
-				if (!settings.MemoryWindowPositionFlg)
+				if (!SettingsStore.MemoryWindowPositionFlg)
 					return;
-				settings.TimerWindowRect[0] = value;
-				if (!settings.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.TimerWindowRect[0] = value;
+				SettingsStore.ChangeSettingFlg = true;
 			});
 			WindowPositionTop.Subscribe(value => {
-				var settings = SettingsStore.Instance;
-				if (!settings.MemoryWindowPositionFlg)
+				if (!SettingsStore.MemoryWindowPositionFlg)
 					return;
-				settings.TimerWindowRect[1] = value;
-				if (!settings.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.TimerWindowRect[1] = value;
+				SettingsStore.ChangeSettingFlg = true;
 			});
 			WindowPositionWidth.Subscribe(value => {
-				var settings = SettingsStore.Instance;
-				if (!settings.MemoryWindowPositionFlg)
+				if (!SettingsStore.MemoryWindowPositionFlg)
 					return;
-				settings.TimerWindowRect[2] = value;
-				if (!settings.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.TimerWindowRect[2] = value;
+				SettingsStore.ChangeSettingFlg = true;
 			});
 			WindowPositionHeight.Subscribe(value => {
-				var settings = SettingsStore.Instance;
-				if (!settings.MemoryWindowPositionFlg)
+				if (!SettingsStore.MemoryWindowPositionFlg)
 					return;
-				settings.TimerWindowRect[3] = value;
-				if (!settings.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.TimerWindowRect[3] = value;
+				SettingsStore.ChangeSettingFlg = true;
 			});
 			// 起動時にこの画面を表示するか？
 			AutoOpenWindowFlg.Subscribe(value => {
-				var settings = SettingsStore.Instance;
-				settings.AutoTimerWindowFlg = value;
-				if (!settings.SaveSettings()) {
-					MessageBox.Show("設定を保存できませんでした。", Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
+				SettingsStore.AutoTimerWindowFlg = value;
 			});
 			// タイマーを初期化し、定時タスクを登録して実行する
 			// http://takachan.hatenablog.com/entry/2017/09/09/225342
