@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Data.SQLite;
-using static AzLH.Models.CharacterRecognition;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static AzLH.Models.CharacterRecognition;
 
 namespace AzLH.Models {
 	internal static class SupplyStore {
@@ -65,12 +65,16 @@ namespace AzLH.Models {
 		}
 		// 資材量を更新できれば更新する
 		public static bool UpdateSupplyValue(Bitmap bitmap, string supplyType, bool autoSupplyScreenShotFlg, bool putCharacterRecognitionFlg) {
+			// 最終更新日時(lastWriteDateTime)～現在時刻(nowDateTime)の間が、
+			// 更新間隔(updateInterval)より短ければ更新しない
 			var nowDateTime = DateTime.Now;
 			if ((nowDateTime - lastWriteDateTime[supplyType]).TotalMinutes < updateInterval)
 				return false;
+			// OCRを行い、結果がなぜか負数になった場合も更新しない
 			int value = GetValueOCR(bitmap, supplyType, putCharacterRecognitionFlg);
 			if (value < 0)
 				return false;
+			// 更新操作
 			try {
 				using (var con = new SQLiteConnection(connectionString)) {
 					con.Open();
@@ -80,7 +84,9 @@ namespace AzLH.Models {
 						cmd.ExecuteNonQuery();
 					}
 				}
+				// 更新に成功すれば、最終更新日時を書き換える
 				lastWriteDateTime[supplyType] = nowDateTime;
+				// フラグが立っていれば、読み取った瞬間のスクショを数値とともに保存する
 				if(autoSupplyScreenShotFlg)
 					bitmap.Save($"debug\\{Utility.GetTimeStrLong(nowDateTime)} {supplyType} {value}.png");
 				return true;
@@ -100,6 +106,7 @@ namespace AzLH.Models {
 						cmd.CommandText = sql;
 						using (var reader = cmd.ExecuteReader()) {
 							while(reader.Read()) {
+								// reader.GetInt32(1)とは、「1(引数の数字)列目をint型で読み取る」ということ
 								output[reader.GetDateTime(0)] = reader.GetInt32(1);
 							}
 						}
