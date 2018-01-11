@@ -2,14 +2,17 @@
 using Prism.Events;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
 using System.IO;
+using System.Reactive.Disposables;
 using System.Timers;
 using System.Windows;
 
 namespace AzLH.ViewModels {
-	internal class MainViewModel {
+	internal class MainViewModel : IDisposable {
 		// modelのinstance
 		private readonly MainModel mainModel;
+		private CompositeDisposable Disposable { get; } = new CompositeDisposable();
 		// trueにすると画面を閉じる
 		public ReactiveProperty<bool> CloseWindow { get; }
 		// 画像保存ボタンは有効か？
@@ -81,21 +84,21 @@ namespace AzLH.ViewModels {
 			// 初期化
 			mainModel = new MainModel();
 			// プロパティを設定
-			CloseWindow = mainModel.ObserveProperty(x => x.CloseWindow).ToReactiveProperty();
-			SaveScreenshotFlg = mainModel.ObserveProperty(x => x.SaveScreenshotFlg).ToReactiveProperty();
-			ApplicationLog = mainModel.ObserveProperty(x => x.ApplicationLog).ToReactiveProperty();
-			JudgedScene = mainModel.ObserveProperty(x => x.JudgedScene).ToReactiveProperty();
-			ForTwitterFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.ForTwitterFlg);
-			SoftwareTitle = mainModel.ObserveProperty(x => x.SoftwareTitle).ToReactiveProperty();
-			MainWindowPositionLeft   = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionLeft  );
-			MainWindowPositionTop    = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionTop   );
-			MainWindowPositionWidth  = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionWidth );
-			MainWindowPositionHeight = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionHeight);
-			MemoryWindowPositionFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.MemoryWindowPositionFlg);
-			AutoSearchPositionFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.AutoSearchPositionFlg);
-			AutoSupplyScreenShotFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.AutoSupplyScreenShotFlg);
-			PutCharacterRecognitionFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.PutCharacterRecognitionFlg);
-			DragAndDropPictureFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.DragAndDropPictureFlg);
+			CloseWindow = mainModel.ObserveProperty(x => x.CloseWindow).ToReactiveProperty().AddTo(Disposable);
+			SaveScreenshotFlg = mainModel.ObserveProperty(x => x.SaveScreenshotFlg).ToReactiveProperty().AddTo(Disposable);
+			ApplicationLog = mainModel.ObserveProperty(x => x.ApplicationLog).ToReactiveProperty().AddTo(Disposable);
+			JudgedScene = mainModel.ObserveProperty(x => x.JudgedScene).ToReactiveProperty().AddTo(Disposable);
+			ForTwitterFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.ForTwitterFlg).AddTo(Disposable);
+			SoftwareTitle = mainModel.ObserveProperty(x => x.SoftwareTitle).ToReactiveProperty().AddTo(Disposable);
+			MainWindowPositionLeft   = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionLeft  ).AddTo(Disposable);
+			MainWindowPositionTop    = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionTop   ).AddTo(Disposable);
+			MainWindowPositionWidth  = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionWidth ).AddTo(Disposable);
+			MainWindowPositionHeight = mainModel.ToReactivePropertyAsSynchronized(x => x.MainWindowPositionHeight).AddTo(Disposable);
+			MemoryWindowPositionFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.MemoryWindowPositionFlg).AddTo(Disposable);
+			AutoSearchPositionFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.AutoSearchPositionFlg).AddTo(Disposable);
+			AutoSupplyScreenShotFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.AutoSupplyScreenShotFlg).AddTo(Disposable);
+			PutCharacterRecognitionFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.PutCharacterRecognitionFlg).AddTo(Disposable);
+			DragAndDropPictureFlg = mainModel.ToReactivePropertyAsSynchronized(x => x.DragAndDropPictureFlg).AddTo(Disposable);
 			// コマンドを設定
 			GetGameWindowPositionCommand = new ReactiveCommand();
 			SaveScreenshotCommand = new ReactiveCommand();
@@ -163,5 +166,7 @@ namespace AzLH.ViewModels {
 			// 最新版をチェックする
 			mainModel.CheckSoftwareVer();
 		}
+
+		public void Dispose() => Disposable.Dispose();
 	}
 }
