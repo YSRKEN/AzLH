@@ -14,65 +14,77 @@ namespace AzLH.Models {
 		#region ファイルに保存する設定
 		// メイン画面の位置・大きさ
 		[JsonProperty("MainWindowRect")]
-		private double[] mainWindowRect { get; set; }
-			= new double[] { double.NaN, double.NaN, 400.0, 300.0 };
+		private double[] mainWindowRect = new double[] { double.NaN, double.NaN, 400.0, 300.0 };
 		// 資材記録画面の位置・大きさ
 		[JsonProperty("SupplyWindowRect")]
-		private double[] supplyWindowRect { get; set; }
-			= new double[] { double.NaN, double.NaN, 600.0, 400.0 };
+		private double[] supplyWindowRect = new double[] { double.NaN, double.NaN, 600.0, 400.0 };
 		// 各種タイマー画面の位置・大きさ
 		[JsonProperty("TimerWindowRect")]
-		private double[] timerWindowRect { get; set; }
-			= new double[] { double.NaN, double.NaN, 400.0, 250.0 };
+		private double[] timerWindowRect = new double[] { double.NaN, double.NaN, 400.0, 250.0 };
 
 		// Twitter用に加工するか？
-		public bool ForTwitterFlg { get; set; }
+		[JsonProperty("ForTwitterFlg")]
+		private bool forTwitterFlg;
 		// ウィンドウの座標を記憶するか？
-		public bool MemoryWindowPositionFlg { get; set; } = true;
+		[JsonProperty("MemoryWindowPositionFlg")]
+		private bool memoryWindowPositionFlg = true;
 		// 常時座標を捕捉し続けるか？
-		public bool AutoSearchPositionFlg { get; set; } = true;
+		[JsonProperty("AutoSearchPositionFlg")]
+		private bool autoSearchPositionFlg = true;
 		// 資材記録画面を最初から表示するか？
-		public bool AutoSupplyWindowFlg { get; set; }
+		[JsonProperty("AutoSupplyWindowFlg")]
+		private bool autoSupplyWindowFlg;
 		// 各種タイマー画面を最初から表示するか？
-		public bool AutoTimerWindowFlg { get; set; }
+		[JsonProperty("AutoTimerWindowFlg")]
+		private bool autoTimerWindowFlg;
 		// 資材記録時にスクショでロギングするか？
-		public bool AutoSupplyScreenShotFlg { get; set; }
+		[JsonProperty("AutoSupplyScreenShotFlg")]
+		private bool autoSupplyScreenShotFlg;
 		// 資材記録時に画像処理結果を出力するか？
-		public bool PutCharacterRecognitionFlg { get; set; }
+		[JsonProperty("PutCharacterRecognitionFlg")]
+		private bool putCharacterRecognitionFlg;
 		// ドラッグ＆ドロップでシーン認識するか？
-		public bool DragAndDropPictureFlg { get; set; }
+		[JsonProperty("DragAndDropPictureFlg")]
+		private bool dragAndDropPictureFlg;
 
 		// 軍事委託の完了時刻をメモする
-		public DateTime? ConsignFinalTime1 { get; set; }
-		public DateTime? ConsignFinalTime2 { get; set; }
-		public DateTime? ConsignFinalTime3 { get; set; }
-		public DateTime? ConsignFinalTime4 { get; set; }
+		[JsonProperty("ConsignFinalTime1")]
+		private DateTime? consignFinalTime1;
+		[JsonProperty("ConsignFinalTime2")]
+		private DateTime? consignFinalTime2;
+		[JsonProperty("ConsignFinalTime3")]
+		private DateTime? consignFinalTime3;
+		[JsonProperty("ConsignFinalTime4")]
+		private DateTime? consignFinalTime4;
 		// 戦術教室の完了時刻をメモする
-		public DateTime? LectureFinalTime1 { get; set; }
-		public DateTime? LectureFinalTime2 { get; set; }
+		[JsonProperty("LectureFinalTime1")]
+		private DateTime? lectureFinalTime1;
+		[JsonProperty("LectureFinalTime2")]
+		private DateTime? lectureFinalTime2;
 		// 食糧の枯渇時刻をメモする
-		public DateTime? FoodFinalTime { get; set; }
+		[JsonProperty("FoodFinalTime")]
+		private DateTime? foodFinalTime;
 		#endregion
 
 		#region ファイルに保存しない設定
 		// 資材記録画面が表示されているか？
 		[JsonIgnore]
-		public bool ShowSupplyWindowFlg { get; set; }
+		private bool showSupplyWindowFlg;
 		// 各種タイマー画面が表示されているか？
 		[JsonIgnore]
-		public bool ShowTimerWindowFlg { get; set; }
+		private bool showTimerWindowFlg;
 
 		// 各種ボムのチャージ完了時刻をメモする
 		[JsonIgnore]
-		public DateTime? BombChageTime1 { get; set; }
+		private DateTime? bombChageTime1;
 		[JsonIgnore]
-		public DateTime? BombChageTime2 { get; set; }
+		private DateTime? bombChageTime2;
 		[JsonIgnore]
-		public DateTime? BombChageTime3 { get; set; }
+		private DateTime? bombChageTime3;
 
 		// ファイルが変更されたか？
 		[JsonIgnore]
-		private static bool ChangeSettingFlg { get; set; }
+		private static bool changeSettingFlg;
 		#endregion
 
 		#region staticに処理するためのラッパー
@@ -82,7 +94,7 @@ namespace AzLH.Models {
 			get => This.mainWindowRect;
 			set {
 				This.mainWindowRect = value;
-				ChangeSettingFlg = true;
+				changeSettingFlg = true;
 			}
 		}
 		// 資材記録画面の位置・大きさ
@@ -91,7 +103,7 @@ namespace AzLH.Models {
 			get => This.supplyWindowRect;
 			set {
 				This.supplyWindowRect = value;
-				ChangeSettingFlg = true;
+				changeSettingFlg = true;
 			}
 		}
 		// 各種タイマー画面の位置・大きさ
@@ -100,7 +112,185 @@ namespace AzLH.Models {
 			get => This.timerWindowRect;
 			set {
 				This.timerWindowRect = value;
-				ChangeSettingFlg = true;
+				changeSettingFlg = true;
+			}
+		}
+
+		// Twitter用に加工するか？
+		[JsonIgnore]
+		public static bool ForTwitterFlg {
+			get => This.forTwitterFlg;
+			set {
+				This.forTwitterFlg = value;
+				changeSettingFlg = true;
+			}
+		}
+		// ウィンドウの座標を記憶するか？
+		[JsonIgnore]
+		public static bool MemoryWindowPositionFlg {
+			get => This.memoryWindowPositionFlg;
+			set {
+				This.memoryWindowPositionFlg = value;
+				changeSettingFlg = true;
+			}
+		}
+		// 常時座標を捕捉し続けるか？
+		[JsonIgnore]
+		public static bool AutoSearchPositionFlg {
+			get => This.autoSearchPositionFlg;
+			set {
+				This.autoSearchPositionFlg = value;
+				changeSettingFlg = true;
+			}
+		}
+		// 資材記録画面を最初から表示するか？
+		[JsonIgnore]
+		public static bool AutoSupplyWindowFlg {
+			get => This.autoSupplyWindowFlg;
+			set {
+				This.autoSupplyWindowFlg = value;
+				changeSettingFlg = true;
+			}
+		}
+		// 各種タイマー画面を最初から表示するか？
+		[JsonIgnore]
+		public static bool AutoTimerWindowFlg {
+			get => This.autoTimerWindowFlg;
+			set {
+				This.autoTimerWindowFlg = value;
+				changeSettingFlg = true;
+			}
+		}
+		// 資材記録時にスクショでロギングするか？
+		[JsonIgnore]
+		public static bool AutoSupplyScreenShotFlg {
+			get => This.autoSupplyScreenShotFlg;
+			set {
+				This.autoSupplyScreenShotFlg = value;
+				changeSettingFlg = true;
+			}
+		}
+		// 資材記録時に画像処理結果を出力するか？
+		[JsonIgnore]
+		public static bool PutCharacterRecognitionFlg {
+			get => This.putCharacterRecognitionFlg;
+			set {
+				This.putCharacterRecognitionFlg = value;
+				changeSettingFlg = true;
+			}
+		}
+		// ドラッグ＆ドロップでシーン認識するか？
+		[JsonIgnore]
+		public static bool DragAndDropPictureFlg {
+			get => This.dragAndDropPictureFlg;
+			set {
+				This.dragAndDropPictureFlg = value;
+				changeSettingFlg = true;
+			}
+		}
+
+		// 軍事委託の完了時刻をメモする
+		[JsonIgnore]
+		public static DateTime? ConsignFinalTime1 {
+			get => This.consignFinalTime1;
+			set {
+				This.consignFinalTime1 = value;
+				changeSettingFlg = true;
+			}
+		}
+		[JsonIgnore]
+		public static DateTime? ConsignFinalTime2 {
+			get => This.consignFinalTime2;
+			set {
+				This.consignFinalTime2 = value;
+				changeSettingFlg = true;
+			}
+		}
+		[JsonIgnore]
+		public static DateTime? ConsignFinalTime3 {
+			get => This.consignFinalTime3;
+			set {
+				This.consignFinalTime3 = value;
+				changeSettingFlg = true;
+			}
+		}
+		[JsonIgnore]
+		public static DateTime? ConsignFinalTime4 {
+			get => This.consignFinalTime4;
+			set {
+				This.consignFinalTime4 = value;
+				changeSettingFlg = true;
+			}
+		}
+		// 戦術教室の完了時刻をメモする
+		[JsonIgnore]
+		public static DateTime? LectureFinalTime1 {
+			get => This.lectureFinalTime1;
+			set {
+				This.lectureFinalTime1 = value;
+				changeSettingFlg = true;
+			}
+		}
+		[JsonIgnore]
+		public static DateTime? LectureFinalTime2 {
+			get => This.lectureFinalTime2;
+			set {
+				This.lectureFinalTime2 = value;
+				changeSettingFlg = true;
+			}
+		}
+		// 食糧の枯渇時刻をメモする
+		[JsonIgnore]
+		public static DateTime? FoodFinalTime {
+			get => This.foodFinalTime;
+			set {
+				This.foodFinalTime = value;
+				changeSettingFlg = true;
+			}
+		}
+
+		// 資材記録画面が表示されているか？
+		[JsonIgnore]
+		public bool ShowSupplyWindowFlg {
+			get => This.showSupplyWindowFlg;
+			set {
+				This.showSupplyWindowFlg = value;
+				changeSettingFlg = true;
+			}
+		}
+		// 各種タイマー画面が表示されているか？
+		[JsonIgnore]
+		public bool ShowTimerWindowFlg {
+			get => This.showTimerWindowFlg;
+			set {
+				This.showTimerWindowFlg = value;
+				changeSettingFlg = true;
+			}
+		}
+
+		// 各種ボムのチャージ完了時刻をメモする
+		[JsonIgnore]
+		public DateTime? BombChageTime1 {
+			get => This.bombChageTime1;
+			set {
+				This.bombChageTime1 = value;
+				changeSettingFlg = true;
+			}
+		}
+		[JsonIgnore]
+		public DateTime? BombChageTime2 {
+			get => This.bombChageTime2;
+			set {
+				This.bombChageTime2 = value;
+				changeSettingFlg = true;
+			}
+		}
+		[JsonIgnore]
+		public DateTime? BombChageTime3 {
+			get => This.bombChageTime3;
+			set {
+				This.bombChageTime3 = value;
+				changeSettingFlg = true;
 			}
 		}
 		#endregion
@@ -137,9 +327,9 @@ namespace AzLH.Models {
 		}
 		// 設定に変更点があった場合、JSONに書き出し
 		public static bool SaveSettingsAuto() {
-			if (!ChangeSettingFlg)
+			if (!changeSettingFlg)
 				return false;
-			ChangeSettingFlg = false;
+			changeSettingFlg = false;
 			return SaveSettings();
 		}
 		// 設定項目を初期化
