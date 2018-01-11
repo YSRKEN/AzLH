@@ -478,6 +478,7 @@ namespace AzLH.Models {
 			public RectangleF MarkRect;
 			public ulong MarkHash;
 		}
+		#pragma warning disable 0649
 		private struct TimeParameterJson {
 			public float[] TimeRectFloat;
 			public bool InverseFlg;
