@@ -139,7 +139,6 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Messenger.cs" />
     <Compile Include="Libraries\CharacterRecognition.cs" />
-    <Compile Include="Models\GameScreenSelectModel.cs" />
     <Compile Include="Models\MainModel.cs" />
     <Compile Include="Libraries\SceneRecognition.cs" />
     <Compile Include="Libraries\ScreenShotProvider.cs" />
