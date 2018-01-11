@@ -3,15 +3,17 @@ using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Timers;
 using System.Windows;
 
 namespace AzLH.ViewModels
 {
-	class TimerViewModel
+	class TimerViewModel : IDisposable
 	{
 		// modelのinstance
 		private readonly TimerModel timerModel = new TimerModel();
+		private CompositeDisposable Disposable { get; } = new CompositeDisposable();
 		// trueにすると画面を閉じる
 		public ReactiveProperty<bool> CloseWindow { get; } = new ReactiveProperty<bool>(false);
 		// 起動時にこの画面を表示するか？
@@ -209,5 +211,8 @@ namespace AzLH.ViewModels
 			//
 			RedrawTimerWindow();
 		}
+
+		// Dispose処理
+		public void Dispose() => Disposable.Dispose();
 	}
 }

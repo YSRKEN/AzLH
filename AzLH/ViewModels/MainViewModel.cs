@@ -167,6 +167,7 @@ namespace AzLH.ViewModels {
 			mainModel.CheckSoftwareVer();
 		}
 
+		// Dispose処理
 		public void Dispose() => Disposable.Dispose();
 	}
 }

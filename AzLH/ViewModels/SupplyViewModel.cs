@@ -3,13 +3,17 @@ using OxyPlot;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
+using System.Reactive.Disposables;
 using System.Timers;
 using System.Windows.Media;
+using System;
 
 namespace AzLH.ViewModels {
-	internal class SupplyViewModel {
+	internal class SupplyViewModel : IDisposable
+	{
 		// modelのinstance
 		private readonly SupplyModel supplyModel;
+		private CompositeDisposable Disposable { get; } = new CompositeDisposable();
 		// trueにすると画面を閉じる
 		public ReactiveProperty<bool> CloseWindow { get; }
 		// 画面の位置
@@ -39,17 +43,17 @@ namespace AzLH.ViewModels {
 			// 初期化
 			supplyModel = new SupplyModel();
 			// プロパティを設定
-			CloseWindow = supplyModel.ObserveProperty(x => x.CloseWindow).ToReactiveProperty();
-			WindowPositionLeft = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionLeft);
-			WindowPositionTop = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionTop);
-			WindowPositionWidth = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionWidth);
-			WindowPositionHeight = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionHeight);
-			AutoOpenWindowFlg = supplyModel.ToReactivePropertyAsSynchronized(x => x.AutoOpenWindowFlg);
-			GraphPeriodIndex = supplyModel.ToReactivePropertyAsSynchronized(x => x.GraphPeriodIndex);
-			GraphPeriodList = supplyModel.ObserveProperty(x => x.GraphPeriodList).ToReactiveProperty();
-			SupplyModeButtonColor = supplyModel.ObserveProperty(x => x.SupplyModeButtonColor).ToReactiveProperty();
-			SupplyModeButtonContent = supplyModel.ObserveProperty(x => x.SupplyModeButtonContent).ToReactiveProperty();
-			SupplyGraphModel = supplyModel.ObserveProperty(x => x.SupplyGraphModel).ToReactiveProperty();
+			CloseWindow = supplyModel.ObserveProperty(x => x.CloseWindow).ToReactiveProperty().AddTo(Disposable);
+			WindowPositionLeft = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionLeft).AddTo(Disposable);
+			WindowPositionTop = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionTop).AddTo(Disposable);
+			WindowPositionWidth = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionWidth).AddTo(Disposable);
+			WindowPositionHeight = supplyModel.ToReactivePropertyAsSynchronized(x => x.WindowPositionHeight).AddTo(Disposable);
+			AutoOpenWindowFlg = supplyModel.ToReactivePropertyAsSynchronized(x => x.AutoOpenWindowFlg).AddTo(Disposable);
+			GraphPeriodIndex = supplyModel.ToReactivePropertyAsSynchronized(x => x.GraphPeriodIndex).AddTo(Disposable);
+			GraphPeriodList = supplyModel.ObserveProperty(x => x.GraphPeriodList).ToReactiveProperty().AddTo(Disposable);
+			SupplyModeButtonColor = supplyModel.ObserveProperty(x => x.SupplyModeButtonColor).ToReactiveProperty().AddTo(Disposable);
+			SupplyModeButtonContent = supplyModel.ObserveProperty(x => x.SupplyModeButtonContent).ToReactiveProperty().AddTo(Disposable);
+			SupplyGraphModel = supplyModel.ObserveProperty(x => x.SupplyGraphModel).ToReactiveProperty().AddTo(Disposable);
 			// コマンドを設定
 			ChangeSupplyModeCommand = new ReactiveCommand();
 			SaveSupplyGraphCommand = new ReactiveCommand();
@@ -67,5 +71,8 @@ namespace AzLH.ViewModels {
 			};
 			timer.Start();
 		}
+
+		// Dispose処理
+		public void Dispose() => Disposable.Dispose();
 	}
 }
