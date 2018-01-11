@@ -12,7 +12,9 @@ namespace AzLH.ViewModels {
 	internal class MainViewModel : IDisposable {
 		// modelのinstance
 		private readonly MainModel mainModel;
+		//
 		private CompositeDisposable Disposable { get; } = new CompositeDisposable();
+
 		// trueにすると画面を閉じる
 		public ReactiveProperty<bool> CloseWindow { get; }
 		// 画像保存ボタンは有効か？

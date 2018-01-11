@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Prism.Mvvm;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -180,39 +181,13 @@ namespace AzLH.Models {
 				SaveScreenshotFlg = true;
 			}
 		}
-		// サンプルコマンド
-		/*public void Test() {
-			if (true) {
-				var sw = new System.Diagnostics.Stopwatch();
-				sw.Start();
-				var rectList = ScreenShotProvider.GetGameWindowPosition();
-				sw.Stop();
-				string output = $"{sw.ElapsedMilliseconds}[ms]\n";
-				var bitmap = ScreenShotProvider.GetScreenBitmap();
-				bitmap.Save("hoge-1.png");
-				using (var bitmapGraphics = System.Drawing.Graphics.FromImage(bitmap)) {
-					foreach (var rect in rectList) {
-						bitmapGraphics.DrawRectangle(new System.Drawing.Pen(System.Drawing.Color.Blue, 10.0f), rect);
-						output += $"({rect.X},{rect.Y}) - {rect.Width}x{rect.Height}\n";
-					}
-				}
-				MessageBox.Show(output);
-				bitmap.Save("hoge-2.png");
-			}
-			else {
-				int count = 10;
-				var sw = new System.Diagnostics.Stopwatch();
-				// 呼び出すオーバーヘッドが18[ms/回]程度あることに注意
-				sw.Start();
-				for (int i = 0; i < count; ++i) {
-					var rectList = ScreenShotProvider.GetGameWindowPosition(new System.Drawing.Bitmap("benchmark2.png"));
-				}
-				sw.Stop();
-				System.GC.Collect();
-				string output = $"{1.0 * sw.ElapsedMilliseconds / count}[ms]\n";
-				MessageBox.Show(output);
-			}
-		}*/
+		// 選択画面を表示する
+		private void ShowSelectGameWindow(List<Rectangle> rectList) {
+			var dg = new SelectGameWindowAction(SelectGameWindow);
+			var vm = new ViewModels.GameScreenSelectViewModel(rectList, dg);
+			var view = new Views.GameScreenSelectView { DataContext = vm };
+			view.ShowDialog();
+		}
 		// ゲーム画面の座標を取得する
 		public async void GetGameWindowPosition() {
 			PutLog("座標取得開始...");
@@ -249,10 +224,15 @@ namespace AzLH.Models {
 						switch (rectList2.Count) {
 						case 0: {
 								// 選択画面を表示する
-								var dg = new SelectGameWindowAction(SelectGameWindow);
-								var vm = new ViewModels.GameScreenSelectViewModel(rectList, dg);
-								var view = new Views.GameScreenSelectView { DataContext = vm };
-								view.ShowDialog();
+								// http://blogs.wankuma.com/naka/archive/2009/02/12/168020.aspx
+								var dispatcher = Application.Current.Dispatcher;
+								if (dispatcher.CheckAccess()) {
+									ShowSelectGameWindow(rectList);
+								} else {
+									dispatcher.Invoke(() => {
+										ShowSelectGameWindow(rectList);
+									});
+								}
 							}
 							break;
 						case 1: {
@@ -265,10 +245,15 @@ namespace AzLH.Models {
 							break;
 						default: {
 								// 選択画面を表示する
-								var dg = new SelectGameWindowAction(SelectGameWindow);
-								var vm = new ViewModels.GameScreenSelectViewModel(rectList2, dg);
-								var view = new Views.GameScreenSelectView { DataContext = vm };
-								view.ShowDialog();
+								// http://blogs.wankuma.com/naka/archive/2009/02/12/168020.aspx
+								var dispatcher = Application.Current.Dispatcher;
+								if (dispatcher.CheckAccess()) {
+									ShowSelectGameWindow(rectList2);
+								} else {
+									dispatcher.Invoke(() => {
+										ShowSelectGameWindow(rectList2);
+									});
+								}
 							}
 							break;
 						}
