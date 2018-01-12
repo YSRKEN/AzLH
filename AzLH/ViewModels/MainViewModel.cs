@@ -9,6 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
@@ -21,8 +22,8 @@ namespace AzLH.ViewModels {
 		public event PropertyChangedEventHandler PropertyChanged;
 		public delegate void SelectGameWindowAction(Rectangle? rect);
 		// 各種ボムにおける1秒前のゲージ量・残時間
-		double[] oldGauge = new double[] { -1.0, -1.0, -1.0 };
-		double[] remainTime = new double[] { 0.0, 0.0, 0.0 };
+		private double[] oldGauge = new double[] { -1.0, -1.0, -1.0 };
+		private double[] remainTime = new double[] { 0.0, 0.0, 0.0 };
 
 		#region 各種ReactiveProperty
 		// trueにすると画面を閉じる
@@ -247,36 +248,11 @@ namespace AzLH.ViewModels {
 					JudgedScene.Value = $"シーン判定 : {judgedScene}";
 					// 資材量を取得する
 					// (戦闘中なら各種ボムの分量と残り秒数を読み取る)
-					switch (judgedScene) {
-					case "母港": {
-							if (SupplyStore.UpdateSupplyValue(screenShot, "燃料", AutoSupplyScreenShotFlg.Value, PutCharacterRecognitionFlg.Value))
-								PutLog("資材量追記：燃料");
-							if (SupplyStore.UpdateSupplyValue(screenShot, "資金", AutoSupplyScreenShotFlg.Value, PutCharacterRecognitionFlg.Value))
-								PutLog("資材量追記：資金");
-							if (SupplyStore.UpdateSupplyValue(screenShot, "ダイヤ", AutoSupplyScreenShotFlg.Value, PutCharacterRecognitionFlg.Value))
-								PutLog("資材量追記：ダイヤ");
+					if (SupplyStore.SupplyListEachScene.ContainsKey(judgedScene)) {
+						foreach (string supplyName in SupplyStore.SupplyListEachScene[judgedScene]) {
+							if (SupplyStore.UpdateSupplyValue(screenShot, supplyName, AutoSupplyScreenShotFlg.Value, PutCharacterRecognitionFlg.Value))
+								PutLog($"資材量追記：{supplyName}");
 						}
-						break;
-					case "建造": {
-							if (SupplyStore.UpdateSupplyValue(screenShot, "キューブ", AutoSupplyScreenShotFlg.Value, PutCharacterRecognitionFlg.Value))
-								PutLog("資材量追記：キューブ");
-						}
-						break;
-					case "建造中": {
-							if (SupplyStore.UpdateSupplyValue(screenShot, "ドリル", AutoSupplyScreenShotFlg.Value, PutCharacterRecognitionFlg.Value))
-								PutLog("資材量追記：ドリル");
-						}
-						break;
-					case "支援": {
-							if (SupplyStore.UpdateSupplyValue(screenShot, "勲章", AutoSupplyScreenShotFlg.Value, PutCharacterRecognitionFlg.Value))
-								PutLog("資材量追記：勲章");
-						}
-						break;
-					case "家具屋": {
-							if (SupplyStore.UpdateSupplyValue(screenShot, "家具コイン", AutoSupplyScreenShotFlg.Value, PutCharacterRecognitionFlg.Value))
-								PutLog("資材量追記：家具コイン");
-						}
-						break;
 					}
 					// 戦闘中でなくなった場合、速やかにボムタイマーをリセットする
 					if (judgedScene != "戦闘中" && judgedScene != "不明") {
