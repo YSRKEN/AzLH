@@ -17,13 +17,14 @@ namespace AzLH.ViewModels {
 		public event PropertyChangedEventHandler PropertyChanged;
 		// rect一覧
 		private readonly List<Rectangle> rectList;
-		// 選択しているrectのindex
-		private ReactiveProperty<int> RectIndex { get; } = new ReactiveProperty<int>(0);
 		// 選択結果を返すdelegate
 		private readonly SelectGameWindowAction dg;
 
+		// 選択しているrectのindex
+		private ReactiveProperty<int> RectIndex { get; } = new ReactiveProperty<int>(0);
+
 		// trueにすると画面を閉じる
-		public ReactiveProperty<bool> CloseWindow { get; } = new ReactiveProperty<bool>();
+		public ReactiveProperty<bool> CloseWindow { get; } = new ReactiveProperty<bool>(false);
 		// ページ情報を表示
 		public ReadOnlyReactiveProperty<string> PageInfoStr { get; }
 		// 選択しているrectに基づくスクショのプレビュー
