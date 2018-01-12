@@ -18,18 +18,12 @@ using OxyPlot.Series;
 
 namespace AzLH.ViewModels {
 	// 表示する期間の情報
-	public class GraphPeriodInfo
+	public struct GraphPeriodInfo
 	{
-		public double Days { get; set; }
-		public string StringFormat { get; set; }
-		public double MajorStep { get; set; }
-		public double MinorStep { get; set; }
-		public GraphPeriodInfo(double days, string stringFormat, double majorStep, double minorStep) {
-			Days = days;
-			StringFormat = stringFormat;
-			MajorStep = majorStep;
-			MinorStep = minorStep;
-		}
+		public double Days;
+		public string StringFormat;
+		public double MajorStep;
+		public double MinorStep;
 	}
 
 	internal class SupplyViewModel : IDisposable, INotifyPropertyChanged
@@ -39,15 +33,15 @@ namespace AzLH.ViewModels {
 		// 表示する期間の一覧(Keyが名称、Valueが期間(単位は"日"))
 		private readonly Dictionary<string, GraphPeriodInfo> graphPeriodDic
 			= new Dictionary<string, GraphPeriodInfo> {
-			{ "6時間",  new GraphPeriodInfo(0.25, "HH:mm"   , 1.0 / 24 , 0.5 / 24)},
-			{ "12時間", new GraphPeriodInfo(0.5 , "HH:mm"   , 2.0 / 24 , 1.0 / 24)},
-			{ "1日",    new GraphPeriodInfo(1.0 , "HH:mm"   , 4.0 / 24 , 2.0 / 24)},
-			{ "3日",    new GraphPeriodInfo(3.0, "MM/dd" , 12.0 / 24, 6.0 / 24)},
-			{ "1週間",  new GraphPeriodInfo(7.0, "MM/dd" , 1.0      , 12.0 / 24)},
-			{ "1ヶ月", new GraphPeriodInfo(30.0, "MM/dd" , 3.0      , 1.0)},
-			{ "3ヶ月", new GraphPeriodInfo(90.0, "MM/dd" , 10.0     , 5.0)},
-			{ "6ヶ月", new GraphPeriodInfo(180.0, "MM/dd", 30.0     , 15.0)},
-			{ "1年", new GraphPeriodInfo(365, "MM/dd"    , 60.0     , 30.0)},
+			{ "6時間",  new GraphPeriodInfo{Days = 0.25,  StringFormat = "HH:mm", MajorStep = 1.0 / 24,  MinorStep = 0.5 / 24} },
+			{ "12時間", new GraphPeriodInfo{Days = 0.5 ,  StringFormat = "HH:mm", MajorStep = 2.0 / 24,  MinorStep = 1.0 / 24 } },
+			{ "1日",    new GraphPeriodInfo{Days = 1.0 ,  StringFormat = "HH:mm", MajorStep = 4.0 / 24,  MinorStep = 2.0 / 24 } },
+			{ "3日",    new GraphPeriodInfo{Days = 3.0,   StringFormat = "MM/dd", MajorStep = 12.0 / 24, MinorStep = 6.0 / 24 } },
+			{ "1週間",  new GraphPeriodInfo{Days = 7.0,   StringFormat = "MM/dd", MajorStep = 1.0,       MinorStep = 12.0 / 24 } },
+			{ "1ヶ月",  new GraphPeriodInfo{Days = 30.0,  StringFormat = "MM/dd", MajorStep = 3.0,       MinorStep = 1.0 } },
+			{ "3ヶ月",  new GraphPeriodInfo{Days = 90.0,  StringFormat = "MM/dd", MajorStep = 10.0,      MinorStep = 5.0 } },
+			{ "6ヶ月",  new GraphPeriodInfo{Days = 180.0, StringFormat = "MM/dd", MajorStep = 30.0,      MinorStep = 15.0 } },
+			{ "1年",    new GraphPeriodInfo{Days = 365,   StringFormat = "MM/dd", MajorStep = 60.0,      MinorStep = 30.0 } },
 		};
 		// 現在の表示する期間
 		private GraphPeriodInfo NowGraphPeriodInfo
