@@ -1,7 +1,7 @@
 ﻿using AzLH.Models;
 using Microsoft.Win32;
-using Prism.Events;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,6 +24,7 @@ namespace AzLH.ViewModels {
 		double[] oldGauge = new double[] { -1.0, -1.0, -1.0 };
 		double[] remainTime = new double[] { 0.0, 0.0, 0.0 };
 
+		#region 各種ReactiveProperty
 		// trueにすると画面を閉じる
 		public ReactiveProperty<bool> CloseWindow { get; } = new ReactiveProperty<bool>(false);
 		// 画像保存ボタンは有効か？
@@ -38,9 +39,9 @@ namespace AzLH.ViewModels {
 		public ReactiveProperty<string> SoftwareTitle { get; }
 			= new ReactiveProperty<string>($"{Utility.SoftwareName}Ver.{Utility.SoftwareVer}");
 		// メイン画面の位置
-		public ReactiveProperty<double> MainWindowPositionLeft   { get; } = new ReactiveProperty<double>(double.NaN);
-		public ReactiveProperty<double> MainWindowPositionTop    { get; } = new ReactiveProperty<double>(double.NaN);
-		public ReactiveProperty<double> MainWindowPositionWidth  { get; } = new ReactiveProperty<double>(400.0);
+		public ReactiveProperty<double> MainWindowPositionLeft { get; } = new ReactiveProperty<double>(double.NaN);
+		public ReactiveProperty<double> MainWindowPositionTop { get; } = new ReactiveProperty<double>(double.NaN);
+		public ReactiveProperty<double> MainWindowPositionWidth { get; } = new ReactiveProperty<double>(400.0);
 		public ReactiveProperty<double> MainWindowPositionHeight { get; } = new ReactiveProperty<double>(300.0);
 		// ウィンドウの座標を記憶するか？
 		public ReactiveProperty<bool> MemoryWindowPositionFlg { get; } = new ReactiveProperty<bool>(true);
@@ -52,7 +53,9 @@ namespace AzLH.ViewModels {
 		public ReactiveProperty<bool> PutCharacterRecognitionFlg { get; } = new ReactiveProperty<bool>(false);
 		// ドラッグ＆ドロップでシーン認識するか？
 		public ReactiveProperty<bool> DragAndDropPictureFlg { get; } = new ReactiveProperty<bool>(false);
+		#endregion
 
+		#region 各種ReactiveCommand
 		// 座標取得ボタン
 		public ReactiveCommand GetGameWindowPositionCommand { get; } = new ReactiveCommand();
 		// 画像保存ボタン
@@ -77,7 +80,7 @@ namespace AzLH.ViewModels {
 		public ReactiveCommand ImportSubSupply2Command { get; } = new ReactiveCommand();
 		public ReactiveCommand ImportSubSupply3Command { get; } = new ReactiveCommand();
 		public ReactiveCommand ImportSubSupply4Command { get; } = new ReactiveCommand();
-
+		#endregion
 
 		// 実行ログに追記する
 		private void PutLog(string message) {
@@ -572,7 +575,7 @@ namespace AzLH.ViewModels {
 				var view = new Views.SupplyView { DataContext = vm };
 				view.Show();
 				SettingsStore.ShowSupplyWindowFlg = true;
-			});
+			}).AddTo(Disposable);
 			OpenTimerViewCommand.Subscribe(_ => {
 				if (SettingsStore.ShowTimerWindowFlg)
 					return;
@@ -580,7 +583,7 @@ namespace AzLH.ViewModels {
 				var view = new Views.TimerView { DataContext = vm };
 				view.Show();
 				SettingsStore.ShowTimerWindowFlg = true;
-			});
+			}).AddTo(Disposable);
 			ImportMainSupplyCommand.Subscribe(async _ => {
 				// 資材のインポート機能(燃料・資金・ダイヤ)
 				// インスタンスを作成
