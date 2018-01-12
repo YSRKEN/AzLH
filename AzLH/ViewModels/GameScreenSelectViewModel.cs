@@ -8,7 +8,7 @@ using System.Drawing;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Media.Imaging;
-using static AzLH.Models.MainModel;
+using static AzLH.ViewModels.MainViewModel;
 
 namespace AzLH.ViewModels {
 	internal class GameScreenSelectViewModel : IDisposable, INotifyPropertyChanged
