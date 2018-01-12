@@ -17,23 +17,25 @@ using OxyPlot.Axes;
 using OxyPlot.Series;
 
 namespace AzLH.ViewModels {
+	// 表示する期間の情報
+	public class GraphPeriodInfo
+	{
+		public double Days { get; set; }
+		public string StringFormat { get; set; }
+		public double MajorStep { get; set; }
+		public double MinorStep { get; set; }
+		public GraphPeriodInfo(double days, string stringFormat, double majorStep, double minorStep) {
+			Days = days;
+			StringFormat = stringFormat;
+			MajorStep = majorStep;
+			MinorStep = minorStep;
+		}
+	}
+
 	internal class SupplyViewModel : IDisposable, INotifyPropertyChanged
 	{
 		private CompositeDisposable Disposable { get; } = new CompositeDisposable();
 		public event PropertyChangedEventHandler PropertyChanged;
-		// 表示する期間の情報
-		private class GraphPeriodInfo {
-			public double Days { get; set; }
-			public string StringFormat { get; set; }
-			public double MajorStep { get; set; }
-			public double MinorStep { get; set; }
-			public GraphPeriodInfo(double days, string stringFormat, double majorStep, double minorStep) {
-				Days = days;
-				StringFormat = stringFormat;
-				MajorStep = majorStep;
-				MinorStep = minorStep;
-			}
-		}
 		// 表示する期間の一覧(Keyが名称、Valueが期間(単位は"日"))
 		private readonly Dictionary<string, GraphPeriodInfo> graphPeriodDic
 			= new Dictionary<string, GraphPeriodInfo> {
@@ -77,8 +79,89 @@ namespace AzLH.ViewModels {
 		// グラフ画像を保存する
 		public ReactiveCommand SaveSupplyGraphCommand { get; } = new ReactiveCommand();
 
+		// グラフを再描画する
+		private PlotModel RedrawSupplyGraph() {
+			return SupplyModel.RedrawSupplyGraph(ShowSupplyMode.Value, NowGraphPeriodInfo);
+		}
+		// コンストラクタ
+		public SupplyViewModel() {
+			// 設定ファイルに記録していた情報を書き戻す
+			{
+				if (SettingsStore.MemoryWindowPositionFlg) {
+					WindowPositionLeft.Value = SettingsStore.SupplyWindowRect[0];
+					WindowPositionTop.Value = SettingsStore.SupplyWindowRect[1];
+					WindowPositionWidth.Value = SettingsStore.SupplyWindowRect[2];
+					WindowPositionHeight.Value = SettingsStore.SupplyWindowRect[3];
+				}
+				AutoOpenWindowFlg.Value = SettingsStore.AutoSupplyWindowFlg;
+			}
+			// 画面の位置が変更された際、自動で設定ファイルに書き戻すようにする
+			WindowPositionLeft.Subscribe(x => {
+				if (!SettingsStore.MemoryWindowPositionFlg)
+					return;
+				SettingsStore.SupplyWindowRect[0] = x;
+				SettingsStore.ChangeSettingFlg = true;
+			});
+			WindowPositionTop.Subscribe(x => {
+				if (!SettingsStore.MemoryWindowPositionFlg)
+					return;
+				SettingsStore.SupplyWindowRect[1] = x;
+				SettingsStore.ChangeSettingFlg = true;
+			});
+			WindowPositionWidth.Subscribe(x => {
+				if (!SettingsStore.MemoryWindowPositionFlg)
+					return;
+				SettingsStore.SupplyWindowRect[2] = x;
+				SettingsStore.ChangeSettingFlg = true;
+			});
+			WindowPositionHeight.Subscribe(x => {
+				if (!SettingsStore.MemoryWindowPositionFlg)
+					return;
+				SettingsStore.SupplyWindowRect[3] = x;
+				SettingsStore.ChangeSettingFlg = true;
+			});
+			// 起動時にこの画面を表示するか？
+			AutoOpenWindowFlg.Subscribe(value => {
+				SettingsStore.AutoSupplyWindowFlg = value;
+			});
+			// 表示する資材のモードに対応してボタンの色・表示内容を変える
+			SupplyModeButtonColor = ShowSupplyMode.Select(x => {
+				return (Brush)(x == 0 ? new SolidColorBrush(Colors.Pink) : new SolidColorBrush(Colors.SkyBlue));
+			}).ToReadOnlyReactiveProperty();
+			SupplyModeButtonContent = ShowSupplyMode.Select(x => {
+				return (x == 0 ? "通常資材" : "特殊資材");
+			}).ToReadOnlyReactiveProperty();
+			// その他staticな初期化
+			GraphPeriodList = new ReactiveProperty<List<string>>(graphPeriodDic.Keys.Select(p => p).ToList());
+			// 表示期間・資材モードが変更された際、グラフを再描画する
+			SupplyGraphModel = GraphPeriodIndex.CombineLatest(ShowSupplyMode, (_, mode) => RedrawSupplyGraph()).ToReactiveProperty();
+			// コマンドを設定
+			ChangeSupplyModeCommand.Subscribe(_ => {
+				ShowSupplyMode.Value = (ShowSupplyMode.Value == 0 ? 1 : 0);
+				RedrawSupplyGraph();
+			});
+			SaveSupplyGraphCommand.Subscribe(_ => SupplyModel.SaveSupplyGraph(SupplyGraphModel.Value));
+			// タイマーを指定してグラフ更新を定期実行する
+			var timer = new Timer(1000 * 60 * 5);
+			timer.Elapsed += (sender, e) => {
+				try {
+					timer.Stop();
+					RedrawSupplyGraph();
+				}
+				finally { timer.Start(); }
+			};
+			timer.Start();
+			// まず最初の画面更新を掛ける
+			SupplyGraphModel.Value = RedrawSupplyGraph();
+		}
+
+		// Dispose処理
+		public void Dispose() => Disposable.Dispose();
+	}
+	static class SupplyModel
+	{
 		// グラフ表示に適した適当な数値に切り上げる
-		private void SpecialCeiling(ref int maxValue, out int interval) {
+		private static void SpecialCeiling(ref int maxValue, out int interval) {
 			// とりあえず10で割っていく
 			double x_ = maxValue;
 			double temp = 1.0;
@@ -93,17 +176,17 @@ namespace AzLH.ViewModels {
 		}
 		// グラフを再描画する
 		// 参考→https://qiita.com/maruh/items/035a39a2a01102ce248f
-		private void RedrawSupplyGraph() {
+		public static PlotModel RedrawSupplyGraph(int showSupplyMode, GraphPeriodInfo graphPeriodInfo) {
 			try {
 				// Y軸および第二Y軸に表示するデータを集めておく
 				// Y軸→「表示する資材のモードと同じ」かつ「第二Y軸ではない」資材名
 				// 第二Y軸→「表示する資材のモードと同じ」かつ「第二Y軸である」資材名
 				var AxisYList = CharacterRecognition.SupplyParameters
-					.Where(p => p.Value.MainSupplyFlg == (ShowSupplyMode.Value == 0)
+					.Where(p => p.Value.MainSupplyFlg == (showSupplyMode == 0)
 						&& !p.Value.SecondaryAxisFlg)
 					.ToDictionary(p => p.Key, q => SupplyStore.GetSupplyData(q.Key));
 				var AxisY2List = CharacterRecognition.SupplyParameters
-					.Where(p => p.Value.MainSupplyFlg == (ShowSupplyMode.Value == 0)
+					.Where(p => p.Value.MainSupplyFlg == (showSupplyMode == 0)
 						&& p.Value.SecondaryAxisFlg)
 					.ToDictionary(p => p.Key, q => SupplyStore.GetSupplyData(q.Key));
 				// グラフに必要な数値を算出する
@@ -111,7 +194,7 @@ namespace AzLH.ViewModels {
 				var maxYDateTime = AxisYList.Max(p => p.Value.Max(q => q.Key));
 				var maxY2DateTime = AxisY2List.Max(p => p.Value.Max(q => q.Key));
 				var maxDateTime = (maxYDateTime > maxY2DateTime ? maxYDateTime : maxY2DateTime);
-				var minDateTime = maxDateTime.AddDays(-NowGraphPeriodInfo.Days);
+				var minDateTime = maxDateTime.AddDays(-graphPeriodInfo.Days);
 				//縦軸
 				int maxYValue = AxisYList
 					.Max(p => p.Value.Where(q => minDateTime <= q.Key)
@@ -140,11 +223,11 @@ namespace AzLH.ViewModels {
 					Position = AxisPosition.Bottom,
 					Minimum = DateTimeAxis.ToDouble(minDateTime),
 					Maximum = DateTimeAxis.ToDouble(maxDateTime),
-					StringFormat = NowGraphPeriodInfo.StringFormat,
+					StringFormat = graphPeriodInfo.StringFormat,
 					MajorGridlineStyle = LineStyle.Solid,
 					MajorGridlineColor = OxyColors.LightGray,
-					MajorStep = NowGraphPeriodInfo.MajorStep,
-					MinorStep = NowGraphPeriodInfo.MinorStep,
+					MajorStep = graphPeriodInfo.MajorStep,
+					MinorStep = graphPeriodInfo.MinorStep,
 					Title = "日時"
 				});
 				newSupplyGraphModel.Axes.Add(new LinearAxis {
@@ -207,17 +290,19 @@ namespace AzLH.ViewModels {
 
 				// グラフの要素を画面に反映する
 				newSupplyGraphModel.InvalidatePlot(true);
-				SupplyGraphModel.Value = newSupplyGraphModel;
-			} catch { }
+				return newSupplyGraphModel;
+			} catch {
+				return null;
+			}
 		}
 		// グラフ画像を保存する
-		private void SaveSupplyGraph() {
+		public static void SaveSupplyGraph(PlotModel plotModel) {
 			var pngExporter = new OxyPlot.Wpf.PngExporter {
-				Width = (int)SupplyGraphModel.Value.PlotArea.Width,
-				Height = (int)SupplyGraphModel.Value.PlotArea.Height,
+				Width = (int)plotModel.PlotArea.Width,
+				Height = (int)plotModel.PlotArea.Height,
 				Background = OxyColors.White
 			};
-			var bitmapSource = pngExporter.ExportToBitmap(SupplyGraphModel.Value);
+			var bitmapSource = pngExporter.ExportToBitmap(plotModel);
 			// BitmapSourceを保存する
 			var sfd = new SaveFileDialog {
 				// ファイルの種類を設定
@@ -233,80 +318,5 @@ namespace AzLH.ViewModels {
 				}
 			}
 		}
-
-		// コンストラクタ
-		public SupplyViewModel() {
-			// 設定ファイルに記録していた情報を書き戻す
-			{
-				if (SettingsStore.MemoryWindowPositionFlg) {
-					WindowPositionLeft.Value = SettingsStore.SupplyWindowRect[0];
-					WindowPositionTop.Value = SettingsStore.SupplyWindowRect[1];
-					WindowPositionWidth.Value = SettingsStore.SupplyWindowRect[2];
-					WindowPositionHeight.Value = SettingsStore.SupplyWindowRect[3];
-				}
-				AutoOpenWindowFlg.Value = SettingsStore.AutoSupplyWindowFlg;
-			}
-			// 画面の位置が変更された際、自動で設定ファイルに書き戻すようにする
-			WindowPositionLeft.Subscribe(x => {
-				if (!SettingsStore.MemoryWindowPositionFlg)
-					return;
-				SettingsStore.SupplyWindowRect[0] = x;
-				SettingsStore.ChangeSettingFlg = true;
-			});
-			WindowPositionTop.Subscribe(x => {
-				if (!SettingsStore.MemoryWindowPositionFlg)
-					return;
-				SettingsStore.SupplyWindowRect[1] = x;
-				SettingsStore.ChangeSettingFlg = true;
-			});
-			WindowPositionWidth.Subscribe(x => {
-				if (!SettingsStore.MemoryWindowPositionFlg)
-					return;
-				SettingsStore.SupplyWindowRect[2] = x;
-				SettingsStore.ChangeSettingFlg = true;
-			});
-			WindowPositionHeight.Subscribe(x => {
-				if (!SettingsStore.MemoryWindowPositionFlg)
-					return;
-				SettingsStore.SupplyWindowRect[3] = x;
-				SettingsStore.ChangeSettingFlg = true;
-			});
-			// 起動時にこの画面を表示するか？
-			AutoOpenWindowFlg.Subscribe(value => {
-				SettingsStore.AutoSupplyWindowFlg = value;
-			});
-			// 表示期間が変更された際、グラフを再描画する
-			GraphPeriodIndex.Subscribe(_ => RedrawSupplyGraph());
-			// 表示する資材のモードに対応してボタンの色・表示内容を変える
-			SupplyModeButtonColor = ShowSupplyMode.Select(x => {
-				return (Brush)(x == 0 ? new SolidColorBrush(Colors.Pink) : new SolidColorBrush(Colors.SkyBlue));
-			}).ToReadOnlyReactiveProperty();
-			SupplyModeButtonContent = ShowSupplyMode.Select(x => {
-				return (x == 0 ? "通常資材" : "特殊資材");
-			}).ToReadOnlyReactiveProperty();
-			// その他staticな初期化
-			GraphPeriodList = new ReactiveProperty<List<string>>(graphPeriodDic.Keys.Select(p => p).ToList());
-			// コマンドを設定
-			ChangeSupplyModeCommand.Subscribe(_ => {
-				ShowSupplyMode.Value = (ShowSupplyMode.Value == 0 ? 1 : 0);
-				RedrawSupplyGraph();
-			});
-			SaveSupplyGraphCommand.Subscribe(_ => SaveSupplyGraph());
-			// タイマーを指定してグラフ更新を定期実行する
-			var timer = new Timer(1000 * 60 * 5);
-			timer.Elapsed += (sender, e) => {
-				try {
-					timer.Stop();
-					RedrawSupplyGraph();
-				}
-				finally { timer.Start(); }
-			};
-			timer.Start();
-			// まず最初の画面更新を掛ける
-			RedrawSupplyGraph();
-		}
-
-		// Dispose処理
-		public void Dispose() => Disposable.Dispose();
 	}
 }
