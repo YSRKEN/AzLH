@@ -148,6 +148,7 @@
     <Compile Include="Behaviors\CloseWindowAttachedBehavior.cs" />
     <Compile Include="Behaviors\ApplicationLogScrollBehavior.cs" />
     <Compile Include="Behaviors\FileDragAndDropToWindowBehavior.cs" />
+    <Compile Include="Models\SupplyModel.cs" />
     <Compile Include="ViewModels\GameScreenSelectViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\SupplyViewModel.cs" />

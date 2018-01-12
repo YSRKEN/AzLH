@@ -1,11 +1,8 @@
 ﻿using AzLH.Models;
 using Reactive.Bindings;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Timers;
-using System.Windows;
 
 namespace AzLH.ViewModels
 {
