@@ -72,71 +72,55 @@ namespace AzLH.Models {
 		}
 		// BitmapについてOCRした結果を表示する
 		public static void ShowOcrInfo(Bitmap bitmap) {
+			// シーン判定を行う
 			string scene = SceneRecognition.JudgeGameScene(bitmap);
-			var supplyValueDic = new Dictionary<string, int>();
-			string otherMessage = "";
+			string output = $"シーン判定結果：{scene}\n";
+			// 資材関係のシーンだった場合、資材量を読み取って表示内容に追記する
+			if (SupplyStore.SupplyListEachScene.ContainsKey(scene)) {
+				output += "読み取った資材量：\n";
+				foreach (string supplyName in SupplyStore.SupplyListEachScene[scene]) {
+					int supplyValue = CharacterRecognition.GetValueOCR(bitmap, supplyName, SettingsStore.PutCharacterRecognitionFlg);
+					output += $"　{supplyName}→{supplyValue}\n";
+				}
+			}
+			// その他のシーンの場合の処理
 			switch (scene) {
-			case "母港":
-				supplyValueDic["燃料"] = CharacterRecognition.GetValueOCR(bitmap, "燃料", SettingsStore.PutCharacterRecognitionFlg);
-				supplyValueDic["資金"] = CharacterRecognition.GetValueOCR(bitmap, "資金", SettingsStore.PutCharacterRecognitionFlg);
-				supplyValueDic["ダイヤ"] = CharacterRecognition.GetValueOCR(bitmap, "ダイヤ", SettingsStore.PutCharacterRecognitionFlg);
-				break;
-			case "建造":
-				supplyValueDic["キューブ"] = CharacterRecognition.GetValueOCR(bitmap, "キューブ", SettingsStore.PutCharacterRecognitionFlg);
-				break;
-			case "建造中":
-				supplyValueDic["ドリル"] = CharacterRecognition.GetValueOCR(bitmap, "ドリル", SettingsStore.PutCharacterRecognitionFlg);
-				break;
-			case "支援":
-				supplyValueDic["勲章"] = CharacterRecognition.GetValueOCR(bitmap, "勲章", SettingsStore.PutCharacterRecognitionFlg);
-				break;
-			case "家具屋":
-				supplyValueDic["家具コイン"] = CharacterRecognition.GetValueOCR(bitmap, "家具コイン", SettingsStore.PutCharacterRecognitionFlg);
-				break;
 			case "戦闘中": {
 					var gauge = SceneRecognition.GetBattleBombGauge(bitmap);
-					otherMessage += "読み取ったゲージ量：\n";
-					otherMessage += $"　空撃→{Math.Round(gauge[0] * 100.0, 1)}％\n";
-					otherMessage += $"　雷撃→{Math.Round(gauge[1] * 100.0, 1)}％\n";
-					otherMessage += $"　砲撃→{Math.Round(gauge[2] * 100.0, 1)}％\n";
+					output += "読み取ったゲージ量：\n";
+					output += $"　空撃→{Math.Round(gauge[0] * 100.0, 1)}％\n";
+					output += $"　雷撃→{Math.Round(gauge[1] * 100.0, 1)}％\n";
+					output += $"　砲撃→{Math.Round(gauge[2] * 100.0, 1)}％\n";
 				}
 				break;
 			case "委託": {
-					long time1 = CharacterRecognition.GetTimeOCR(bitmap, "委託1", SettingsStore.PutCharacterRecognitionFlg);
-					long time2 = CharacterRecognition.GetTimeOCR(bitmap, "委託2", SettingsStore.PutCharacterRecognitionFlg);
-					long time3 = CharacterRecognition.GetTimeOCR(bitmap, "委託3", SettingsStore.PutCharacterRecognitionFlg);
-					long time4 = CharacterRecognition.GetTimeOCR(bitmap, "委託4", SettingsStore.PutCharacterRecognitionFlg);
-					otherMessage += "読み取った秒数：\n";
-					otherMessage += $"　1つ目→{time1}\n";
-					otherMessage += $"　2つ目→{time2}\n";
-					otherMessage += $"　3つ目→{time3}\n";
-					otherMessage += $"　4つ目→{time4}\n";
+					output += "読み取った秒数：\n";
+					for(int i = 1; i <= 4; ++i) {
+						long time = CharacterRecognition.GetTimeOCR(bitmap, $"委託{i}", SettingsStore.PutCharacterRecognitionFlg);
+						output += $"　{i}つ目→{time}\n";
+					}
 				}
 				break;
 			case "戦術教室": {
-					long time1 = CharacterRecognition.GetTimeOCR(bitmap, "戦術教室1", SettingsStore.PutCharacterRecognitionFlg);
-					long time2 = CharacterRecognition.GetTimeOCR(bitmap, "戦術教室2", SettingsStore.PutCharacterRecognitionFlg);
-					otherMessage += "読み取った秒数：\n";
-					otherMessage += $"　1つ目→{time1}\n";
-					otherMessage += $"　2つ目→{time2}\n";
+					output += "読み取った秒数：\n";
+					for (int i = 1; i <= 2; ++i) {
+						long time = CharacterRecognition.GetTimeOCR(bitmap, $"戦術教室{i}", SettingsStore.PutCharacterRecognitionFlg);
+						output += $"　{i}つ目→{time}\n";
+					}
 				}
 				break;
 			case "寮舎": {
+					output += "読み取った秒数：\n";
 					long time = CharacterRecognition.GetTimeOCR(bitmap, "食糧", SettingsStore.PutCharacterRecognitionFlg);
-					otherMessage += "読み取った秒数：\n";
-					otherMessage += $"　食糧→{time}\n";
+					output += $"　食糧→{time}\n";
 				}
 				break;
 			}
-			string output = $"シーン判定結果：{scene}\n";
-			if (supplyValueDic.Count > 0) {
-				output += "読み取った資材量：\n";
-				foreach (var pair in supplyValueDic) {
-					output += $"　{pair.Key}→{pair.Value}\n";
-				}
-			}
-			output += otherMessage;
 			MessageBox.Show(output, Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Information);
+		}
+		// 残りの秒数から完了時間を計算する
+		public static DateTime? GetFinalTime(long remainTime) {
+			return (remainTime > 0 ? DateTime.Now.AddSeconds(remainTime) : (DateTime?)null);
 		}
 	}
 	internal static class NativeMethods {

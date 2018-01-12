@@ -22,6 +22,14 @@ namespace AzLH.Models {
 		// 更新間隔(分)
 		private static int updateInterval = 10;
 
+		// 各シーンに対応した資材
+		public static Dictionary<string, string[]> SupplyListEachScene { get; } = new Dictionary<string, string[]>{
+			{ "母港", new string[]{ "燃料", "資金", "ダイヤ" } },
+			{ "建造", new string[]{ "キューブ" } },
+			{ "建造中", new string[]{ "ドリル" } },
+			{ "支援", new string[]{ "勲章" } },
+			{ "家具屋", new string[]{ "家具コイン" } }
+		};
 		// 初期化
 		public static void Initialize() {
 			// テーブルが存在しない場合、テーブルを作成する
