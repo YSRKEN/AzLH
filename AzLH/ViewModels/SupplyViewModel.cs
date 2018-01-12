@@ -302,6 +302,8 @@ namespace AzLH.ViewModels {
 				finally { timer.Start(); }
 			};
 			timer.Start();
+			// まず最初の画面更新を掛ける
+			RedrawSupplyGraph();
 		}
 
 		// Dispose処理

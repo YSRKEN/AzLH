@@ -9,7 +9,7 @@ namespace AzLH.Models {
 	internal class SettingsStore {
 		// シングルトンパターン
 		// 参考→https://qiita.com/rohinomiya/items/6bca22211d1bddf581c4
-		private static SettingsStore This { get; } = new SettingsStore();
+		private static SettingsStore This { get; set; }
 		private SettingsStore(){}
 
 		#region ファイルに保存する設定
@@ -298,7 +298,7 @@ namespace AzLH.Models {
 					// 全体をstringに読み込む
 					string json = sr.ReadToEnd();
 					// Json.NETでパース
-					var This = JsonConvert.DeserializeObject<SettingsStore>(json);
+					This = JsonConvert.DeserializeObject<SettingsStore>(json);
 				}
 				return true;
 			} catch {
