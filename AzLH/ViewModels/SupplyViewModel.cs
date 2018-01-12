@@ -10,6 +10,11 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using Microsoft.Win32;
+using System.IO;
+using System.Windows.Media.Imaging;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 
 namespace AzLH.ViewModels {
 	internal class SupplyViewModel : IDisposable, INotifyPropertyChanged
@@ -64,18 +69,169 @@ namespace AzLH.ViewModels {
 		// 表示する資材のモードに対応してボタンの色・表示内容が変わる
 		public ReadOnlyReactiveProperty<Brush> SupplyModeButtonColor { get; }
 		public ReadOnlyReactiveProperty<string> SupplyModeButtonContent { get; }
-
 		// グラフデータ
-		public ReactiveProperty<PlotModel> SupplyGraphModel { get; }
+		public ReactiveProperty<PlotModel> SupplyGraphModel { get; } = new ReactiveProperty<PlotModel>();
 
 		// 表示する資材のモードを切り替える
-		public ReactiveCommand ChangeSupplyModeCommand { get; }
+		public ReactiveCommand ChangeSupplyModeCommand { get; } = new ReactiveCommand();
 		// グラフ画像を保存する
-		public ReactiveCommand SaveSupplyGraphCommand { get; }
+		public ReactiveCommand SaveSupplyGraphCommand { get; } = new ReactiveCommand();
 
+		// グラフ表示に適した適当な数値に切り上げる
+		private void SpecialCeiling(ref int maxValue, out int interval) {
+			// とりあえず10で割っていく
+			double x_ = maxValue;
+			double temp = 1.0;
+			while (x_ >= 10.0) {
+				x_ /= 10.0;
+				temp *= 10.0;
+			}
+			// 切り上げ処理
+			x_ = Math.Ceiling(x_);
+			maxValue = (int)(x_ * temp);
+			interval = (int)temp;
+		}
 		// グラフを再描画する
+		// 参考→https://qiita.com/maruh/items/035a39a2a01102ce248f
 		private void RedrawSupplyGraph() {
-			// スタブ
+			try {
+				// Y軸および第二Y軸に表示するデータを集めておく
+				// Y軸→「表示する資材のモードと同じ」かつ「第二Y軸ではない」資材名
+				// 第二Y軸→「表示する資材のモードと同じ」かつ「第二Y軸である」資材名
+				var AxisYList = CharacterRecognition.SupplyParameters
+					.Where(p => p.Value.MainSupplyFlg == (ShowSupplyMode.Value == 0)
+						&& !p.Value.SecondaryAxisFlg)
+					.ToDictionary(p => p.Key, q => SupplyStore.GetSupplyData(q.Key));
+				var AxisY2List = CharacterRecognition.SupplyParameters
+					.Where(p => p.Value.MainSupplyFlg == (ShowSupplyMode.Value == 0)
+						&& p.Value.SecondaryAxisFlg)
+					.ToDictionary(p => p.Key, q => SupplyStore.GetSupplyData(q.Key));
+				// グラフに必要な数値を算出する
+				//横軸
+				var maxYDateTime = AxisYList.Max(p => p.Value.Max(q => q.Key));
+				var maxY2DateTime = AxisY2List.Max(p => p.Value.Max(q => q.Key));
+				var maxDateTime = (maxYDateTime > maxY2DateTime ? maxYDateTime : maxY2DateTime);
+				var minDateTime = maxDateTime.AddDays(-NowGraphPeriodInfo.Days);
+				//縦軸
+				int maxYValue = AxisYList
+					.Max(p => p.Value.Where(q => minDateTime <= q.Key)
+					.Max(r => r.Value));
+				SpecialCeiling(ref maxYValue, out int intervalY);
+				string axisYStr = "";
+				for (int i = 0; i < AxisYList.Count; ++i) {
+					if (i != 0)
+						axisYStr += "・";
+					axisYStr += AxisYList.Keys.ToList()[i];
+				}
+				int maxY2Value = AxisY2List
+					.Max(p => p.Value.Where(q => minDateTime <= q.Key)
+					.Max(r => r.Value));
+				SpecialCeiling(ref maxY2Value, out int intervalY2);
+				string axis2YStr = "";
+				for (int i = 0; i < AxisY2List.Count; ++i) {
+					if (i != 0)
+						axisYStr += "・";
+					axis2YStr += AxisY2List.Keys.ToList()[i];
+				}
+				// グラフ要素を構築する
+				//軸
+				var newSupplyGraphModel = new PlotModel();
+				newSupplyGraphModel.Axes.Add(new DateTimeAxis {
+					Position = AxisPosition.Bottom,
+					Minimum = DateTimeAxis.ToDouble(minDateTime),
+					Maximum = DateTimeAxis.ToDouble(maxDateTime),
+					StringFormat = NowGraphPeriodInfo.StringFormat,
+					MajorGridlineStyle = LineStyle.Solid,
+					MajorGridlineColor = OxyColors.LightGray,
+					MajorStep = NowGraphPeriodInfo.MajorStep,
+					MinorStep = NowGraphPeriodInfo.MinorStep,
+					Title = "日時"
+				});
+				newSupplyGraphModel.Axes.Add(new LinearAxis {
+					Position = AxisPosition.Left,
+					Minimum = 0.0,
+					Maximum = maxYValue,
+					MajorGridlineStyle = LineStyle.Solid,
+					MajorGridlineColor = OxyColors.LightGray,
+					MajorStep = intervalY,
+					MinorTickSize = 0,
+					Title = axisYStr,
+					Key = "Primary"
+				});
+				newSupplyGraphModel.Axes.Add(new LinearAxis {
+					Position = AxisPosition.Right,
+					Minimum = 0.0,
+					Maximum = maxY2Value,
+					MajorGridlineStyle = LineStyle.Solid,
+					MajorGridlineColor = OxyColors.LightGray,
+					MajorStep = intervalY2,
+					MinorTickSize = 0,
+					Title = axis2YStr,
+					Key = "Secondary"
+				});
+				//グラフ値
+				foreach (var plotInfo in AxisYList) {
+					var lineSeries = new LineSeries();
+					foreach (var plotData in plotInfo.Value) {
+						lineSeries.Points.Add(new DataPoint(
+							DateTimeAxis.ToDouble(plotData.Key),
+							plotData.Value
+						));
+					}
+					lineSeries.YAxisKey = "Primary";
+					lineSeries.Title = plotInfo.Key;
+					lineSeries.Color = OxyColor.FromRgb(
+						CharacterRecognition.SupplyParameters[plotInfo.Key].Color.R,
+						CharacterRecognition.SupplyParameters[plotInfo.Key].Color.G,
+						CharacterRecognition.SupplyParameters[plotInfo.Key].Color.B
+					);
+					newSupplyGraphModel.Series.Add(lineSeries);
+				}
+				foreach (var plotInfo in AxisY2List) {
+					var lineSeries = new LineSeries();
+					foreach (var plotData in plotInfo.Value) {
+						lineSeries.Points.Add(new DataPoint(
+							DateTimeAxis.ToDouble(plotData.Key),
+							plotData.Value
+						));
+					}
+					lineSeries.YAxisKey = "Secondary";
+					lineSeries.Title = plotInfo.Key;
+					lineSeries.Color = OxyColor.FromRgb(
+						CharacterRecognition.SupplyParameters[plotInfo.Key].Color.R,
+						CharacterRecognition.SupplyParameters[plotInfo.Key].Color.G,
+						CharacterRecognition.SupplyParameters[plotInfo.Key].Color.B
+					);
+					newSupplyGraphModel.Series.Add(lineSeries);
+				}
+
+				// グラフの要素を画面に反映する
+				newSupplyGraphModel.InvalidatePlot(true);
+				SupplyGraphModel.Value = newSupplyGraphModel;
+			} catch { }
+		}
+		// グラフ画像を保存する
+		private void SaveSupplyGraph() {
+			var pngExporter = new OxyPlot.Wpf.PngExporter {
+				Width = (int)SupplyGraphModel.Value.PlotArea.Width,
+				Height = (int)SupplyGraphModel.Value.PlotArea.Height,
+				Background = OxyColors.White
+			};
+			var bitmapSource = pngExporter.ExportToBitmap(SupplyGraphModel.Value);
+			// BitmapSourceを保存する
+			var sfd = new SaveFileDialog {
+				// ファイルの種類を設定
+				Filter = "画像ファイル(*.png)|*.png|全てのファイル (*.*)|*.*"
+			};
+			// ダイアログを表示
+			if ((bool)sfd.ShowDialog()) {
+				// 保存処理
+				using (var stream = new FileStream(sfd.FileName, FileMode.Create)) {
+					var encoder = new PngBitmapEncoder();
+					encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+					encoder.Save(stream);
+				}
+			}
 		}
 
 		// コンストラクタ
@@ -130,25 +286,18 @@ namespace AzLH.ViewModels {
 			}).ToReadOnlyReactiveProperty();
 			// その他staticな初期化
 			GraphPeriodList = new ReactiveProperty<List<string>>(graphPeriodDic.Keys.Select(p => p).ToList());
-
-			// プロパティを設定
-			GraphPeriodIndex = supplyModel.ToReactivePropertyAsSynchronized(x => x.GraphPeriodIndex).AddTo(Disposable);
-			GraphPeriodList = supplyModel.ObserveProperty(x => x.GraphPeriodList).ToReactiveProperty().AddTo(Disposable);
-			SupplyModeButtonColor = supplyModel.ObserveProperty(x => x.SupplyModeButtonColor).ToReactiveProperty().AddTo(Disposable);
-			SupplyModeButtonContent = supplyModel.ObserveProperty(x => x.SupplyModeButtonContent).ToReactiveProperty().AddTo(Disposable);
-			SupplyGraphModel = supplyModel.ObserveProperty(x => x.SupplyGraphModel).ToReactiveProperty().AddTo(Disposable);
 			// コマンドを設定
-			ChangeSupplyModeCommand = new ReactiveCommand();
-			SaveSupplyGraphCommand = new ReactiveCommand();
-			//
-			ChangeSupplyModeCommand.Subscribe(supplyModel.ChangeSupplyMode);
-			SaveSupplyGraphCommand.Subscribe(supplyModel.SaveSupplyGraph);
+			ChangeSupplyModeCommand.Subscribe(_ => {
+				ShowSupplyMode.Value = (ShowSupplyMode.Value == 0 ? 1 : 0);
+				RedrawSupplyGraph();
+			});
+			SaveSupplyGraphCommand.Subscribe(_ => SaveSupplyGraph());
 			// タイマーを指定してグラフ更新を定期実行する
 			var timer = new Timer(1000 * 60 * 5);
 			timer.Elapsed += (sender, e) => {
 				try {
 					timer.Stop();
-					supplyModel.RedrawSupplyGraph();
+					RedrawSupplyGraph();
 				}
 				finally { timer.Start(); }
 			};

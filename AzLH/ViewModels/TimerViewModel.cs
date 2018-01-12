@@ -11,8 +11,6 @@ namespace AzLH.ViewModels
 {
 	class TimerViewModel : IDisposable
 	{
-		// modelのinstance
-		private readonly TimerModel timerModel = new TimerModel();
 		private CompositeDisposable Disposable { get; } = new CompositeDisposable();
 		// trueにすると画面を閉じる
 		public ReactiveProperty<bool> CloseWindow { get; } = new ReactiveProperty<bool>(false);

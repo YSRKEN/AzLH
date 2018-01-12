@@ -143,9 +143,7 @@
     <Compile Include="Libraries\SceneRecognition.cs" />
     <Compile Include="Libraries\ScreenShotProvider.cs" />
     <Compile Include="DataStores\SettingsStore.cs" />
-    <Compile Include="Models\SupplyModel.cs" />
     <Compile Include="DataStores\SupplyStore.cs" />
-    <Compile Include="Models\TimerModel.cs" />
     <Compile Include="Libraries\Utility.cs" />
     <Compile Include="Behaviors\CloseWindowAttachedBehavior.cs" />
     <Compile Include="Behaviors\ApplicationLogScrollBehavior.cs" />
