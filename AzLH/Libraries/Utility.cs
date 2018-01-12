@@ -118,6 +118,10 @@ namespace AzLH.Models {
 			}
 			MessageBox.Show(output, Utility.SoftwareName, MessageBoxButton.OK, MessageBoxImage.Information);
 		}
+		// 残りの秒数から完了時間を計算する
+		public static DateTime? GetFinalTime(long remainTime) {
+			return (remainTime > 0 ? DateTime.Now.AddSeconds(remainTime) : (DateTime?)null);
+		}
 	}
 	internal static class NativeMethods {
 		[DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
