@@ -68,6 +68,8 @@ namespace AzLH.Models {
 			foreach (var supplyInfo in SupplyParameters) {
 				lastWriteDateTime[supplyInfo.Key] = GetLastWriteDateTime(supplyInfo.Key);
 			}
+			// SupplyNameListを初期化する
+
 		}
 		// ある資材について、その最新書き込み日時を知る
 		private static DateTime GetLastWriteDateTime(string supplyType) {

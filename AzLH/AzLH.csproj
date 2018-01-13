@@ -150,6 +150,7 @@
     <Compile Include="Models\SupplyModel.cs" />
     <Compile Include="ViewModels\GameScreenSelectViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\SupplyEditorViewModel.cs" />
     <Compile Include="ViewModels\SupplyViewModel.cs" />
     <Compile Include="ViewModels\TimerViewModel.cs" />
     <Compile Include="Views\GameScreenSelectView.xaml.cs">
@@ -162,6 +163,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Views\SupplyEditorView.xaml.cs">
+      <DependentUpon>SupplyEditorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SupplyView.xaml.cs">
       <DependentUpon>SupplyView.xaml</DependentUpon>
     </Compile>
@@ -173,6 +177,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SupplyEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

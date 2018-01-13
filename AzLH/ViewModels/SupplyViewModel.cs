@@ -72,6 +72,8 @@ namespace AzLH.ViewModels {
 		public ReactiveCommand ChangeSupplyModeCommand { get; } = new ReactiveCommand();
 		// グラフ画像を保存する
 		public ReactiveCommand SaveSupplyGraphCommand { get; } = new ReactiveCommand();
+		// エディタを起動する
+		public ReactiveCommand ShowEditorCommand { get; } = new ReactiveCommand();
 
 		// グラフを再描画する
 		private PlotModel RedrawSupplyGraph() {
@@ -135,6 +137,11 @@ namespace AzLH.ViewModels {
 				RedrawSupplyGraph();
 			});
 			SaveSupplyGraphCommand.Subscribe(_ => SupplyModel.SaveSupplyGraph(SupplyGraphModel.Value));
+			ShowEditorCommand.Subscribe(_ => {
+				var vm = new SupplyEditorViewModel();
+				var view = new Views.SupplyEditorView { DataContext = vm };
+				view.ShowDialog();
+			});
 			// タイマーを指定してグラフ更新を定期実行する
 			var timer = new Timer(1000 * 60 * 5);
 			timer.Elapsed += (sender, e) => {

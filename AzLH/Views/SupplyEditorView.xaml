@@ -6,8 +6,58 @@
 	xmlns:local="clr-namespace:AzLH.Views"
 	mc:Ignorable="d"
 	Topmost="True"
-	Title="資材記録(詳細)" Height="300" Width="300">
-	<Grid>
-		
+	Title="資材記録(詳細)" Height="400" Width="300">
+	<Grid Margin="5,5,5,5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="auto"/>
+			<RowDefinition/>
+			<RowDefinition Height="auto"/>
+		</Grid.RowDefinitions>
+		<Grid Grid.Row="0" HorizontalAlignment="Center">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="auto"/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
+			<ComboBox Grid.Column="0" Height="24" Width="80" Margin="5,5,5,5"
+					SelectedIndex="{Binding SupplyNameIndex.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+					ItemsSource="{Binding SupplyNameList.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+			<TextBlock Grid.Column="1" Text="の資材データ↓" FontSize="20" VerticalAlignment="Center"/>
+		</Grid>
+		<ListView Grid.Row="1" Margin="5,5,5,5"
+			ItemsSource="{Binding SupplyDataList.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+			<ListView.View>
+				<GridView>
+					<GridViewColumn Header="取得時刻" Width="110">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBox Text="{Binding Path=Time}" TextWrapping="NoWrap"/>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="数値" Width="70">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBox Text="{Binding Path=Value}" TextWrapping="NoWrap"/>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="編集" Width="40">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<Button Content="編集" Command="{Binding EditCommand}"/>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="削除" Width="40">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<Button Content="削除" Command="{Binding DeleteCommand}"/>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+				</GridView>
+			</ListView.View>
+		</ListView>
+		<CheckBox Grid.Row="2" Content="確認ダイアログを表示しない" Height="24" Margin="5,5,5,5" VerticalAlignment="Center"/>
 	</Grid>
 </Window>
