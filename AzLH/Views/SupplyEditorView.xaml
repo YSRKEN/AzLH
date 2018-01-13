@@ -61,14 +61,14 @@
 					<GridViewColumn Header="取得時刻" Width="140">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
-								<TextBox Text="{Binding Path=Time}" TextWrapping="NoWrap"/>
+								<TextBox Text="{Binding Path=Time.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="NoWrap"/>
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
 					<GridViewColumn Header="数値" Width="70">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
-								<TextBox Text="{Binding Path=Value}" TextWrapping="NoWrap"/>
+								<TextBox Text="{Binding Path=Value.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="NoWrap"/>
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>

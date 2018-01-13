@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using System.Windows;
 using System.Globalization;
+using System.Reactive.Linq;
 
 namespace AzLH.ViewModels
 {
@@ -101,21 +102,25 @@ namespace AzLH.ViewModels
 			private string oldTime;
 			private int oldValue;
 			// 現データ
-			public string Time { get; set; }
-			public int Value { get; set; }
-			// delegate
-			private Action1 action1;
-			private Action2 action2;
+			public ReactiveProperty<string> Time { get; }
+			public ReactiveProperty<int> Value { get; }
 			// 編集・削除コマンド
 			public ReactiveCommand EditCommand { get; } = new ReactiveCommand();
 			public ReactiveCommand DeleteCommand { get; } = new ReactiveCommand();
 			// コンストラクタ
 			public SupplyData(DateTime time, int value, Action1 action1, Action2 action2) {
 				// 数値を記録する
-				oldTime = Time = Utility.GetTimeStrSQLite(time);
-				oldValue = Value = value;
+				oldTime = Utility.GetTimeStrSQLite(time);
+				Time = new ReactiveProperty<string>(oldTime);
+				oldValue = value;
+				Value = new ReactiveProperty<int>(oldValue);
+				// コマンドを作成する
+				// つまり、「Time != oldTime または Value != oldValue」なら
+				// EditCommandが有効になる
+				EditCommand = Time.Select(x => (x != oldTime)).CombineLatest(
+					Value.Select(y => (y != oldValue)), (x, y) => x | y).ToReactiveCommand();
 				// コマンドを登録する
-				EditCommand.Subscribe(_ => action1(oldTime, oldValue, Time, Value));
+				EditCommand.Subscribe(_ => action1(oldTime, oldValue, Time.Value, Value.Value));
 				DeleteCommand.Subscribe(_ => action2(oldTime, oldValue));
 			}
 		}
