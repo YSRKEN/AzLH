@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Data.SQLite;
-using static AzLH.Models.CharacterRecognition;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static AzLH.Models.CharacterRecognition;
 
 namespace AzLH.Models {
 	internal static class SupplyStore {
@@ -22,26 +22,54 @@ namespace AzLH.Models {
 		// 更新間隔(分)
 		private static int updateInterval = 10;
 
+		// 各シーンに対応した資材
+		public static Dictionary<string, string[]> SupplyListEachScene { get; } = new Dictionary<string, string[]>{
+			{ "母港", new string[]{ "燃料", "資金", "ダイヤ" } },
+			{ "建造", new string[]{ "キューブ" } },
+			{ "建造中", new string[]{ "ドリル" } },
+			{ "支援", new string[]{ "勲章" } },
+			{ "家具屋", new string[]{ "家具コイン" } }
+		};
 		// 初期化
 		public static void Initialize() {
 			// テーブルが存在しない場合、テーブルを作成する
 			foreach (var supplyInfo in SupplyParameters) {
+				// テーブルの存在を確認(SQLite流)
+				bool hasTableFlg = false;
 				try {
 					using (var con = new SQLiteConnection(connectionString)) {
 						con.Open();
 						using (var cmd = con.CreateCommand()) {
-							string sql = $"CREATE TABLE [{supplyInfo.Value.Name}]([datetime] DATETIME, [value] INTEGER, PRIMARY KEY(datetime))";
+							string sql = $"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{supplyInfo.Value.Name}';";
 							cmd.CommandText = sql;
-							cmd.ExecuteNonQuery();
+							using (var reader = cmd.ExecuteReader()) {
+								if (reader.Read() && reader.GetInt32(0) == 1) {
+									hasTableFlg = true;
+								}
+							}
 						}
 					}
+				} catch { }
+				// テーブルを作成
+				if (!hasTableFlg) {
+					try {
+						using (var con = new SQLiteConnection(connectionString)) {
+							con.Open();
+							using (var cmd = con.CreateCommand()) {
+								string sql = $"CREATE TABLE [{supplyInfo.Value.Name}]([datetime] DATETIME, [value] INTEGER, PRIMARY KEY(datetime))";
+								cmd.CommandText = sql;
+								cmd.ExecuteNonQuery();
+							}
+						}
+					} catch { }
 				}
-				catch { }
 			}
 			// 最終更新日時のキャッシュを準備する
 			foreach (var supplyInfo in SupplyParameters) {
 				lastWriteDateTime[supplyInfo.Key] = GetLastWriteDateTime(supplyInfo.Key);
 			}
+			// SupplyNameListを初期化する
+
 		}
 		// ある資材について、その最新書き込み日時を知る
 		private static DateTime GetLastWriteDateTime(string supplyType) {
@@ -65,12 +93,16 @@ namespace AzLH.Models {
 		}
 		// 資材量を更新できれば更新する
 		public static bool UpdateSupplyValue(Bitmap bitmap, string supplyType, bool autoSupplyScreenShotFlg, bool putCharacterRecognitionFlg) {
+			// 最終更新日時(lastWriteDateTime)～現在時刻(nowDateTime)の間が、
+			// 更新間隔(updateInterval)より短ければ更新しない
 			var nowDateTime = DateTime.Now;
 			if ((nowDateTime - lastWriteDateTime[supplyType]).TotalMinutes < updateInterval)
 				return false;
+			// OCRを行い、結果がなぜか負数になった場合も更新しない
 			int value = GetValueOCR(bitmap, supplyType, putCharacterRecognitionFlg);
 			if (value < 0)
 				return false;
+			// 更新操作
 			try {
 				using (var con = new SQLiteConnection(connectionString)) {
 					con.Open();
@@ -80,7 +112,9 @@ namespace AzLH.Models {
 						cmd.ExecuteNonQuery();
 					}
 				}
+				// 更新に成功すれば、最終更新日時を書き換える
 				lastWriteDateTime[supplyType] = nowDateTime;
+				// フラグが立っていれば、読み取った瞬間のスクショを数値とともに保存する
 				if(autoSupplyScreenShotFlg)
 					bitmap.Save($"debug\\{Utility.GetTimeStrLong(nowDateTime)} {supplyType} {value}.png");
 				return true;
@@ -100,6 +134,7 @@ namespace AzLH.Models {
 						cmd.CommandText = sql;
 						using (var reader = cmd.ExecuteReader()) {
 							while(reader.Read()) {
+								// reader.GetInt32(1)とは、「1(引数の数字)列目をint型で読み取る」ということ
 								output[reader.GetDateTime(0)] = reader.GetInt32(1);
 							}
 						}
@@ -246,6 +281,40 @@ namespace AzLH.Models {
 		}
 		public static Task<bool> ImportOldSubSupplyDataAsync(string fileName, int index) {
 			return Task.Run(() => ImportOldSubSupplyData(fileName, index));
+		}
+		// 資材量を直接更新する
+		public static bool EditSupplyData(string supplyType, string oldTime, int oldValue, string newTime, int newValue) {
+			try {
+				using (var con = new SQLiteConnection(connectionString)) {
+					con.Open();
+					using (var cmd = con.CreateCommand()) {
+						string sql = $"UPDATE [{SupplyParameters[supplyType].Name}] SET datetime='{newTime}',value={newValue} WHERE datetime='{oldTime}' AND value={oldValue}";
+						cmd.CommandText = sql;
+						cmd.ExecuteNonQuery();
+					}
+				}
+				lastWriteDateTime[supplyType] = GetLastWriteDateTime(supplyType);
+				return true;
+			} catch {
+				return false;
+			}
+		}
+		// 資材量を直接削除する
+		public static bool DeleteSupplyData(string supplyType, string oldTime, int oldValue) {
+			try {
+				using (var con = new SQLiteConnection(connectionString)) {
+					con.Open();
+					using (var cmd = con.CreateCommand()) {
+						string sql = $"DELETE FROM [{SupplyParameters[supplyType].Name}] WHERE datetime='{oldTime}' AND value={oldValue}";
+						cmd.CommandText = sql;
+						cmd.ExecuteNonQuery();
+					}
+				}
+				lastWriteDateTime[supplyType] = GetLastWriteDateTime(supplyType);
+				return true;
+			} catch {
+				return false;
+			}
 		}
 	}
 }

@@ -20,6 +20,8 @@
 		<ContextMenu>
 			<MenuItem IsCheckable="True" Header="起動時にこのウィンドウを表示する"
 					IsChecked="{Binding AutoOpenWindowFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+			<MenuItem Header="編集画面を起動...(_E)"
+					Command="{Binding ShowEditorCommand}"/>
 		</ContextMenu>
 	</Window.ContextMenu>
 	<Grid Margin="5,5,5,5">

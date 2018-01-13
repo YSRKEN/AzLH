@@ -15,8 +15,7 @@ namespace AzLH.Views
 		}
 		protected override void OnClosing(CancelEventArgs e) {
 			base.OnClosing(e);
-			var settings = SettingsStore.Instance;
-			settings.ShowTimerWindowFlg = false;
+			SettingsStore.ShowTimerWindowFlg = false;
 		}
 	}
 }

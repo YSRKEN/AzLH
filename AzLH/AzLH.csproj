@@ -137,22 +137,20 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Messenger.cs" />
-    <Compile Include="Models\CharacterRecognition.cs" />
-    <Compile Include="Models\GameScreenSelectModel.cs" />
+    <Compile Include="Libraries\CharacterRecognition.cs" />
     <Compile Include="Models\MainModel.cs" />
-    <Compile Include="Models\SceneRecognition.cs" />
-    <Compile Include="Models\ScreenShotProvider.cs" />
-    <Compile Include="Models\SettingsStore.cs" />
+    <Compile Include="Libraries\SceneRecognition.cs" />
+    <Compile Include="Libraries\ScreenShotProvider.cs" />
+    <Compile Include="DataStores\SettingsStore.cs" />
+    <Compile Include="DataStores\SupplyStore.cs" />
+    <Compile Include="Libraries\Utility.cs" />
+    <Compile Include="Behaviors\CloseWindowAttachedBehavior.cs" />
+    <Compile Include="Behaviors\ApplicationLogScrollBehavior.cs" />
+    <Compile Include="Behaviors\FileDragAndDropToWindowBehavior.cs" />
     <Compile Include="Models\SupplyModel.cs" />
-    <Compile Include="Models\SupplyStore.cs" />
-    <Compile Include="Models\TimerModel.cs" />
-    <Compile Include="Models\Utility.cs" />
-    <Compile Include="ViewModels\CloseWindowAttachedBehavior.cs" />
-    <Compile Include="ViewModels\ApplicationLogScrollBehavior.cs" />
-    <Compile Include="ViewModels\FileDragAndDropToWindowBehavior.cs" />
     <Compile Include="ViewModels\GameScreenSelectViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\SupplyEditorViewModel.cs" />
     <Compile Include="ViewModels\SupplyViewModel.cs" />
     <Compile Include="ViewModels\TimerViewModel.cs" />
     <Compile Include="Views\GameScreenSelectView.xaml.cs">
@@ -165,6 +163,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Views\SupplyEditorView.xaml.cs">
+      <DependentUpon>SupplyEditorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SupplyView.xaml.cs">
       <DependentUpon>SupplyView.xaml</DependentUpon>
     </Compile>
@@ -176,6 +177,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SupplyEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

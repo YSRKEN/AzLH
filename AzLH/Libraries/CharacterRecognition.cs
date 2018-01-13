@@ -89,7 +89,7 @@ namespace AzLH.Models {
 								tpj.MarkRectFloat[1],
 								tpj.MarkRectFloat[2],
 								tpj.MarkRectFloat[3]);
-						var markHash = Convert.ToUInt64(tpj.MarkHashStr, 16);
+						ulong markHash = Convert.ToUInt64(tpj.MarkHashStr, 16);
 						output[pair.Key] = new TimeParameter {
 							TimeRect = timeRect,
 							InverseFlg = pair.Value.InverseFlg,
@@ -149,7 +149,7 @@ namespace AzLH.Models {
 		private static bitmapArray BitmapToMonoArray(Bitmap bitmap){
 			var bmpArr = new bitmapArray();
 			var bitmapData = bitmap.LockBits(
-				new Rectangle(System.Drawing.Point.Empty, bitmap.Size),
+				new Rectangle(Point.Empty, bitmap.Size),
 				System.Drawing.Imaging.ImageLockMode.ReadOnly,
 				System.Drawing.Imaging.PixelFormat.Format32bppArgb
 			);
@@ -182,7 +182,7 @@ namespace AzLH.Models {
 			// つまり、発見できず0が返ってくるのか、
 			// 座標0で発見したから0が返ってくるのかが判別できない。
 			// なのであえて1スタートにしている
-			var rect = new Rectangle(new System.Drawing.Point(0, 0), bitmap.Size);
+			var rect = new Rectangle(new Point(0, 0), bitmap.Size);
 			var xRange = Enumerable.Range(1, bitmap.Width);
 			var yRange = Enumerable.Range(1, bitmap.Height);
 			// 上下左右の境界を取得する
@@ -478,13 +478,13 @@ namespace AzLH.Models {
 			public RectangleF MarkRect;
 			public ulong MarkHash;
 		}
-		[JsonObject("param")]
-		public struct TimeParameterJson {
+		#pragma warning disable 0649
+		private struct TimeParameterJson {
 			public float[] TimeRectFloat;
 			public bool InverseFlg;
 			public int Threshold;
 			public float[] MarkRectFloat;
 			public string MarkHashStr;
-		}
+		};
 	}
 }
