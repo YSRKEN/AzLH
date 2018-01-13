@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Windows;
+using System.Globalization;
 
 namespace AzLH.ViewModels
 {
 	class SupplyEditorViewModel
 	{
+		private string supplyType { get => SupplyNameList.Value[SupplyNameIndex.Value]; }
+
 		public delegate void Action1(string oldTime, int oldValue, string newTime, int newValue);
 		public delegate void Action2(string oldTime, int oldValue);
 
@@ -21,25 +24,40 @@ namespace AzLH.ViewModels
 			// 更新していない場合は無視する
 			if (oldTime == newTime && oldValue == newValue)
 				return;
+			// 時間がパース可能かを調べる
+			if(!DateTime.TryParseExact(newTime, "yyyy-MM-dd HH:mm:ss",DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out DateTime dt)) {
+				return;
+			}
+			// 資材量が負数になっているかを調べる
+			if (newValue < 0)
+				return;
 			// 更新するかを確認する
-			var result = MessageBox.Show($"以下のデータを更新します。よろしいですか？\n種類：{SupplyNameList.Value[SupplyNameIndex.Value]}\n旧データ：{oldTime}　{oldValue}\n新データ：{newTime}　{newValue}", Utility.SoftwareName, MessageBoxButton.YesNo);
+			var result = MessageBox.Show($"以下のデータを更新します。よろしいですか？\n種類：{supplyType}\n旧データ：{oldTime}　{oldValue}\n新データ：{newTime}　{newValue}", Utility.SoftwareName, MessageBoxButton.YesNo);
 			if(result != MessageBoxResult.Yes)
 				return;
-			// 更新操作を行う(スタブ)
-			// リストを再作成する
-			RemakeSupplyDataList();
-			return;
+			// 更新操作を行う
+			if(SupplyStore.EditSupplyData(supplyType, oldTime, oldValue, newTime, newValue)) {
+				MessageBox.Show("データの更新に成功しました", Utility.SoftwareName, MessageBoxButton.OK);
+				// リストを再作成する
+				RemakeSupplyDataList();
+			} else {
+				MessageBox.Show("データの更新に失敗しました", Utility.SoftwareName, MessageBoxButton.OK);
+			}
 		}
 		// データを削除する
 		private void DeleteSupplyData(string oldTime, int oldValue) {
 			// 更新するかを確認する
-			var result = MessageBox.Show($"以下のデータを削除します。よろしいですか？\n種類：{SupplyNameList.Value[SupplyNameIndex.Value]}\nデータ：{oldTime}　{oldValue}", Utility.SoftwareName, MessageBoxButton.YesNo);
+			var result = MessageBox.Show($"以下のデータを削除します。よろしいですか？\n種類：{supplyType}\nデータ：{oldTime}　{oldValue}", Utility.SoftwareName, MessageBoxButton.YesNo);
 			if (result != MessageBoxResult.Yes)
 				return;
-			// 削除操作を行う(スタブ)
-			// リストを再作成する
-			RemakeSupplyDataList();
-			return;
+			// 削除操作を行う
+			if (SupplyStore.DeleteSupplyData(supplyType, oldTime, oldValue)) {
+				MessageBox.Show("データの削除に成功しました", Utility.SoftwareName, MessageBoxButton.OK);
+				// リストを再作成する
+				RemakeSupplyDataList();
+			} else {
+				MessageBox.Show("データの削除に失敗しました", Utility.SoftwareName, MessageBoxButton.OK);
+			}
 		}
 		// リストを再作成する
 		private void RemakeSupplyDataList() {
