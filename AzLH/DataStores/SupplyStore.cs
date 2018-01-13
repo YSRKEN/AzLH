@@ -68,6 +68,8 @@ namespace AzLH.Models {
 			foreach (var supplyInfo in SupplyParameters) {
 				lastWriteDateTime[supplyInfo.Key] = GetLastWriteDateTime(supplyInfo.Key);
 			}
+			// SupplyNameListを初期化する
+
 		}
 		// ある資材について、その最新書き込み日時を知る
 		private static DateTime GetLastWriteDateTime(string supplyType) {
@@ -279,6 +281,40 @@ namespace AzLH.Models {
 		}
 		public static Task<bool> ImportOldSubSupplyDataAsync(string fileName, int index) {
 			return Task.Run(() => ImportOldSubSupplyData(fileName, index));
+		}
+		// 資材量を直接更新する
+		public static bool EditSupplyData(string supplyType, string oldTime, int oldValue, string newTime, int newValue) {
+			try {
+				using (var con = new SQLiteConnection(connectionString)) {
+					con.Open();
+					using (var cmd = con.CreateCommand()) {
+						string sql = $"UPDATE [{SupplyParameters[supplyType].Name}] SET datetime='{newTime}',value={newValue} WHERE datetime='{oldTime}' AND value={oldValue}";
+						cmd.CommandText = sql;
+						cmd.ExecuteNonQuery();
+					}
+				}
+				lastWriteDateTime[supplyType] = GetLastWriteDateTime(supplyType);
+				return true;
+			} catch {
+				return false;
+			}
+		}
+		// 資材量を直接削除する
+		public static bool DeleteSupplyData(string supplyType, string oldTime, int oldValue) {
+			try {
+				using (var con = new SQLiteConnection(connectionString)) {
+					con.Open();
+					using (var cmd = con.CreateCommand()) {
+						string sql = $"DELETE FROM [{SupplyParameters[supplyType].Name}] WHERE datetime='{oldTime}' AND value={oldValue}";
+						cmd.CommandText = sql;
+						cmd.ExecuteNonQuery();
+					}
+				}
+				lastWriteDateTime[supplyType] = GetLastWriteDateTime(supplyType);
+				return true;
+			} catch {
+				return false;
+			}
 		}
 	}
 }

@@ -24,6 +24,10 @@ namespace AzLH.Models {
 		public static string GetTimeStrLong() {
 			return GetTimeStrLong(DateTime.Now);
 		}
+		// 時刻をSQLiteのDatetime("")で返す
+		public static string GetTimeStrSQLite(DateTime dt) {
+			return dt.ToString("yyyy-MM-dd HH:mm:ss");
+		}
 		// Rectangleを文字列()で返す
 		public static string GetRectStr(Rectangle rect) {
 			return $"({rect.X},{rect.Y}) {rect.Width}x{rect.Height}";
