@@ -21,7 +21,7 @@ namespace AzLH.ViewModels
 				var supplyData = SupplyStore.GetSupplyData(SupplyNameList.Value[index]);
 				foreach(var pair in supplyData) {
 					var temp = new SupplyData();
-					temp.Time = Utility.GetTimeStrLong(pair.Key);
+					temp.Time = Utility.GetTimeStrSQLite(pair.Key);
 					temp.Value = pair.Value;
 					newSupplyDataList.Add(temp);
 				}

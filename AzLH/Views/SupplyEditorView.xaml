@@ -6,7 +6,7 @@
 	xmlns:local="clr-namespace:AzLH.Views"
 	mc:Ignorable="d"
 	Topmost="True"
-	Title="資材記録(詳細)" Height="400" Width="300">
+	Title="資材記録(詳細)" Height="450" Width="350">
 	<Grid Margin="5,5,5,5">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto"/>
@@ -23,11 +23,42 @@
 					ItemsSource="{Binding SupplyNameList.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 			<TextBlock Grid.Column="1" Text="の資材データ↓" FontSize="20" VerticalAlignment="Center"/>
 		</Grid>
+		<!-- 参考→http://pieceofnostalgy.blogspot.jp/2014/04/wpf-textboxlistview.html -->
 		<ListView Grid.Row="1" Margin="5,5,5,5"
 			ItemsSource="{Binding SupplyDataList.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+			<ListView.Resources>
+				<Style x:Key="{x:Type TextBox}" TargetType="TextBox">
+					<Setter Property="Template">
+						<Setter.Value>
+							<ControlTemplate TargetType="{x:Type TextBoxBase}">
+								<Border Name="TextBoxBorder" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" BorderThickness="1" BorderBrush="Transparent">
+									<ScrollViewer Margin="0" x:Name="PART_ContentHost" />
+								</Border>
+								<ControlTemplate.Triggers>
+									<Trigger Property="IsKeyboardFocusWithin" Value="True">
+										<Setter TargetName="TextBoxBorder" Property="BorderBrush" Value="LightGray" />
+										<Setter TargetName="TextBoxBorder" Property="Background" Value="White" />
+									</Trigger>
+								</ControlTemplate.Triggers>
+							</ControlTemplate>
+						</Setter.Value>
+					</Setter>
+				</Style>
+			</ListView.Resources>
+			<ListView.ItemContainerStyle>
+				<Style TargetType="ListViewItem">
+					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+					<Setter Property="VerticalContentAlignment" Value="Stretch" />
+					<Style.Triggers>
+						<Trigger Property="IsKeyboardFocusWithin" Value="true">
+							<Setter Property="IsSelected" Value="true" />
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+			</ListView.ItemContainerStyle>
 			<ListView.View>
 				<GridView>
-					<GridViewColumn Header="取得時刻" Width="110">
+					<GridViewColumn Header="取得時刻" Width="140">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<TextBox Text="{Binding Path=Time}" TextWrapping="NoWrap"/>
