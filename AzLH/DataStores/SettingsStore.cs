@@ -300,8 +300,10 @@ namespace AzLH.Models {
 					// Json.NETでパース
 					This = JsonConvert.DeserializeObject<SettingsStore>(json);
 				}
-				return true;
+				if (This == null) throw new Exception();
+					return true;
 			} catch {
+				This = new SettingsStore();
 				return false;
 			}
 		}
