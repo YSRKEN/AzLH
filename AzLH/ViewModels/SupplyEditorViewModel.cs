@@ -17,14 +17,15 @@ namespace AzLH.ViewModels
 			SupplyNameList = new ReactiveProperty<List<string>>(CharacterRecognition.SupplyParameters.Keys.Select(p => p).ToList());
 			SupplyDataList = new ReactiveProperty<List<SupplyData>>(new List<SupplyData>());
 			SupplyNameIndex.Subscribe(index => {
-				SupplyDataList.Value.Clear();
+				var newSupplyDataList = new List<SupplyData>();
 				var supplyData = SupplyStore.GetSupplyData(SupplyNameList.Value[index]);
 				foreach(var pair in supplyData) {
 					var temp = new SupplyData();
 					temp.Time = Utility.GetTimeStrLong(pair.Key);
 					temp.Value = pair.Value;
-					SupplyDataList.Value.Add(temp);
+					newSupplyDataList.Add(temp);
 				}
+				SupplyDataList.Value = newSupplyDataList;
 			});
 		}
 
