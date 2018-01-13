@@ -38,7 +38,7 @@ namespace AzLH.ViewModels {
 		public ReactiveProperty<bool> ForTwitterFlg { get; } = new ReactiveProperty<bool>(false);
 		// ソフトウェアのタイトル
 		public ReactiveProperty<string> SoftwareTitle { get; }
-			= new ReactiveProperty<string>($"{Utility.SoftwareName}Ver.{Utility.SoftwareVer}");
+			= new ReactiveProperty<string>($"{Utility.SoftwareName} Ver.{Utility.SoftwareVer}");
 		// メイン画面の位置
 		public ReactiveProperty<double> MainWindowPositionLeft { get; } = new ReactiveProperty<double>(double.NaN);
 		public ReactiveProperty<double> MainWindowPositionTop { get; } = new ReactiveProperty<double>(double.NaN);
