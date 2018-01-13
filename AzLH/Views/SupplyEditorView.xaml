@@ -89,6 +89,7 @@
 				</GridView>
 			</ListView.View>
 		</ListView>
-		<CheckBox Grid.Row="2" Content="確認ダイアログを表示しない" Height="24" Margin="5,5,5,5" VerticalAlignment="Center"/>
+		<CheckBox Grid.Row="2" Content="確認ダイアログを表示しない" Height="24" Margin="5,5,5,5" VerticalAlignment="Center"
+				IsChecked="{Binding ShowDialogFlg.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 	</Grid>
 </Window>
