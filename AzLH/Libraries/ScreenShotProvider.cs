@@ -229,6 +229,11 @@ namespace AzLH.Models {
 			foreach (var point in pointList) {
 				int left = point.Key;
 				int top = point.Value;
+				// そもそもMinGameWindowSizeが収まらなければ意味がない
+				if (left + MinGameWindowSize.Width >= bitmap.Width)
+					continue;
+				if (top + MinGameWindowSize.Height >= bitmap.Height)
+					continue;
 				// 枠の基準色を決める
 				var baseColor = bitmap.GetPixel(left, top);
 				// まず、MinGameWindowSizeまで大丈夫かを検証する
